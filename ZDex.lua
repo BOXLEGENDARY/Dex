@@ -145,8 +145,6 @@ local service = setmetatable({}, {
 	end
 })
 
-local selection = nil;
-
 local EmbeddedModules = {
 ["Console"] = function()
 --[[
