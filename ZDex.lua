@@ -145,6 +145,8 @@ local service = setmetatable({}, {
 	end
 })
 
+local selection = nil;
+
 local EmbeddedModules = {
 ["Console"] = function()
 --[[
@@ -873,7 +875,6 @@ end
 end
 
 end,
-
 ["Explorer"] = function()
 --[[
 	Explorer App Module
