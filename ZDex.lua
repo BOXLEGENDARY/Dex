@@ -872,9 +872,8 @@ local function main()
 end
 
 	return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
-end
-
 end,
+
 ["Explorer"] = function()
 --[[
 	Explorer App Module
@@ -5295,7 +5294,7 @@ end
 
 return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
 end,
-Lib = function()
+["Lib"] = function()
 --[[
 	Lib Module
 	
