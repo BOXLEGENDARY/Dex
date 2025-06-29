@@ -2361,9 +2361,20 @@ local function main()
 			Explorer.InsertObjectContext:Show(x,y)
 		end})
 
-		context:Register("CALL_FUNCTION",{Name = "Call Function", IconMap = Explorer.ClassIcons, Icon = 66, OnClick = function()
-			
-		end})
+        context:Register("CALL_FUNCTION", {
+        	Name = "Call Function",
+        	IconMap = Explorer.ClassIcons,
+        	Icon = 66,
+       	OnClick = function()
+	            local obj = Explorer:GetSelectedObject()
+        		if typeof(obj) == "function" then
+		        	local success, result = pcall(obj)
+		        	print(success and "Success: "..tostring(result) or "Error: "..tostring(result))
+        		else
+	        		warn("Not a function.")
+        		end
+            end
+        })
 
 		context:Register("GET_REFERENCES",{Name = "Get Lua References", IconMap = Explorer.ClassIcons, Icon = 34, OnClick = function()
 			
