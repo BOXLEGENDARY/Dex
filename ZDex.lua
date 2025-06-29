@@ -913,6 +913,7 @@ local function main()
 		Notepad.Window = window
 
 		codeFrame = Lib.CodeFrame.new()
+		codeFrame.DisableHighlighting = true
 		codeFrame.Frame.Position = UDim2.new(0, 0, 0, 20)
 		codeFrame.Frame.Size = UDim2.new(1, 0, 1, -20)
 		codeFrame.Frame.Parent = window.GuiElems.Content
@@ -9054,7 +9055,7 @@ local function main()
 					label.Font = Enum.Font.Code
 					label.TextSize = self.FontSize
 					label.Size = UDim2.new(1,0,0,self.FontSize)
-					label.RichText = true
+					label.RichText = not self.DisableHighlighting
 					label.TextXAlignment = Enum.TextXAlignment.Left
 					label.TextColor3 = self.Colors.Text
 					label.ZIndex = 2
