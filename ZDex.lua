@@ -2,7 +2,7 @@
 	Upgrade Version From Moon
     Developed by ZxL
 	Credits by Moon > github: https://github.com/LorekeeperZinnia/Dex
-    High Performance
+    ZDex
 ]]
 
 	
