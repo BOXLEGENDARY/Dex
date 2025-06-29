@@ -147,6 +147,24 @@ local service = setmetatable({}, {
 
 local selection = nil;
 
+_G.CallFunction = _G.CallFunction or function()
+	local success, result = pcall(function()
+		local selection = rawget(_G, "Explorer") and Explorer.Selected or {}
+		for _, v in ipairs(selection) do
+			if typeof(v.Function) == "function" then
+				pcall(v.Function)
+			elseif typeof(getfenv(v).Function) == "function" then
+				pcall(getfenv(v).Function)
+			else
+				warn("Function() not found in", v)
+			end
+		end
+	end)
+	if not success then
+		warn("[CallFunction Error]:", result)
+	end
+end
+
 local EmbeddedModules = {
 ["Console"] = function()
 --[[
@@ -12525,24 +12543,6 @@ Main = (function()
 	
 	return Main
 end)()
-
-_G.CallFunction = _G.CallFunction or function()
-	local success, result = pcall(function()
-		local selection = rawget(_G, "Explorer") and Explorer.Selected or {}
-		for _, v in ipairs(selection) do
-			if typeof(v.Function) == "function" then
-				pcall(v.Function)
-			elseif typeof(getfenv(v).Function) == "function" then
-				pcall(getfenv(v).Function)
-			else
-				warn("Function() not found in", v)
-			end
-		end
-	end)
-	if not success then
-		warn("[CallFunction Error]:", result)
-	end
-end
 
 -- Start
 Main.Init()
