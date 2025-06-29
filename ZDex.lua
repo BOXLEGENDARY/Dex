@@ -147,24 +147,6 @@ local service = setmetatable({}, {
 
 local selection = nil;
 
-_G.CallFunction = _G.CallFunction or function()
-	local success, result = pcall(function()
-		local selection = rawget(_G, "Explorer") and Explorer.Selected or {}
-		for _, v in ipairs(selection) do
-			if typeof(v.Function) == "function" then
-				pcall(v.Function)
-			elseif typeof(getfenv(v).Function) == "function" then
-				pcall(getfenv(v).Function)
-			else
-				warn("Function() not found in", v)
-			end
-		end
-	end)
-	if not success then
-		warn("[CallFunction Error]:", result)
-	end
-end
-
 local EmbeddedModules = {
 ["Console"] = function()
 --[[
@@ -2379,14 +2361,9 @@ local function main()
 			Explorer.InsertObjectContext:Show(x,y)
 		end})
 
-        context:Register("CALL_FUNCTION", {
-        	Name = "Call Function",
-        	IconMap = Explorer.ClassIcons,
-        	Icon = 66,
-        	OnClick = function()
-	        	pcall(CallFunction)
-        	end
-        })
+		context:Register("CALL_FUNCTION",{Name = "Call Function", IconMap = Explorer.ClassIcons, Icon = 66, OnClick = function()
+			
+		end})
 
 		context:Register("GET_REFERENCES",{Name = "Get Lua References", IconMap = Explorer.ClassIcons, Icon = 34, OnClick = function()
 			
