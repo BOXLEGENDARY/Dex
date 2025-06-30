@@ -2453,7 +2453,7 @@ local function main()
 		end, OnRightClick = function()
 			workspace.CurrentCamera.CameraSubject = plr.Character
 		end})
-
+		
 		context:Register("VIEW_MODEL",{Name = "View Model", IconMap = Explorer.ClassIcons, Icon = 5, OnClick = function()
 			local sList = selection.List
 			local isa = game.IsA
