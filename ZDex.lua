@@ -11872,7 +11872,7 @@ end
 }
 
 -- Main vars
-local Main, Explorer, Properties, ScriptViewer, Notepad, Console, ModelViewer, DefaultSettings, Notebook, Serializer, Lib
+local Main, Explorer, Properties, ScriptViewer, Notepad, ModelViewer, Console, DefaultSettings, Notebook, Serializer, Lib
 local API, RM
 
 -- Default Settings
@@ -11985,7 +11985,7 @@ end
 Main = (function()
 	local Main = {}
 	
-	Main.ModuleList = {"Explorer","Properties","ScriptViewer","Notepad","Console","ModelViewer"}
+	Main.ModuleList = {"Explorer","Properties","ScriptViewer","Notepad","ModelViewer","Console"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
 	Main.Version = "" -- pre-aplha ( in-dev )
@@ -12069,14 +12069,16 @@ Main = (function()
 		Explorer = Apps.Explorer
 		Properties = Apps.Properties
 		ScriptViewer = Apps.ScriptViewer
-		Console = Apps.Console
         Notepad = Apps.Notepad
+		ModelViewer = Apps.ModelViewer
+		Console = Apps.Console
 		Notebook = Apps.Notebook
 		local appTable = {
 			Explorer = Explorer,
 			Properties = Properties,
 			ScriptViewer = ScriptViewer,
             Notepad = Notepad,
+			ModelViewer = ModelViewer,
 			Console = Console,
 			Notebook = Notebook
 		}
@@ -12791,9 +12793,9 @@ Main = (function()
 		
 		Main.CreateApp({Name = "Notepad", IconMap = Main.LargeIcons, Icon = "Script_Viewer", Window = Notepad.Window})
 
-		Main.CreateApp({Name = "Console", IconMap = Main.LargeIcons, Icon = "Output", Window = Console.Window})
-
 		Main.CreateApp({Name = "Model Viewer", IconMap = Main.LargeIcons, Icon = 6, Window = ModelViewer.Window})
+
+		Main.CreateApp({Name = "Console", IconMap = Main.LargeIcons, Icon = "Output", Window = Console.Window})
 		
 		local cptsOnMouseClick = nil
 		Main.CreateApp({Name = "Click part to select", IconMap = Main.LargeIcons, Icon = 6, OnClick = function(callback)
@@ -12932,6 +12934,7 @@ Main = (function()
 		Properties.Init()
 		ScriptViewer.Init()
         Notepad.Init()
+		ModelViewer.Init()
 		Console.Init()
 		Lib.FastWait()
 		
