@@ -12112,6 +12112,8 @@ Main = (function()
 						rawset(self, name, func)
 				end})
 
+        		env.isonmobile = game:GetService("UserInputService").TouchEnabled
+
 				-- file
 				env.readfile = readfile
 				env.writefile = writefile
