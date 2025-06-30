@@ -7,13 +7,15 @@
 
 	
 
+-- PerformanceEngine
 local cloneref = cloneref or function(...) return ... end
 local getnilinstances = getnilinstances or function() return {} end
 
+-- Local shortcuts
 local math_floor    = math.floor
 local table_insert  = table.insert
 local table_sort    = table.sort
-local table_clear   = table.clear or function(t) for k in pairs(t) do t[k] = nil end end -- fallback table.clear
+local table_clear   = table.clear or function(t) for k in pairs(t) do t[k] = nil end end
 local tostring      = tostring
 local string_find   = string.find
 local string_gsub   = string.gsub
@@ -27,6 +29,7 @@ local type          = type
 local safe_pcall    = xpcall
 local function silent_error_handler(err) return nil end
 
+-- Spoof garbage collector for stealth
 local real_gcinfo = gcinfo
 local spoofed_max_gc = real_gcinfo()
 local spoofed_min_gc = spoofed_max_gc - math.random(5, 15)
@@ -44,17 +47,15 @@ collectgarbage = function(mode)
 	return 0
 end
 
+-- Fake debug
 local real_debug = debug or {}
-
 local blocked = {
 	["getinfo"] = true,
 	["traceback"] = true,
 	["getupvalue"] = true
 }
 
-local function nil_return()
-	return nil
-end
+local function nil_return() return nil end
 
 debug = setmetatable({}, {
 	__index = function(_, key)
@@ -71,6 +72,7 @@ debug = setmetatable({}, {
 	__metatable = "Locked"
 })
 
+-- Safe environment
 local original_env = (getfenv and getfenv(0)) or _G
 local fake_env = setmetatable({}, {
 	__index = function(_, k)
@@ -93,26 +95,48 @@ local function try_setfenv(level, env)
 end
 
 local ok = try_setfenv(1, fake_env)
-if not ok then
-end
 
+-- PerformanceEngine Core
 local PerformanceEngine = {}
-
 local lastUpdate = os.clock()
 local MIN_THROTTLE = 0.03
 local MAX_THROTTLE = 0.1
 local throttleLevel = MIN_THROTTLE
 
+-- Stats
+local perfStats = {
+	FPS = 0,
+	Memory = 0,
+	Delta = 0,
+	LastSpike = 0
+}
+
+-- FPS tracker
+local runService = game:GetService("RunService")
+local frames, acc = 0, 0
+runService.RenderStepped:Connect(function(dt)
+	frames += 1
+	acc += dt
+	if acc >= 1 then
+		perfStats.FPS = frames
+		perfStats.Memory = collectgarbage("count")
+		perfStats.Delta = dt
+		frames, acc = 0, 0
+	end
+end)
+
+function PerformanceEngine.GetStats()
+	return perfStats
+end
+
 function PerformanceEngine.AdaptiveThrottle()
 	local now = os.clock()
 	local delta = now - lastUpdate
-
 	if delta < MIN_THROTTLE then
 		throttleLevel = math.min(throttleLevel + 0.01, MAX_THROTTLE)
 	else
 		throttleLevel = math.max(throttleLevel - 0.01, MIN_THROTTLE)
 	end
-
 	lastUpdate = now
 	task.wait(throttleLevel)
 end
@@ -134,8 +158,41 @@ function PerformanceEngine.SmartUpdate(updateFunc)
 	PerformanceEngine.FastCall(updateFunc)
 end
 
+-- Task Queue
+local taskQueue = {}
+function PerformanceEngine.QueueTask(fn, ...)
+	table_insert(taskQueue, {fn = fn, args = {...}})
+end
+
+function PerformanceEngine.RunTaskQueue()
+	for i = #taskQueue, 1, -1 do
+		local item = taskQueue[i]
+		safe_pcall(item.fn, table.unpack(item.args))
+		table.remove(taskQueue, i)
+	end
+end
+
+-- Auto Balance
+function PerformanceEngine.AutoBalance(func)
+	local t1 = os.clock()
+	local ok, result = pcall(func)
+	local t2 = os.clock()
+	local timeUsed = t2 - t1
+	if timeUsed > 0.08 then
+		perfStats.LastSpike = timeUsed
+		task.wait(0.1)
+	elseif timeUsed > 0.04 then
+		task.wait(0.03)
+	else
+		task.wait()
+	end
+	return ok, result
+end
+
+-- Global alias
 _G.Perf = PerformanceEngine
 
+-- Auto service fetch
 local nodes = {}
 local service = setmetatable({}, {
 	__index = function(self, name)
