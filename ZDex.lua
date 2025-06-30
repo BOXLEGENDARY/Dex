@@ -2822,13 +2822,8 @@ local function main()
 			
 		end})]]
 		
-		context:Register("COPY_API_PAGE",{Name = "Copy Roblox API Page URL", IconMap = Explorer.MiscIcons, Icon = "Reference", OnClick = function()
-			local sList = selection.List
-			if #sList == 1 then
-				env.setclipboard(
-					"https://create.roblox.com/docs/reference/engine/classes/"..sList[1].Obj.ClassName
-				)
-			end
+		context:Register("VIEW_API",{Name = "View API Page", IconMap = Explorer.MiscIcons, Icon = "Reference", OnClick = function()
+			
 		end})
 		
 		context:Register("VIEW_MODEL",{Name = "View Model", IconMap = Explorer.ClassIcons, Icon = 5, OnClick = function()
