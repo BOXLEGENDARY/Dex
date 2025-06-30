@@ -12911,7 +12911,7 @@ Main = (function()
 		})
 		Main.LargeIcons = Lib.IconMap.new("rbxassetid://6579106223",256,256,32,32)
 		Main.LargeIcons:SetDict({
-			Explorer = 0, Properties = 1, Script_Viewer = 2,
+			Explorer = 0, Properties = 1, Script_Viewer = 2, Watcher = 3, Output = 4
 		})
 		
 		-- Fetch version if needed
