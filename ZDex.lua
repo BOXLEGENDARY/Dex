@@ -2438,10 +2438,6 @@ local function main()
 			
 		end})
 		
-		context:Register("TEST_TEST",{Name = "test", IconMap = Explorer.MiscIcons, Icon = "Reference", OnClick = function()
-			
-		end})
-		
 		context:Register("VIEW_OBJECT",{Name = "View Object (Right click to reset)", IconMap = Explorer.ClassIcons, Icon = 5, OnClick = function()
 			local sList = selection.List
 			local isa = game.IsA
