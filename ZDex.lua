@@ -1489,7 +1489,7 @@ local RETURN_ELAPSED_TIME = false]]
 end
 
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, ModelViewer, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -1511,6 +1511,7 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
+	ModelViewer = Apps.ModelViewer
 	Notebook = Apps.Notebook
 end
 
