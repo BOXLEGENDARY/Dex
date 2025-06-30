@@ -2388,6 +2388,7 @@ local function main()
 		
 		if presentClasses["BasePart"] or presentClasses["Model"] then
 			context:AddRegistered("TELEPORT_TO")
+			context:AddRegistered("VIEW_MODEL")
 			context:AddRegistered("VIEW_OBJECT")
 		end
 		if presentClasses["Tween"] then context:AddRegistered("PLAY_TWEEN") end
