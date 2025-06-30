@@ -12946,6 +12946,7 @@ Main = (function()
 		Properties.Init()
 		ScriptViewer.Init()
         Notepad.Init()
+		ModelViewer.Init()
 		Console.Init()
 		Lib.FastWait()
 		
