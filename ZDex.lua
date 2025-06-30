@@ -12816,7 +12816,7 @@ Main = (function()
 
 		Main.CreateApp({Name = "Model Viewer", IconMap = Main.LargeIcons, Icon = 6, Window = ModelViewer.Window})
 
-		Main.CreateApp({Name = "Console", IconMap = Main.LargeIcons, Icon = "33", Window = Console.Window})
+		Main.CreateApp({Name = "Console", IconMap = Main.LargeIcons, Icon = 33, Window = Console.Window})
 		
 		local cptsOnMouseClick = nil
 		Main.CreateApp({Name = "Click part to select", IconMap = Main.LargeIcons, Icon = 6, OnClick = function(callback)
