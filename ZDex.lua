@@ -1421,16 +1421,16 @@ local Decompile do
 	if Success then
 		local CONSTANTS = [[
 local ENABLED_REMARKS = {
-	NATIVE_REMARK = true,
-	INLINE_REMARK = true
+	NATIVE_REMARK = false,
+	INLINE_REMARK = false
 }
 
-local DECOMPILER_TIMEOUT = 10
+local DECOMPILER_TIMEOUT = 2
 
 local READER_FLOAT_PRECISION = 7 -- up to 99
-local SHOW_INSTRUCTION_LINES = false
-local SHOW_REFERENCES = true
-local SHOW_OPERATION_NAMES = false
+local SHOW_INSTRUCTION_LINES = true
+local SHOW_REFERENCES = false
+local SHOW_OPERATION_NAMES = true
 local SHOW_MISC_OPERATIONS = false
 local LIST_USED_GLOBALS = true
 local RETURN_ELAPSED_TIME = false]]
