@@ -73,7 +73,7 @@ debug = setmetatable({}, {
 })
 
 -- Safe environment
-local original_env = (getfenv and getfenv(0)) or _G
+local original_env = (getgenv and getgenv()) or (getfenv and getfenv(1)) or _ENV
 local fake_env = setmetatable({}, {
 	__index = function(_, k)
 		if k == "_G" then return fake_env end
