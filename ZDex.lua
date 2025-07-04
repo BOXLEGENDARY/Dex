@@ -5351,17 +5351,10 @@ local function main()
 		window:Resize(500, 400)
 		Notepad.Window = window
 
-		codeFrame = Instance.new("TextBox")
-		codeFrame.ClearTextOnFocus = false
-		codeFrame.MultiLine = true
-		codeFrame.TextWrapped = true
-		codeFrame.Font = Enum.Font.Code
-		codeFrame.TextSize = 14
-		codeFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-		codeFrame.TextColor3 = Color3.new(1, 1, 1)
-		codeFrame.Position = UDim2.new(0, 0, 0, 20)
-		codeFrame.Size = UDim2.new(1, 0, 1, -20)
-		codeFrame.Parent = window.GuiElems.Content
+		codeFrame = Lib.CodeFrame.new()
+		codeFrame.Frame.Position = UDim2.new(0, 0, 0, 20)
+		codeFrame.Frame.Size = UDim2.new(1, 0, 1, -20)
+		codeFrame.Frame.Parent = window.GuiElems.Content
 
 		local execute = Instance.new("TextButton", window.GuiElems.Content)
 		execute.BackgroundTransparency = 1
@@ -5371,13 +5364,8 @@ local function main()
 		execute.TextColor3 = Color3.new(1, 1, 1)
 
 		execute.MouseButton1Click:Connect(function()
-			local source = codeFrame.Text
-			local func, err = loadstring(source)
-			if func then
-				func()
-			else
-				warn("Error in code: "..err)
-			end
+			local source = codeFrame:GetText()
+			loadstring(source)()
 		end)
 
 		local clear = Instance.new("TextButton", window.GuiElems.Content)
@@ -5388,7 +5376,7 @@ local function main()
 		clear.TextColor3 = Color3.new(1, 1, 1)
 
 		clear.MouseButton1Click:Connect(function()
-			codeFrame.Text = ""
+			codeFrame:SetText("")
 		end)
 
 		local copy = Instance.new("TextButton", window.GuiElems.Content)
@@ -5399,7 +5387,8 @@ local function main()
 		copy.TextColor3 = Color3.new(1, 1, 1)
 
 		copy.MouseButton1Click:Connect(function()
-			setclipboard(codeFrame.Text)
+			local source = codeFrame:GetText()
+			setclipboard(source)
 		end)
 
 		local save = Instance.new("TextButton", window.GuiElems.Content)
@@ -5410,7 +5399,7 @@ local function main()
 		save.TextColor3 = Color3.new(1, 1, 1)
 
 		save.MouseButton1Click:Connect(function()
-			local source = codeFrame.Text
+			local source = codeFrame:GetText()
 			local filename = "Place_" .. game.PlaceId .. "_Script_" .. os.time() .. ".txt"
 			writefile(filename, source)
 			if movefileas then
