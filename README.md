@@ -2,7 +2,7 @@
 
 ## Credits
 
-.ZxL. ( Owner )
+ZxL ( Owner )
 
 [Cazan](https://github.com/Cazzanos) (Model Viewer)
 
