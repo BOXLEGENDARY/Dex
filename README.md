@@ -17,3 +17,5 @@ ZxL ( Owner )
 ## Credits
 
 [ZxL](https://github.com/BOXLEGENDARY/LuauDecompile)
+
+[w.a.e](https://github.com/w-a-e/Advanced-Decompiler-V3)
