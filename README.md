@@ -12,3 +12,6 @@ ZxL ( Owner )
 [Moon](https://github.com/LorekeeperZinnia/Dex) (Creator)
 
 [chillz](https://github.com/AZYsGithub/DexPlusPlus) ( Open Source i use )
+
+# Luau Decompline
+## Credits
