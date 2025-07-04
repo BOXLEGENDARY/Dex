@@ -29,7 +29,7 @@ local type          = type
 local safe_pcall    = xpcall
 local function silent_error_handler(err) return nil end
 
--- Spoof garbage collector for stealth
+-- Spoof garbage collector
 local real_gcinfo = gcinfo
 local spoofed_max_gc = real_gcinfo()
 local spoofed_min_gc = spoofed_max_gc - math.random(5, 15)
