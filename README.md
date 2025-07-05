@@ -24,4 +24,4 @@
 
 [w.a.e](https://github.com/w-a-e)
 
-[break-core](https://github.com/break-core/Advanced-Decompiler-V3)
+[break-core](https://github.com/break-core)
