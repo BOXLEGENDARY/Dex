@@ -7140,7 +7140,14 @@ local function main()
 		end
 
 		local function resizeHook(self,resizer,dir)
+			local pressing = false
+
 			local guiMain = self.GuiElems.Main
+			
+			resizer.MouseEnter:Connect(function() resizer.BackgroundTransparency = 0.5 end)
+			resizer.MouseButton1Down:Connect(function() pressing = true resizer.BackgroundTransparency = 0.5 end)
+			resizer.MouseButton1Up:Connect(function() pressing = false resizer.BackgroundTransparency = 1 end)
+
 			resizer.InputBegan:Connect(function(input)
 				if not self.Dragging and not self.Resizing and self.Resizable and self.ResizableInternal then
 					local isH = dir:find("[WE]") and true
