@@ -7140,27 +7140,34 @@ local function main()
 		end
 
 		local function resizeHook(self,resizer,dir)
+			local pressing = false
+			
 			local guiMain = self.GuiElems.Main
+			
+			resizer.MouseEnter:Connect(function() resizer.BackgroundTransparency = 0.5 end)
+			resizer.MouseButton1Down:Connect(function() pressing = true resizer.BackgroundTransparency = 0.5 end)
+			resizer.MouseButton1Up:Connect(function() pressing = false resizer.BackgroundTransparency = 1 end)
+			
+			
+			
 			resizer.InputBegan:Connect(function(input)
-				if not self.Dragging and not self.Resizing and self.Resizable and self.ResizableInternal then
+				if not self.Dragging and not self.Resizing and self.Resizable and self.ResizableInternal and pressing then
 					local isH = dir:find("[WE]") and true
 					local isV = dir:find("[NS]") and true
 					local signX = dir:find("W",1,true) and -1 or 1
 					local signY = dir:find("N",1,true) and -1 or 1
-			
+
 					if self.Minimized and isV then return end
-			
-					if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-						resizer.BackgroundTransparency = 0.5
-					elseif input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+					
+					if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+						
 						local releaseEvent, mouseEvent
-			
+
 						local offX = input.Position.X - resizer.AbsolutePosition.X
 						local offY = input.Position.Y - resizer.AbsolutePosition.Y
-			
+
 						self.Resizing = resizer
-						resizer.BackgroundTransparency = 1
-			
+						
 						releaseEvent = service.UserInputService.InputEnded:Connect(function(input)
 							if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 								releaseEvent:Disconnect()
@@ -7169,17 +7176,17 @@ local function main()
 								resizer.BackgroundTransparency = 1
 							end
 						end)
-			
+
 						mouseEvent = service.UserInputService.InputChanged:Connect(function(input)
 							if self.Resizable and self.ResizableInternal and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
 								self:StopTweens()
 								local deltaX = input.Position.X - resizer.AbsolutePosition.X - offX
 								local deltaY = input.Position.Y - resizer.AbsolutePosition.Y - offY
-			
+
 								if guiMain.AbsoluteSize.X + deltaX * signX < self.MinX then deltaX = signX * (self.MinX - guiMain.AbsoluteSize.X) end
 								if guiMain.AbsoluteSize.Y + deltaY * signY < self.MinY then deltaY = signY * (self.MinY - guiMain.AbsoluteSize.Y) end
 								if signY < 0 and guiMain.AbsolutePosition.Y + deltaY < 0 then deltaY = -guiMain.AbsolutePosition.Y end
-			
+
 								guiMain.Position = guiMain.Position + UDim2.new(0, (signX < 0 and deltaX or 0), 0, (signY < 0 and deltaY or 0))
 								self.SizeX = self.SizeX + (isH and deltaX * signX or 0)
 								self.SizeY = self.SizeY + (isV and deltaY * signY or 0)
