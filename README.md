@@ -25,3 +25,8 @@
 [w.a.e](https://github.com/w-a-e)
 
 [break-core](https://github.com/break-core)
+# XML
+
+[Fast ReflectionMetadata XML](https://github.com/jonathanpoelen/xmlparser)
+
+[ReflectionMetadata XML](https://github.com/MaximumADHD/Roblox-Client-Tracker)
