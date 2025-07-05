@@ -9,6 +9,7 @@
  * ScriptView
  * Notepad
  * ModelView
+ * Console
 ## Credits
 ZxL (Owner)
 
