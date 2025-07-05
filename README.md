@@ -27,6 +27,6 @@
 [break-core](https://github.com/break-core)
 # XML
 
-[Fast ReflectionMetadata XML](https://github.com/jonathanpoelen/xmlparser)
+[Fast ReflectionMetadata XML](https://github.com/BOXLEGENDARY/ReflectionMetadata)
 
 [Normal ReflectionMetadata XML](https://github.com/MaximumADHD/Roblox-Client-Tracker)
