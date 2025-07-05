@@ -1,7 +1,8 @@
  # ZDex
  ## IN-DEV ( version 4 )
-Features
+Support
  * Mobile/Pc
+Features
  * Performance Engine: Optimized for efficient and smooth operation.
  * Explorer
  * Properties
