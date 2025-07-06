@@ -3057,7 +3057,28 @@ local function main()
 				{".ElasticityWeight", "float"},
 				{".Friction", "float"},
 				{".FrictionWeight", "float"},
-			}
+			},
+			Ray = {
+				{".Origin", "Vector3"},
+				{".Direction", "Vector3"},
+			},
+			NumberRange = {
+				{".Min", "float"},
+				{".Max", "float"},
+			},
+			Faces = {
+				{".Back", "bool"},
+				{".Bottom", "bool"},
+				{".Front", "bool"},
+				{".Left", "bool"},
+				{".Right", "bool"},
+				{".Top", "bool"},
+			},
+			Axes = {
+				{".X", "bool"},
+				{".Y", "bool"},
+				{".Z", "bool"},
+			},
 		}
 	
 		local format = expandTable[typeName]
@@ -3066,6 +3087,10 @@ local function main()
 				local entry = format[i]
 				result[i] = makeSubProp(prop, entry[1], {Name = entry[2]}, entry[3])
 			end
+		end
+	
+		if prop.Name == "SoundId" and prop.Class == "Sound" then
+			result[1] = Properties.SoundPreviewProp
 		end
 	
 		return result
