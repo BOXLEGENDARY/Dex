@@ -151,7 +151,7 @@ task.spawn(function()
 				step = math.max(step - 1, 20)
 			end
 		end
-		task.wait(0.25 + math.random() * 0.2)
+		task.wait(0.1 + math.random() * 0.1)
 	end
 end)
 
@@ -165,7 +165,7 @@ function PerformanceEngine.AdaptiveThrottle()
 	if delta < MIN_THROTTLE then
 		throttleLevel = math.min(throttleLevel + 0.01, MAX_THROTTLE)
 	else
-		throttleLevel = math.max(throttleLevel - 0.01, MIN_THROTTLE)
+		throttleLevel = math.max(throttleLevel - 0.05, MIN_THROTTLE)
 	end
 	lastUpdate = now
 	task.wait(throttleLevel)
