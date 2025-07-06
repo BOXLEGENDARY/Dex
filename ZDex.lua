@@ -47,7 +47,6 @@ collectgarbage = function(mode)
 	return 0
 end
 
--- Fake debug
 local real_debug = debug or {}
 local blocked = {
 	["getinfo"] = true,
