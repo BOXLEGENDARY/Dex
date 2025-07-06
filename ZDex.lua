@@ -105,7 +105,7 @@ local ok = try_setfenv(1, fake_env)
 -- PerformanceEngine Core
 local PerformanceEngine = {}
 
--- Settings
+-- If you are not lag do not touch the settings But if you really lag read before changing anything
 PerformanceEngine.Settings = {
 	MIN_THROTTLE = 0.02, -- Minimum delay between updates (lower = smoother but higher CPU usage)
 	MAX_THROTTLE = 0.07, -- Maximum delay between updates (higher = lighter on CPU but may cause stutter)
