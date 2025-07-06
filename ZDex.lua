@@ -12,19 +12,22 @@ local cloneref = cloneref or function(...) return ... end
 local getnilinstances = getnilinstances or function() return {} end
 
 -- Local shortcuts
-local math_floor = math.floor
-local table_insert = table.insert
-local table_sort = table.sort
-local table_clear = table.clear or function(t) for k in pairs(t) do t[k] = nil end end
-local tostring = tostring
-local string_find = string.find
-local string_gsub = string.gsub
-local string_match = string.match
-local Vector2_new = Vector2.new
-local Color3_new = Color3.new
-local UDim2_new = UDim2.new
-local Instance_new = Instance.new
-local type = type
+local math_floor    = math.floor
+local table_insert  = table.insert
+local table_sort    = table.sort
+local table_clear   = table.clear or function(t) for k in pairs(t) do t[k] = nil end end
+local tostring      = tostring
+local string_find   = string.find
+local string_gsub   = string.gsub
+local string_match  = string.match
+local Vector2_new   = Vector2.new
+local Color3_new    = Color3.new
+local UDim2_new     = UDim2.new
+local Instance_new  = Instance.new
+local type          = type
+
+local safe_pcall    = xpcall
+local function silent_error_handler(err) return nil end
 
 -- Spoof garbage collector
 local real_gcinfo = gcinfo
@@ -51,13 +54,18 @@ local blocked = {
 	["traceback"] = true,
 	["getupvalue"] = true
 }
+
 local function nil_return() return nil end
 
 debug = setmetatable({}, {
 	__index = function(_, key)
-		if blocked[key] then return nil_return end
+		if blocked[key] then
+			return nil_return
+		end
 		local val = rawget(real_debug, key)
-		if type(val) == "function" then return val end
+		if type(val) == "function" then
+			return val
+		end
 		return nil
 	end,
 	__newindex = function() end,
@@ -77,21 +85,33 @@ local fake_env = setmetatable({}, {
 })
 
 local function try_setfenv(level, env)
-	if setfenv then return pcall(setfenv, level + 1, env) end
-	return false
+	if setfenv then
+		return pcall(setfenv, level + 1, env)
+	elseif _ENV then
+		return false
+	else
+		return false
+	end
 end
-try_setfenv(1, fake_env)
+
+local ok = try_setfenv(1, fake_env)
 
 -- PerformanceEngine Core
 local PerformanceEngine = {}
 local lastUpdate = os.clock()
-local MIN_THROTTLE, MAX_THROTTLE = 0.03, 0.1
+local MIN_THROTTLE = 0.03
+local MAX_THROTTLE = 0.1
 local throttleLevel = MIN_THROTTLE
 
+-- Stats
 local perfStats = {
-	FPS = 0, Memory = 0, Delta = 0, LastSpike = 0
+	FPS = 0,
+	Memory = 0,
+	Delta = 0,
+	LastSpike = 0
 }
 
+-- FPS tracker
 local runService = game:GetService("RunService")
 local frames, acc = 0, 0
 runService.RenderStepped:Connect(function(dt)
@@ -122,15 +142,14 @@ function PerformanceEngine.AdaptiveThrottle()
 end
 
 function PerformanceEngine.FastCall(func, ...)
-	if type(func) ~= "function" then return end
 	local args = table.pack(...)
-	local ok = pcall(function()
+	local ok, err = pcall(function()
 		task.defer(function()
 			func(table.unpack(args))
 		end)
 	end)
 	if not ok then
-		pcall(func, table.unpack(args))
+		safe_pcall(func, table.unpack(args))
 	end
 end
 
@@ -148,13 +167,12 @@ end
 function PerformanceEngine.RunTaskQueue()
 	for i = #taskQueue, 1, -1 do
 		local item = taskQueue[i]
-		if type(item.fn) == "function" then
-			pcall(item.fn, table.unpack(item.args))
-		end
+		safe_pcall(item.fn, table.unpack(item.args))
 		table.remove(taskQueue, i)
 	end
 end
 
+-- Auto Balance
 function PerformanceEngine.AutoBalance(func)
 	local t1 = os.clock()
 	local ok, result = pcall(func)
@@ -171,15 +189,11 @@ function PerformanceEngine.AutoBalance(func)
 	return ok, result
 end
 
-local function getGlobalEnv()
-	local g = (getgenv and getgenv()) or (getfenv and getfenv(1)) or _ENV
-	rawset(g, "Perf", PerformanceEngine)
-	return g
-end
-
-local GENV = getGlobalEnv()
+-- Global alias
+_G.Perf = PerformanceEngine
 
 -- Auto service fetch
+local nodes = {}
 local service = setmetatable({}, {
 	__index = function(self, name)
 		local serv = cloneref(game:GetService(name))
@@ -937,8 +951,10 @@ local function main()
 
     Explorer.PerformUpdate = function(instant)
 	    updateDebounce = true
+
+        local Perf = _G.Perf
         
-        GENV.Perf:SmartUpdate(function()
+        Perf.SmartUpdate(function()
     		if not updateDebounce then return end
 	    	updateDebounce = false
     		if not Explorer.Window:IsVisible() then return end
