@@ -189,8 +189,13 @@ function PerformanceEngine.AutoBalance(func)
 	return ok, result
 end
 
--- Global alias
-_G.Perf = PerformanceEngine
+local function getGlobalEnv()
+	local g = (getgenv and getgenv()) or (getfenv and getfenv(1)) or _ENV
+	rawset(g, "Perf", PerformanceEngine)
+	return g
+end
+
+local GENV = getGlobalEnv()
 
 -- Auto service fetch
 local nodes = {}
@@ -952,9 +957,9 @@ local function main()
     Explorer.PerformUpdate = function(instant)
 	    updateDebounce = true
 
-        local Perf = _G.Perf
+        local GENV = getGlobalEnv()
         
-        Perf.SmartUpdate(function()
+        GENV.SmartUpdate(function()
     		if not updateDebounce then return end
 	    	updateDebounce = false
     		if not Explorer.Window:IsVisible() then return end
