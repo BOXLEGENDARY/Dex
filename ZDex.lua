@@ -233,7 +233,7 @@ local Decompile do
 end
 
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, ModelViewer, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, Notepad, ModelViewer, Console, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -2487,7 +2487,7 @@ end,
 
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, Notepad, ModelViewer, Console, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -4432,7 +4432,7 @@ end,
 
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, Notepad, ModelViewer, Console, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -4616,7 +4616,7 @@ end,
 ["Notepad"] = function()
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, Notepad, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, Notepad, ModelViewer, Console, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -4726,7 +4726,7 @@ end,
 
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, ModelViewer, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, Notepad, ModelViewer, Console, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -5102,7 +5102,7 @@ end,
 
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, Console, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, Notepad, ModelViewer, Console, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -5829,7 +5829,7 @@ end,
 
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, Notepad, ModelViewer, Console, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
