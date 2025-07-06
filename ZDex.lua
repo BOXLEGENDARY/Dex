@@ -104,9 +104,35 @@ local ok = try_setfenv(1, fake_env)
 
 -- PerformanceEngine Core
 local PerformanceEngine = {}
+
+-- Settings
+PerformanceEngine.Settings = {
+	MIN_THROTTLE = 0.02, -- Minimum delay between updates (lower = smoother but higher CPU usage)
+	MAX_THROTTLE = 0.07, -- Maximum delay between updates (higher = lighter on CPU but may cause stutter)
+	MEMORY_THRESHOLD = 100, -- Memory (in MB) threshold to trigger garbage collection
+	FPS_THRESHOLD = 50, -- If FPS drops below this, GC will activate to reduce memory usage
+	FPS_LOW_THRESHOLD = 40, -- If FPS drops even lower, GC will increase intensity (step up)
+	GC_STEP_MIN = 25, -- Minimum GC step size (lower = lighter and less aggressive garbage collection)
+	GC_STEP_MAX = 70, -- Maximum GC step size (higher = more aggressive cleanup risk of lag)
+	AUTO_BALANCE_HIGH_DELAY = 0.085, -- Delay after heavy tasks (gives CPU time to recover)
+	AUTO_BALANCE_MEDIUM_DELAY = 0.025, -- Delay after medium tasks (keeps things smooth but responsive)
+}
+
+function PerformanceEngine.SetSettings(newSettings)
+	if type(newSettings) ~= "table" then return false end
+	for k, v in pairs(newSettings) do
+		if PerformanceEngine.Settings[k] ~= nil then
+			PerformanceEngine.Settings[k] = v
+		end
+	end
+	MIN_THROTTLE = PerformanceEngine.Settings.MIN_THROTTLE
+	MAX_THROTTLE = PerformanceEngine.Settings.MAX_THROTTLE
+	return true
+end
+
 local lastUpdate = os.clock()
-local MIN_THROTTLE = 0.03
-local MAX_THROTTLE = 0.1
+local MIN_THROTTLE = PerformanceEngine.Settings.MIN_THROTTLE
+local MAX_THROTTLE = PerformanceEngine.Settings.MAX_THROTTLE
 local throttleLevel = MIN_THROTTLE
 
 -- Stats
@@ -141,14 +167,14 @@ end)
 
 -- Auto GC trigger loop
 task.spawn(function()
-	local step = 20
+	local step = PerformanceEngine.Settings.GC_STEP_MIN
 	while true do
-		if perfStats.Memory > 115 and perfStats.FPS < 50 then
+		if perfStats.Memory > PerformanceEngine.Settings.MEMORY_THRESHOLD and perfStats.FPS < PerformanceEngine.Settings.FPS_THRESHOLD then
 			collectgarbage("step", step)
-			if perfStats.FPS < 40 then
-				step = math.min(step + 5, 60)
+			if perfStats.FPS < PerformanceEngine.Settings.FPS_LOW_THRESHOLD then
+				step = math.min(step + 5, PerformanceEngine.Settings.GC_STEP_MAX)
 			else
-				step = math.max(step - 1, 20)
+				step = math.max(step - 1, PerformanceEngine.Settings.GC_STEP_MIN)
 			end
 		end
 		task.wait(0.1 + math.random() * 0.1)
@@ -210,9 +236,9 @@ function PerformanceEngine.AutoBalance(func)
 	local timeUsed = t2 - t1
 	if timeUsed > 0.08 then
 		perfStats.LastSpike = timeUsed
-		task.wait(0.1)
+		task.wait(PerformanceEngine.Settings.AUTO_BALANCE_HIGH_DELAY)
 	elseif timeUsed > 0.04 then
-		task.wait(0.03)
+		task.wait(PerformanceEngine.Settings.AUTO_BALANCE_MEDIUM_DELAY)
 	else
 		task.wait()
 	end
