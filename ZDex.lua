@@ -27,7 +27,7 @@ local Instance_new  = Instance.new
 local type          = type
 
 local safe_pcall    = xpcall
-local function silent_error_handler(err) return nil end
+local function ERRhandler(err) return nil end
 
 -- Spoof garbage collector
 local real_gcinfo = gcinfo
