@@ -7,13 +7,15 @@
 
 	
 
+-- PerformanceEngine
 local cloneref = cloneref or function(...) return ... end
 local getnilinstances = getnilinstances or function() return {} end
 
+-- Local shortcuts
 local math_floor    = math.floor
 local table_insert  = table.insert
 local table_sort    = table.sort
-local table_clear   = table.clear or function(t) for k in pairs(t) do t[k] = nil end end -- fallback table.clear
+local table_clear   = table.clear or function(t) for k in pairs(t) do t[k] = nil end end
 local tostring      = tostring
 local string_find   = string.find
 local string_gsub   = string.gsub
@@ -27,6 +29,7 @@ local type          = type
 local safe_pcall    = xpcall
 local function silent_error_handler(err) return nil end
 
+-- Spoof garbage collector
 local real_gcinfo = gcinfo
 local spoofed_max_gc = real_gcinfo()
 local spoofed_min_gc = spoofed_max_gc - math.random(5, 15)
@@ -44,17 +47,15 @@ collectgarbage = function(mode)
 	return 0
 end
 
+-- Fake debug
 local real_debug = debug or {}
-
 local blocked = {
 	["getinfo"] = true,
 	["traceback"] = true,
 	["getupvalue"] = true
 }
 
-local function nil_return()
-	return nil
-end
+local function nil_return() return nil end
 
 debug = setmetatable({}, {
 	__index = function(_, key)
@@ -71,7 +72,8 @@ debug = setmetatable({}, {
 	__metatable = "Locked"
 })
 
-local original_env = (getfenv and getfenv(0)) or _G
+-- Safe environment
+local original_env = (getgenv and getgenv()) or (getfenv and getfenv(1)) or _ENV
 local fake_env = setmetatable({}, {
 	__index = function(_, k)
 		if k == "_G" then return fake_env end
@@ -93,26 +95,48 @@ local function try_setfenv(level, env)
 end
 
 local ok = try_setfenv(1, fake_env)
-if not ok then
-end
 
+-- PerformanceEngine Core
 local PerformanceEngine = {}
-
 local lastUpdate = os.clock()
 local MIN_THROTTLE = 0.03
 local MAX_THROTTLE = 0.1
 local throttleLevel = MIN_THROTTLE
 
+-- Stats
+local perfStats = {
+	FPS = 0,
+	Memory = 0,
+	Delta = 0,
+	LastSpike = 0
+}
+
+-- FPS tracker
+local runService = game:GetService("RunService")
+local frames, acc = 0, 0
+runService.RenderStepped:Connect(function(dt)
+	frames += 1
+	acc += dt
+	if acc >= 1 then
+		perfStats.FPS = frames
+		perfStats.Memory = collectgarbage("count")
+		perfStats.Delta = dt
+		frames, acc = 0, 0
+	end
+end)
+
+function PerformanceEngine.GetStats()
+	return perfStats
+end
+
 function PerformanceEngine.AdaptiveThrottle()
 	local now = os.clock()
 	local delta = now - lastUpdate
-
 	if delta < MIN_THROTTLE then
 		throttleLevel = math.min(throttleLevel + 0.01, MAX_THROTTLE)
 	else
 		throttleLevel = math.max(throttleLevel - 0.01, MIN_THROTTLE)
 	end
-
 	lastUpdate = now
 	task.wait(throttleLevel)
 end
@@ -134,8 +158,41 @@ function PerformanceEngine.SmartUpdate(updateFunc)
 	PerformanceEngine.FastCall(updateFunc)
 end
 
+-- Task Queue
+local taskQueue = {}
+function PerformanceEngine.QueueTask(fn, ...)
+	table_insert(taskQueue, {fn = fn, args = {...}})
+end
+
+function PerformanceEngine.RunTaskQueue()
+	for i = #taskQueue, 1, -1 do
+		local item = taskQueue[i]
+		safe_pcall(item.fn, table.unpack(item.args))
+		table.remove(taskQueue, i)
+	end
+end
+
+-- Auto Balance
+function PerformanceEngine.AutoBalance(func)
+	local t1 = os.clock()
+	local ok, result = pcall(func)
+	local t2 = os.clock()
+	local timeUsed = t2 - t1
+	if timeUsed > 0.08 then
+		perfStats.LastSpike = timeUsed
+		task.wait(0.1)
+	elseif timeUsed > 0.04 then
+		task.wait(0.03)
+	else
+		task.wait()
+	end
+	return ok, result
+end
+
+-- Global alias
 _G.Perf = PerformanceEngine
 
+-- Auto service fetch
 local nodes = {}
 local service = setmetatable({}, {
 	__index = function(self, name)
@@ -148,832 +205,6 @@ local service = setmetatable({}, {
 local selection = nil;
 
 local EmbeddedModules = {
-["Console"] = function()
---[[
-	Console App Module
-	
-	Yes this does not exist on original Dex.
-	However, it is very useful for debugging and have nicer UI than Roblox itself :3
-]]
-
--- Common Locals
-local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, Console, Notebook -- Major Apps
-local API,RMD,env,service,plr,create,createSimple -- Main Locals
-
-local function initDeps(data)
-	Main = data.Main
-	Lib = data.Lib
-	Apps = data.Apps
-	Settings = data.Settings
-
-	API = data.API
-	RMD = data.RMD
-	env = data.env
-	service = data.service
-	plr = data.plr
-	create = data.create
-	createSimple = data.createSimple
-end
-
-local function initAfterMain()
-	Explorer = Apps.Explorer
-	Properties = Apps.Properties
-	Console = Apps.Console
-	Notebook = Apps.Notebook
-end
-
-local function main()
-	local Console = {}
-
-	local window,ConsoleFrame
-	
-	local OutputLimit = 500 -- Same as Roblox.
-	
-	Console.Init = function()
-		
-		
-		
-		-- Instances: 29 | Scripts: 1 | Modules: 1 | Tags: 0
-		local G2L = {};
-
-		-- StarterGui.ScreenGui
-		window = Lib.Window.new()
-		window:SetTitle("Console")
-		window:Resize(500,400)
-		Console.Window = window
-		
-		-- StarterGui.ScreenGui.Console
-		ConsoleFrame = Instance.new("ImageButton", window.GuiElems.Content);
-		ConsoleFrame["BorderSizePixel"] = 0;
-		ConsoleFrame["AutoButtonColor"] = false;
-		ConsoleFrame["BackgroundTransparency"] = 1;
-		ConsoleFrame["BackgroundColor3"] = Color3.fromRGB(47, 47, 47);
-		ConsoleFrame["Selectable"] = false;
-		ConsoleFrame["Size"] = UDim2.new(1,0,1,0);
-		ConsoleFrame["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-		ConsoleFrame["Name"] = [[Console]];
-		ConsoleFrame["Position"] = UDim2.new(0,0,0,0);
-
-
-		-- StarterGui.ScreenGui.Console.CommandLine
-		G2L["3"] = Instance.new("Frame", ConsoleFrame);
-		G2L["3"]["BorderSizePixel"] = 0;
-		G2L["3"]["BackgroundColor3"] = Color3.fromRGB(37, 37, 37);
-		G2L["3"]["AnchorPoint"] = Vector2.new(0.5, 1);
-		G2L["3"]["ClipsDescendants"] = true;
-		G2L["3"]["Size"] = UDim2.new(1, -8, 0, 22);
-		G2L["3"]["Position"] = UDim2.new(0.5, 0, 1, -5);
-		G2L["3"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-		G2L["3"]["Name"] = [[CommandLine]];
-
-
-		-- StarterGui.ScreenGui.Console.CommandLine.UIStroke
-		G2L["4"] = Instance.new("UIStroke", G2L["3"]);
-		G2L["4"]["Transparency"] = 0.65;
-		G2L["4"]["Thickness"] = 1.25;
-
-
-		-- StarterGui.ScreenGui.Console.CommandLine.ScrollingFrame
-		G2L["5"] = Instance.new("ScrollingFrame", G2L["3"]);
-		G2L["5"]["Active"] = true;
-		G2L["5"]["ScrollingDirection"] = Enum.ScrollingDirection.X;
-		G2L["5"]["BorderSizePixel"] = 0;
-		G2L["5"]["CanvasSize"] = UDim2.new(0, 0, 0, 0);
-		G2L["5"]["ElasticBehavior"] = Enum.ElasticBehavior.Never;
-		G2L["5"]["TopImage"] = [[rbxasset://textures/ui/Scroll/scroll-middle.png]];
-		G2L["5"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-		G2L["5"]["HorizontalScrollBarInset"] = Enum.ScrollBarInset.Always;
-		G2L["5"]["BottomImage"] = [[rbxasset://textures/ui/Scroll/scroll-middle.png]];
-		G2L["5"]["AutomaticCanvasSize"] = Enum.AutomaticSize.X;
-		G2L["5"]["Size"] = UDim2.new(1, 0, 1, 0);
-		G2L["5"]["ScrollBarImageColor3"] = Color3.fromRGB(57, 57, 57);
-		G2L["5"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-		G2L["5"]["ScrollBarThickness"] = 2;
-		G2L["5"]["BackgroundTransparency"] = 1;
-
-		-- StarterGui.ScreenGui.Console.CommandLine.ScrollingFrame.TextBox
-		G2L["6"] = Instance.new("TextBox", G2L["5"]);
-		G2L["6"]["CursorPosition"] = -1;
-		G2L["6"]["TextXAlignment"] = Enum.TextXAlignment.Left;
-		G2L["6"]["PlaceholderColor3"] = Color3.fromRGB(211, 211, 211);
-		G2L["6"]["BorderSizePixel"] = 0;
-		G2L["6"]["TextSize"] = 13;
-		G2L["6"]["TextColor3"] = Color3.fromRGB(211, 211, 211);
-		G2L["6"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-		G2L["6"]["FontFace"] = Font.new([[rbxasset://fonts/families/Inconsolata.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-		G2L["6"]["AutomaticSize"] = Enum.AutomaticSize.X;
-		G2L["6"]["ClearTextOnFocus"] = false;
-		G2L["6"]["PlaceholderText"] = [[Run a command]];
-		G2L["6"]["Size"] = UDim2.new(0, 246, 0, 22);
-		G2L["6"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-		G2L["6"]["Text"] = [[]];
-		G2L["6"]["BackgroundTransparency"] = 1;
-
-
-		-- StarterGui.ScreenGui.Console.CommandLine.ScrollingFrame.TextBox.UIPadding
-		G2L["7"] = Instance.new("UIPadding", G2L["6"]);
-		G2L["7"]["PaddingLeft"] = UDim.new(0, 7);
-
-
-		-- StarterGui.ScreenGui.Console.CommandLine.ScrollingFrame.Highlight
-		G2L["8"] = Instance.new("TextLabel", G2L["5"]);
-		G2L["8"]["Interactable"] = false;
-		G2L["8"]["ZIndex"] = 2;
-		G2L["8"]["BorderSizePixel"] = 0;
-		G2L["8"]["TextSize"] = 13;
-		G2L["8"]["TextXAlignment"] = Enum.TextXAlignment.Left;
-		G2L["8"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-		G2L["8"]["FontFace"] = Font.new([[rbxasset://fonts/families/Inconsolata.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-		G2L["8"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-		G2L["8"]["BackgroundTransparency"] = 1;
-		G2L["8"]["RichText"] = true;
-		G2L["8"]["Size"] = UDim2.new(0, 246, 0, 22);
-		G2L["8"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-		G2L["8"]["Text"] = [[]];
-		G2L["8"]["Selectable"] = true;
-		G2L["8"]["AutomaticSize"] = Enum.AutomaticSize.X;
-		G2L["8"]["Name"] = [[Highlight]];
-
-
-		-- StarterGui.ScreenGui.Console.CommandLine.ScrollingFrame.Highlight.UIPadding
-		G2L["9"] = Instance.new("UIPadding", G2L["8"]);
-		G2L["9"]["PaddingLeft"] = UDim.new(0, 7);
-
-
-		-- StarterGui.ScreenGui.Console.Output
-		G2L["a"] = Instance.new("ScrollingFrame", ConsoleFrame);
-		G2L["a"]["Active"] = true;
-		G2L["a"]["BorderSizePixel"] = 0;
-		G2L["a"]["CanvasSize"] = UDim2.new(0, 0, 0, 0);
-		G2L["a"]["TopImage"] = [[rbxasset://textures/ui/Scroll/scroll-middle.png]];
-		G2L["a"]["BackgroundColor3"] = Color3.fromRGB(36, 36, 36);
-		G2L["a"]["Name"] = [[Output]];
-		G2L["a"]["ScrollBarImageTransparency"] = 0.6;
-		G2L["a"]["BottomImage"] = [[rbxasset://textures/ui/Scroll/scroll-middle.png]];
-		G2L["a"]["AnchorPoint"] = Vector2.new(0.5, 0);
-		G2L["a"]["AutomaticCanvasSize"] = Enum.AutomaticSize.Y;
-		G2L["a"]["Size"] = UDim2.new(1, -8, 1, -55);
-		G2L["a"]["Position"] = UDim2.new(0.5, 0, 0, 23);
-		G2L["a"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-		G2L["a"]["ScrollBarThickness"] = 6;
-
-
-		-- StarterGui.ScreenGui.Console.Output.UIListLayout
-		G2L["b"] = Instance.new("UIListLayout", G2L["a"]);
-		G2L["b"]["SortOrder"] = Enum.SortOrder.LayoutOrder;
-
-
-		-- StarterGui.ScreenGui.Console.Output.UIStroke
-		G2L["c"] = Instance.new("UIStroke", G2L["a"]);
-		G2L["c"]["Transparency"] = 0.7;
-		G2L["c"]["Thickness"] = 1.25;
-		G2L["c"]["Color"] = Color3.fromRGB(12, 12, 12);
-
-
-		-- StarterGui.ScreenGui.Console.Output.OutputTextSize
-		G2L["d"] = Instance.new("NumberValue", G2L["a"]);
-		G2L["d"]["Name"] = [[OutputTextSize]];
-		G2L["d"]["Value"] = 15;
-
-
-		-- StarterGui.ScreenGui.Console.Output.OutputLimit
-		G2L["e"] = Instance.new("NumberValue", G2L["a"]);
-		G2L["e"]["Name"] = [[OutputLimit]];
-		G2L["e"]["Value"] = OutputLimit;
-
-
-		-- StarterGui.ScreenGui.Console.Output.UIPadding
-		G2L["f"] = Instance.new("UIPadding", G2L["a"]);
-		G2L["f"]["PaddingTop"] = UDim.new(0, 2);
-
-
-		-- StarterGui.ScreenGui.Console.TextSizeBox
-		G2L["10"] = Instance.new("Frame", ConsoleFrame);
-		G2L["10"]["BorderSizePixel"] = 0;
-		G2L["10"]["BackgroundColor3"] = Color3.fromRGB(37, 37, 37);
-		G2L["10"]["ClipsDescendants"] = true;
-		G2L["10"]["Size"] = UDim2.new(0, 37, 0, 15);
-		G2L["10"]["Position"] = UDim2.new(0, 4, 0, 4);
-		G2L["10"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-		G2L["10"]["Name"] = [[TextSizeBox]];
-
-
-		-- StarterGui.ScreenGui.Console.TextSizeBox.TextBox
-		G2L["11"] = Instance.new("TextBox", G2L["10"]);
-		G2L["11"]["PlaceholderColor3"] = Color3.fromRGB(108, 108, 108);
-		G2L["11"]["BorderSizePixel"] = 0;
-		G2L["11"]["TextWrapped"] = true;
-		G2L["11"]["TextSize"] = 15;
-		G2L["11"]["TextColor3"] = Color3.fromRGB(211, 211, 211);
-		G2L["11"]["TextScaled"] = true;
-		G2L["11"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-		G2L["11"]["FontFace"] = Font.new([[rbxasset://fonts/families/Inconsolata.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-		G2L["11"]["PlaceholderText"] = [[Size]];
-		G2L["11"]["Size"] = UDim2.new(1, 0, 1, 0);
-		G2L["11"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-		G2L["11"]["Text"] = [[]];
-		G2L["11"]["BackgroundTransparency"] = 1;
-
-
-		-- StarterGui.ScreenGui.Console.TextSizeBox.TextBox.UIPadding
-		G2L["12"] = Instance.new("UIPadding", G2L["11"]);
-		G2L["12"]["PaddingTop"] = UDim.new(0, 2);
-		G2L["12"]["PaddingRight"] = UDim.new(0, 5);
-		G2L["12"]["PaddingLeft"] = UDim.new(0, 5);
-		G2L["12"]["PaddingBottom"] = UDim.new(0, 2);
-
-
-		-- StarterGui.ScreenGui.Console.TextSizeBox.UIStroke
-		G2L["13"] = Instance.new("UIStroke", G2L["10"]);
-		G2L["13"]["Transparency"] = 0.65;
-		G2L["13"]["Thickness"] = 1.25;
-
-
-		-- StarterGui.ScreenGui.Console.Clear
-		G2L["14"] = Instance.new("ImageButton", ConsoleFrame);
-		G2L["14"]["BorderSizePixel"] = 0;
-		G2L["14"]["BackgroundColor3"] = Color3.fromRGB(57, 57, 57);
-		G2L["14"]["Size"] = UDim2.new(0, 37, 0, 15);
-		G2L["14"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-		G2L["14"]["Name"] = [[Clear]];
-		G2L["14"]["Position"] = UDim2.new(1, -42, 0, 4);
-
-
-		-- StarterGui.ScreenGui.Console.Clear.TextLabel
-		G2L["15"] = Instance.new("TextLabel", G2L["14"]);
-		G2L["15"]["TextWrapped"] = true;
-		G2L["15"]["Interactable"] = false;
-		G2L["15"]["BorderSizePixel"] = 0;
-		G2L["15"]["TextSize"] = 20;
-		G2L["15"]["TextScaled"] = true;
-		G2L["15"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-		G2L["15"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-		G2L["15"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-		G2L["15"]["BackgroundTransparency"] = 1;
-		G2L["15"]["Size"] = UDim2.new(1, 0, 1, 0);
-		G2L["15"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-		G2L["15"]["Text"] = [[Clear]];
-
-
-		-- StarterGui.ScreenGui.Console.Clear.UIPadding
-		G2L["16"] = Instance.new("UIPadding", G2L["14"]);
-		G2L["16"]["PaddingTop"] = UDim.new(0, 1);
-		G2L["16"]["PaddingBottom"] = UDim.new(0, 1);
-
-
-		-- StarterGui.ScreenGui.Console.OutputTemplate
-		G2L["17"] = Instance.new("TextBox", ConsoleFrame);
-		G2L["17"]["Visible"] = false;
-		G2L["17"]["Active"] = false;
-		G2L["17"]["Name"] = [[OutputTemplate]];
-		G2L["17"]["TextXAlignment"] = Enum.TextXAlignment.Left;
-		G2L["17"]["BorderSizePixel"] = 0;
-		G2L["17"]["TextEditable"] = false;
-		G2L["17"]["TextWrapped"] = true;
-		G2L["17"]["TextSize"] = 15;
-		G2L["17"]["TextColor3"] = Color3.fromRGB(171, 171, 171);
-		G2L["17"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-		G2L["17"]["RichText"] = true;
-		G2L["17"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-		G2L["17"]["AutomaticSize"] = Enum.AutomaticSize.Y;
-		G2L["17"]["Selectable"] = false;
-		G2L["17"]["ClearTextOnFocus"] = false;
-		G2L["17"]["Size"] = UDim2.new(1, 0, 0, 1);
-		G2L["17"]["Position"] = UDim2.new(0, 20, 0, 0);
-		G2L["17"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-		G2L["17"]["Text"] = [[(timestamp) <font color="rgb(255, 255, 255)">Output</font>]];
-		G2L["17"]["BackgroundTransparency"] = 1;
-
-
-		-- StarterGui.ScreenGui.Console.OutputTemplate.UIPadding
-		G2L["18"] = Instance.new("UIPadding", G2L["17"]);
-		G2L["18"]["PaddingRight"] = UDim.new(0, 6);
-		G2L["18"]["PaddingLeft"] = UDim.new(0, 6);
-
-
-		-- StarterGui.ScreenGui.Console.CtrlScroll
-		G2L["19"] = Instance.new("ImageButton", ConsoleFrame);
-		G2L["19"]["BorderSizePixel"] = 0;
-		G2L["19"]["BackgroundColor3"] = Color3.fromRGB(57, 57, 57);
-		G2L["19"]["Size"] = UDim2.new(0, 60, 0, 15);
-		G2L["19"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-		G2L["19"]["Name"] = [[CtrlScroll]];
-		G2L["19"]["Position"] = UDim2.new(0, 46, 0, 4);
-
-
-		-- StarterGui.ScreenGui.Console.CtrlScroll.TextLabel
-		G2L["1a"] = Instance.new("TextLabel", G2L["19"]);
-		G2L["1a"]["TextWrapped"] = true;
-		G2L["1a"]["Interactable"] = false;
-		G2L["1a"]["BorderSizePixel"] = 0;
-		G2L["1a"]["TextSize"] = 20;
-		G2L["1a"]["TextScaled"] = true;
-		G2L["1a"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-		G2L["1a"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
-		G2L["1a"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
-		G2L["1a"]["BackgroundTransparency"] = 1;
-		G2L["1a"]["Size"] = UDim2.new(1, 0, 1, 0);
-		G2L["1a"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-		G2L["1a"]["Text"] = [[Ctrl Scroll]];
-
-
-		-- StarterGui.ScreenGui.Console.CtrlScroll.UIPadding
-		G2L["1b"] = Instance.new("UIPadding", G2L["19"]);
-		G2L["1b"]["PaddingTop"] = UDim.new(0, 1);
-		G2L["1b"]["PaddingBottom"] = UDim.new(0, 1);
-
-
-		-- StarterGui.ScreenGui.ConsoleHandler
-		G2L["1c"] = Instance.new("LocalScript", G2L["1"]);
-		G2L["1c"]["Name"] = [[ConsoleHandler]];
-
-
-		-- StarterGui.ScreenGui.ConsoleHandler.SyntaxHighlighter
-		G2L["1d"] = Instance.new("ModuleScript", G2L["1c"]);
-		G2L["1d"]["Name"] = [[SyntaxHighlighter]];
-
-
-		-- Require G2L wrapper
-		local G2L_REQUIRE = require;
-		local G2L_MODULES = {};
-		local function require(Module:ModuleScript)
-			local ModuleState = G2L_MODULES[Module];
-			if ModuleState then
-				if not ModuleState.Required then
-					ModuleState.Required = true;
-					ModuleState.Value = ModuleState.Closure();
-				end
-				return ModuleState.Value;
-			end;
-			return G2L_REQUIRE(Module);
-		end
-
-		G2L_MODULES[G2L["1d"]] = {
-			Closure = function()
-				local script = G2L["1d"];local highlighter = {}
-				local keywords = {
-					lua = {
-						"and", "break", "or", "else", "elseif", "if", "then", "until", "repeat", "while", "do", "for", "in", "end",
-						"local", "return", "function", "export"
-					},
-					rbx = {
-						"game", "workspace", "script", "math", "string", "table", "task", "wait", "select", "next", "Enum",
-						"error", "warn", "tick", "assert", "shared", "loadstring", "tonumber", "tostring", "type",
-						"typeof", "unpack", "print", "Instance", "CFrame", "Vector3", "Vector2", "Color3", "UDim", "UDim2", "Ray", "BrickColor",
-						"OverlapParams", "RaycastParams", "Axes", "Random", "Region3", "Rect", "TweenInfo",
-						"collectgarbage", "not", "utf8", "pcall", "xpcall", "_G", "setmetatable", "getmetatable", "os", "pairs", "ipairs"
-					},
-					exploit = {
-						"hookmetamethod", "hookfunction", "getgc", "filtergc", "Drawing", "getgenv", "getsenv", "getrenv", "getfenv", "setfenv",
-						"decompile", "saveinstance", "getrawmetatable", "setrawmetatable", "checkcaller", "cloneref", "clonefunction",
-						"iscclosure", "islclosure", "isexecutorclosure", "newcclosure", "getfunctionhash", "crypt", "writefile", "appendfile", "loadfile", "readfile", "listfiles",
-						"makefolder", "isfolder", "isfile", "delfile", "delfolder", "getcustomasset", "fireclickdetector", "firetouchinterest", "fireproximityprompt"
-					},
-					operators = {
-						"#", "+", "-", "*", "%", "/", "^", "=", "~", "=", "<", ">", ",", ".", "(", ")", "{", "}", "[", "]", ";", ":"
-					}
-				}
-
-				local colors = {
-					numbers = Color3.fromRGB(255, 198, 0),
-					boolean = Color3.fromRGB(255, 198, 0),
-					operator = Color3.fromRGB(204, 204, 204),
-					lua = Color3.fromRGB(132, 214, 247),
-					exploit = Color3.fromRGB(171, 84, 247),
-					rbx = Color3.fromRGB(248, 109, 124),
-					str = Color3.fromRGB(173, 241, 132),
-					comment = Color3.fromRGB(102, 102, 102),
-					null = Color3.fromRGB(255, 198, 0),
-					call = Color3.fromRGB(253, 251, 172),
-					self_call = Color3.fromRGB(253, 251, 172),
-					local_color = Color3.fromRGB(248, 109, 115),
-					function_color = Color3.fromRGB(248, 109, 115),
-					self_color = Color3.fromRGB(248, 109, 115),
-					local_property = Color3.fromRGB(97, 161, 241),
-				}
-
-				local function createKeywordSet(keywords)
-					local keywordSet = {}
-					for _, keyword in ipairs(keywords) do
-						keywordSet[keyword] = true
-					end
-					return keywordSet
-				end
-
-				local luaSet = createKeywordSet(keywords.lua)
-				local exploitSet = createKeywordSet(keywords.exploit)
-				local rbxSet = createKeywordSet(keywords.rbx)
-				local operatorsSet = createKeywordSet(keywords.operators)
-
-				local function getHighlight(tokens, index)
-					local token = tokens[index]
-
-					if colors[token .. "_color"] then
-						return colors[token .. "_color"]
-					end
-
-					if tonumber(token) then
-						return colors.numbers
-					elseif token == "nil" then
-						return colors.null
-					elseif token:sub(1, 2) == "--" then
-						return colors.comment
-					elseif operatorsSet[token] then
-						return colors.operator
-					elseif luaSet[token] then
-						return colors.rbx
-					elseif rbxSet[token] then
-						return colors.lua
-					elseif exploitSet[token] then
-						return colors.exploit
-					elseif token:sub(1, 1) == "\"" or token:sub(1, 1) == "\'" then
-						return colors.str
-					elseif token == "true" or token == "false" then
-						return colors.boolean
-					end
-
-					if tokens[index + 1] == "(" then
-						if tokens[index - 1] == ":" then
-							return colors.self_call
-						end
-
-						return colors.call
-					end
-
-					if tokens[index - 1] == "." then
-						if tokens[index - 2] == "Enum" then
-							return colors.rbx
-						end
-
-						return colors.local_property
-					end
-				end
-
-				function highlighter.run(source)
-					local tokens = {}
-					local currentToken = ""
-
-					local inString = false
-					local inComment = false
-					local commentPersist = false
-
-					for i = 1, #source do
-						local character = source:sub(i, i)
-
-						if inComment then
-							if character == "\n" and not commentPersist then
-								table.insert(tokens, currentToken)
-								table.insert(tokens, character)
-								currentToken = ""
-
-								inComment = false
-							elseif source:sub(i - 1, i) == "]]" and commentPersist then
-								currentToken ..= "]"
-
-								table.insert(tokens, currentToken)
-								currentToken = ""
-
-								inComment = false
-								commentPersist = false
-							else
-								currentToken = currentToken .. character
-							end
-						elseif inString then
-							if character == inString and source:sub(i-1, i-1) ~= "\\" or character == "\n" then
-								currentToken = currentToken .. character
-								inString = false
-							else
-								currentToken = currentToken .. character
-							end
-						else
-							if source:sub(i, i + 1) == "--" then
-								table.insert(tokens, currentToken)
-								currentToken = "-"
-								inComment = true
-								commentPersist = source:sub(i + 2, i + 3) == "[["
-							elseif character == "\"" or character == "\'" then
-								table.insert(tokens, currentToken)
-								currentToken = character
-								inString = character
-							elseif operatorsSet[character] then
-								table.insert(tokens, currentToken)
-								table.insert(tokens, character)
-								currentToken = ""
-							elseif character:match("[%w_]") then
-								currentToken = currentToken .. character
-							else
-								table.insert(tokens, currentToken)
-								table.insert(tokens, character)
-								currentToken = ""
-							end
-						end
-					end
-
-					table.insert(tokens, currentToken)
-
-					local highlighted = {}
-
-					for i, token in ipairs(tokens) do
-						local highlight = getHighlight(tokens, i)
-
-						if highlight then
-							local syntax = string.format("<font color = \"#%s\">%s</font>", highlight:ToHex(), token:gsub("<", "&lt;"):gsub(">", "&gt;"))
-
-							table.insert(highlighted, syntax)
-						else
-							table.insert(highlighted, token)
-						end
-					end
-
-					return table.concat(highlighted)
-				end
-
-				return highlighter
-			end;
-		};
-		-- StarterGui.ScreenGui.ConsoleHandler
-		local function C_1c()
-			local script = G2L["1c"];
-			
-			local CtrlScroll = false
-
-			local LogService = game:GetService("LogService")
-			local Players = game:GetService("Players")
-			local LocalPlayer = Players.LocalPlayer
-			local Mouse = LocalPlayer:GetMouse()
-			local UserInputService = game:GetService("UserInputService")
-			local RunService = game:GetService("RunService")
-
-			local Console = ConsoleFrame
-			local SyntaxHighlightingModule = require(script.SyntaxHighlighter)
-			local OutputTextSize = Console.Output.OutputTextSize
-
-			local function Tween(obj, info, prop)
-				local tween = game:GetService("TweenService"):Create(obj, info, prop)
-				tween:Play()
-				return tween
-			end
-
-
-
-			-- MOUSE STUFFS
-
-			if CtrlScroll == true then
-				Console.CtrlScroll.BackgroundColor3 = Color3.fromRGB(11, 90, 175)
-			elseif CtrlScroll == false then
-				Console.CtrlScroll.BackgroundColor3 = Color3.fromRGB(56, 56, 56)
-			end
-			Console.CtrlScroll.MouseButton1Click:Connect(function()
-				CtrlScroll = not CtrlScroll
-				if CtrlScroll == true then
-					Console.CtrlScroll.BackgroundColor3 = Color3.fromRGB(11, 90, 175)
-				elseif CtrlScroll == false then
-					Console.CtrlScroll.BackgroundColor3 = Color3.fromRGB(56, 56, 56)
-				end
-			end)
-
-			local IsHoldingCTRL = false
-			UserInputService.InputBegan:Connect(function(input, gameproc)
-				if not gameproc then
-					if input.KeyCode == Enum.KeyCode.LeftControl or input.KeyCode == Enum.KeyCode.RightControl then
-						IsHoldingCTRL = true
-					end
-				end
-			end)
-			UserInputService.InputEnded:Connect(function(input, gameproc)
-				if not gameproc then
-					if input.KeyCode == Enum.KeyCode.LeftControl or input.KeyCode == Enum.KeyCode.RightControl then
-						IsHoldingCTRL = false
-					end
-				end
-			end)
-			-- Console part
-			local displayedOutput = {}
-			local OutputLimit = Console.Output.OutputLimit
-
-			Console.TextSizeBox.TextBox.Text = tostring(OutputTextSize.Value)
-
-			Console.TextSizeBox.TextBox:GetPropertyChangedSignal("Text"):Connect(function()
-				local tonum = tonumber(Console.TextSizeBox.TextBox.Text)
-				if tonum then
-					OutputTextSize.Value = tonum
-				end
-			end)
-			OutputTextSize:GetPropertyChangedSignal("Value"):Connect(function()
-				Console.TextSizeBox.TextBox.Text = tostring(OutputTextSize.Value)
-			end)
-
-			local scrollConsoleInput
-			Console.Output.MouseEnter:Connect(function()
-				scrollConsoleInput = UserInputService.InputChanged:Connect(function(input)
-					if CtrlScroll and input.UserInputType == Enum.UserInputType.MouseWheel and IsHoldingCTRL == true then
-						Console.Output.ScrollingEnabled = false
-						local newTextSize = OutputTextSize.Value + input.Position.Z
-						if newTextSize >= 1 then
-							OutputTextSize.Value = newTextSize
-						end
-					else
-						Console.Output.ScrollingEnabled = true
-					end
-				end)
-			end)
-			Console.Output.MouseLeave:Connect(function()
-				if scrollConsoleInput then
-					scrollConsoleInput:Disconnect()
-					scrollConsoleInput = nil
-				end
-			end)
-
-
-			Console.Clear.MouseButton1Click:Connect(function()
-				for _, log in pairs(Console.Output:GetChildren()) do
-					if log:IsA("TextBox") then
-						log:Destroy()
-					end
-				end
-			end)
-
-			local focussedOutput
-
-			LogService.MessageOut:Connect(function(msg, msgtype)
-				local formattedText = ""
-				local unformattedText = ""
-				local newOutputText = Console.OutputTemplate:Clone()
-				table.insert(displayedOutput, newOutputText)
-
-				if #displayedOutput > OutputLimit.Value then
-					local oldest = table.remove(displayedOutput, 1)
-					if oldest and typeof(oldest) == "Instance" then
-						oldest:Destroy()
-					end
-				end
-
-				unformattedText = os.date("%H:%M:%S")..'   '..msg
-				if msgtype == Enum.MessageType.MessageOutput then
-					formattedText = os.date("%H:%M:%S")..'   <font color="rgb(204, 204, 204)">'..msg..'</font>'
-					newOutputText.Text = formattedText
-				elseif msgtype == Enum.MessageType.MessageWarning then
-					formattedText = os.date("%H:%M:%S")..'   <b><font color="rgb(255, 142, 60)">'..msg..'</font></b>'
-					newOutputText.Text = formattedText
-				elseif msgtype == Enum.MessageType.MessageError then
-					formattedText = os.date("%H:%M:%S")..'   <b><font color="rgb(255, 68, 68)">'..msg..'</font></b>'
-					newOutputText.Text = formattedText
-				elseif msgtype == Enum.MessageType.MessageInfo then
-					formattedText = os.date("%H:%M:%S")..'   <font color="rgb(128, 215, 255)">'..msg..'</font>'
-					newOutputText.Text = formattedText
-				end
-
-				newOutputText.TextSize = OutputTextSize.Value
-				OutputTextSize:GetPropertyChangedSignal("Value"):Connect(function()
-					newOutputText.TextSize = OutputTextSize.Value
-				end)
-
-				newOutputText.Focused:Connect(function()
-					focussedOutput = newOutputText
-					newOutputText.Text = unformattedText
-				end)
-				newOutputText.FocusLost:Connect(function()
-					focussedOutput = nil
-					newOutputText.Text = formattedText
-				end)
-
-				newOutputText.Parent = Console.Output
-				newOutputText.Visible = true
-			end)
-
-			Console.Output.MouseLeave:Connect(function()
-				if focussedOutput then
-					focussedOutput:ReleaseFocus()
-				end
-			end)
-
-			Console.CommandLine.ScrollingFrame.TextBox:GetPropertyChangedSignal("Text"):Connect(function()
-
-				local oneliner = string.gsub(Console.CommandLine.ScrollingFrame.TextBox.Text, "\n", "    ")
-				Console.CommandLine.ScrollingFrame.TextBox.Text = oneliner
-
-				Console.CommandLine.ScrollingFrame.Highlight.Text = SyntaxHighlightingModule.run(Console.CommandLine.ScrollingFrame.TextBox.Text)
-			end)
-
-
-
-			Console.CommandLine.ScrollingFrame.TextBox.FocusLost:Connect(function(enterPressed)
-				if enterPressed and Console.CommandLine.ScrollingFrame.TextBox.Text ~= "" then
-					print("> "..Console.CommandLine.ScrollingFrame.TextBox.Text)
-					loadstring(Console.CommandLine.ScrollingFrame.TextBox.Text)()
-				end
-			end)
-		end;
-		task.spawn(C_1c);
-	end
-
-	return Console
-end
-
-	return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
-end,
-["Notepad"] = function()
--- Common Locals
-local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, Notepad, Notebook -- Major Apps
-local API,RMD,env,service,plr,create,createSimple -- Main Locals
-
-local function initDeps(data)
-	Main = data.Main
-	Lib = data.Lib
-	Apps = data.Apps
-	Settings = data.Settings
-
-	API = data.API
-	RMD = data.RMD
-	env = data.env
-	service = data.service
-	plr = data.plr
-	create = data.create
-	createSimple = data.createSimple
-end
-
-local function initAfterMain()
-	Explorer = Apps.Explorer
-	Properties = Apps.Properties
-	Notepad = Apps.Notepad
-	Notebook = Apps.Notebook
-end
-
-local function main()
-	local Notepad = {}
-
-	local window, codeFrame
-
-	Notepad.Init = function()
-		window = Lib.Window.new()
-		window:SetTitle("Notepad")
-		window:Resize(500, 400)
-		Notepad.Window = window
-
-		codeFrame = Lib.CodeFrame.new()
-		codeFrame.Frame.Position = UDim2.new(0, 0, 0, 20)
-		codeFrame.Frame.Size = UDim2.new(1, 0, 1, -20)
-		codeFrame.Frame.Parent = window.GuiElems.Content
-
-		local execute = Instance.new("TextButton", window.GuiElems.Content)
-		execute.BackgroundTransparency = 1
-		execute.Position = UDim2.new(0, 0, 0, 0)
-		execute.Size = UDim2.new(0.25, 0, 0, 20)
-		execute.Text = "Execute"
-		execute.TextColor3 = Color3.new(1, 1, 1)
-
-		execute.MouseButton1Click:Connect(function()
-			local source = codeFrame:GetText()
-			loadstring(source)()
-		end)
-
-		local clear = Instance.new("TextButton", window.GuiElems.Content)
-		clear.BackgroundTransparency = 1
-		clear.Position = UDim2.new(0.25, 0, 0, 0)
-		clear.Size = UDim2.new(0.25, 0, 0, 20)
-		clear.Text = "Clear"
-		clear.TextColor3 = Color3.new(1, 1, 1)
-
-		clear.MouseButton1Click:Connect(function()
-			codeFrame:SetText("")
-		end)
-
-		local copy = Instance.new("TextButton", window.GuiElems.Content)
-		copy.BackgroundTransparency = 1
-		copy.Position = UDim2.new(0.5, 0, 0, 0)
-		copy.Size = UDim2.new(0.25, 0, 0, 20)
-		copy.Text = "Copy to Clipboard"
-		copy.TextColor3 = Color3.new(1, 1, 1)
-
-		copy.MouseButton1Click:Connect(function()
-			local source = codeFrame:GetText()
-			setclipboard(source)
-		end)
-
-		local save = Instance.new("TextButton", window.GuiElems.Content)
-		save.BackgroundTransparency = 1
-		save.Position = UDim2.new(0.75, 0, 0, 0)
-		save.Size = UDim2.new(0.25, 0, 0, 20)
-		save.Text = "Save to File"
-		save.TextColor3 = Color3.new(1, 1, 1)
-
-		save.MouseButton1Click:Connect(function()
-			local source = codeFrame:GetText()
-			local filename = "Place_" .. game.PlaceId .. "_Script_" .. os.time() .. ".txt"
-			writefile(filename, source)
-			if movefileas then
-				movefileas(filename, ".txt")
-			end
-		end)
-	end
-
-	return Notepad
-end
-
-return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
-end,
 ["Explorer"] = function()
 --[[
 	Explorer App Module
@@ -984,82 +215,25 @@ end,
 -- Common Locals
 
 local Decompile do
-	local Success, Decompile_Source = pcall(function()
-		return game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/LuauDecompile/refs/heads/main/init.lua", true)
-	end)
-	
-	if Success then
-		local CONSTANTS = [[
-local ENABLED_REMARKS = {
-	NATIVE_REMARK = true,
-	INLINE_REMARK = true
-}
+	local Decompile_Source = assert(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/LuauDecompile/refs/heads/main/init.lua", true))
 
-local DECOMPILER_TIMEOUT = 10
+	xpcall(function()
+		loadstring(
+			Decompile_Source:gsub(
+				"return %(x %% 2^32%) // %(2^disp%)",
+				"return math.floor((x %% 2^32) / (2^disp))",
+				1
+			),
+			"LuauDecompile"
+		)()
+	end, warn)
 
-local READER_FLOAT_PRECISION = 7 -- up to 99
-local SHOW_INSTRUCTION_LINES = false
-local SHOW_REFERENCES = true
-local SHOW_OPERATION_NAMES = false
-local SHOW_MISC_OPERATIONS = false
-local LIST_USED_GLOBALS = true
-local RETURN_ELAPSED_TIME = false]]
-		
-		xpcall(function()
-			return loadstring(
-				string.gsub(
-					string.gsub(
-						Decompile_Source, "return %(x %% 2^32%) // %(2^disp%)", "return math.floor((x %% 2^32) / (2^disp))", 1
-					), ";;CONSTANTS HERE;;", CONSTANTS
-				), "LuauDecompile"
-			)()
-		end, warn)
-		
-		-- local HttpService = service.HttpService
-		
-		local _ENV = (getgenv and getgenv()) or (getfenv and getfenv(1)) or _ENV
-		Decompile = _ENV.decompile
-		
-		--[[local request = request or http_request or (syn and syn.request)
-		
-		local cleanScript = function(ucScript, cUrl)
-			local Url = (cUrl or "http://localhost:5000/fix_script")
-			
-			local result = request({
-				Url = Url,
-				Method = "POST",
-				Headers = { ["Content-Type"] = "application/json" },
-				Body = HttpService:JSONEncode({ script = ucScript })
-			})
-			
-			return (result.Success and result.fixed_script) or nil
-		end
-		
-		local BetterDecompiler = function(Source, Enabled, cUrl)
-			local Success, result = pcall(function()
-				return Decompile(Source)
-			end)
-			
-			if Success and result then
-				if Enabled then
-					local _Success, _result = pcall(cleanScript, Source, cUrl)
-					
-					if _Success and _result then
-						return _result
-					end
-				end
-				return result
-			end
-		end
-		
-		_ENV.decompile = function(Source)
-			return BetterDecompiler(Source, true)
-		end]]
-	end
+	local _ENV = (getgenv and getgenv()) or (getfenv and getfenv(1)) or _ENV
+	Decompile = _ENV.decompile
 end
 
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, Notepad, ModelViewer, Console, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -1081,6 +255,9 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
+	Notepad = Apps.Notepad
+	ModelViewer = Apps.ModelViewer
+	Console = Apps.Console
 	Notebook = Apps.Notebook
 end
 
@@ -1949,15 +1126,16 @@ local function main()
 		if env.setclipboard then context:AddRegistered("COPY_PATH") end
 		context:AddRegistered("INSERT_OBJECT")
 		context:AddRegistered("SAVE_INST")
-		context:AddRegistered("CALL_FUNCTION")
+		-- context:AddRegistered("CALL_FUNCTION")
 		-- context:AddRegistered("VIEW_CONNECTIONS")
-		context:AddRegistered("GET_REFERENCES")
-		context:AddRegistered("VIEW_API")
+		-- context:AddRegistered("GET_REFERENCES")
+		context:AddRegistered("COPY_API_PAGE")
 		
 		context:QueueDivider()
 		
 		if presentClasses["BasePart"] or presentClasses["Model"] then
 			context:AddRegistered("TELEPORT_TO")
+			context:AddRegistered("VIEW_MODEL")
 			context:AddRegistered("VIEW_OBJECT")
 		end
 		if presentClasses["Tween"] then context:AddRegistered("PLAY_TWEEN") end
@@ -2361,13 +1539,13 @@ local function main()
 			Explorer.InsertObjectContext:Show(x,y)
 		end})
 
-		context:Register("CALL_FUNCTION",{Name = "Call Function", IconMap = Explorer.ClassIcons, Icon = 66, OnClick = function()
+		--[[context:Register("CALL_FUNCTION",{Name = "Call Function", IconMap = Explorer.ClassIcons, Icon = 66, OnClick = function()
 			
 		end})
 
 		context:Register("GET_REFERENCES",{Name = "Get Lua References", IconMap = Explorer.ClassIcons, Icon = 34, OnClick = function()
 			
-		end})
+		end})]]
 		
 		context:Register("SAVE_INST",{Name = "Save to File", IconMap = Explorer.MiscIcons, Icon = "Save", OnClick = function()
 			
@@ -2377,8 +1555,13 @@ local function main()
 			
 		end})]]
 		
-		context:Register("VIEW_API",{Name = "View API Page", IconMap = Explorer.MiscIcons, Icon = "Reference", OnClick = function()
-			
+		context:Register("COPY_API_PAGE",{Name = "Copy Roblox API Page URL", IconMap = Explorer.MiscIcons, Icon = "Reference", OnClick = function()
+			local sList = selection.List
+			if #sList == 1 then
+				env.setclipboard(
+					"https://create.roblox.com/docs/reference/engine/classes/"..sList[1].Obj.ClassName
+				)
+			end
 		end})
 		
 		context:Register("VIEW_OBJECT",{Name = "View Object (Right click to reset)", IconMap = Explorer.ClassIcons, Icon = 5, OnClick = function()
@@ -2395,6 +1578,18 @@ local function main()
 			end
 		end, OnRightClick = function()
 			workspace.CurrentCamera.CameraSubject = plr.Character
+		end})
+		
+		context:Register("VIEW_MODEL",{Name = "View Model", IconMap = Explorer.ClassIcons, Icon = 5, OnClick = function()
+			local sList = selection.List
+			local isa = game.IsA
+			
+			if #sList == 1 then
+				if isa(sList[1].Obj,"BasePart") or isa(sList[1].Obj,"Model") then
+					ModelViewer.ViewModel(sList[1].Obj)
+					return
+				end
+			end
 		end})
 		
 		context:Register("FIRE_TOUCHTRANSMITTER",{Name = "Fire TouchTransmitter", IconMap = Explorer.ClassIcons, Icon = 37, OnClick = function()
@@ -3292,7 +2487,7 @@ end,
 
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, Notepad, ModelViewer, Console, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -3314,6 +2509,9 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
+	Notepad = Apps.Notepad
+	ModelViewer = Apps.ModelViewer
+	Console = Apps.Console
 	Notebook = Apps.Notebook
 end
 
@@ -3823,64 +3021,83 @@ local function main()
 		return subProp
 	end
 
-	Properties.GetExpandedProps = function(prop) -- TODO: Optimize using table
-		local result = {}
-		local typeData = prop.ValueType
-		local typeName = typeData.Name
+	Properties.GetExpandedProps = function(prop)
+		local typeName = prop.ValueType.Name
 		local makeSubProp = Properties.MakeSubProp
-
-		if typeName == "Vector2" then
-			result[1] = makeSubProp(prop,".X",{Name = "float"})
-			result[2] = makeSubProp(prop,".Y",{Name = "float"})
-		elseif typeName == "Vector3" then
-			result[1] = makeSubProp(prop,".X",{Name = "float"})
-			result[2] = makeSubProp(prop,".Y",{Name = "float"})
-			result[3] = makeSubProp(prop,".Z",{Name = "float"})
-		elseif typeName == "CFrame" then
-			result[1] = makeSubProp(prop,".Position",{Name = "Vector3"})
-			result[2] = makeSubProp(prop,".RightVector",{Name = "Vector3"})
-			result[3] = makeSubProp(prop,".UpVector",{Name = "Vector3"})
-			result[4] = makeSubProp(prop,".LookVector",{Name = "Vector3"})
-		elseif typeName == "UDim" then
-			result[1] = makeSubProp(prop,".Scale",{Name = "float"})
-			result[2] = makeSubProp(prop,".Offset",{Name = "int"})
-		elseif typeName == "UDim2" then
-			result[1] = makeSubProp(prop,".X",{Name = "UDim"})
-			result[2] = makeSubProp(prop,".Y",{Name = "UDim"})
-		elseif typeName == "Rect" then
-			result[1] = makeSubProp(prop,".Min.X",{Name = "float"},"X0")
-			result[2] = makeSubProp(prop,".Min.Y",{Name = "float"},"Y0")
-			result[3] = makeSubProp(prop,".Max.X",{Name = "float"},"X1")
-			result[4] = makeSubProp(prop,".Max.Y",{Name = "float"},"Y1")
-		elseif typeName == "PhysicalProperties" then
-			result[1] = makeSubProp(prop,".Density",{Name = "float"})
-			result[2] = makeSubProp(prop,".Elasticity",{Name = "float"})
-			result[3] = makeSubProp(prop,".ElasticityWeight",{Name = "float"})
-			result[4] = makeSubProp(prop,".Friction",{Name = "float"})
-			result[5] = makeSubProp(prop,".FrictionWeight",{Name = "float"})
-		elseif typeName == "Ray" then
-			result[1] = makeSubProp(prop,".Origin",{Name = "Vector3"})
-			result[2] = makeSubProp(prop,".Direction",{Name = "Vector3"})
-		elseif typeName == "NumberRange" then
-			result[1] = makeSubProp(prop,".Min",{Name = "float"})
-			result[2] = makeSubProp(prop,".Max",{Name = "float"})
-		elseif typeName == "Faces" then
-			result[1] = makeSubProp(prop,".Back",{Name = "bool"})
-			result[2] = makeSubProp(prop,".Bottom",{Name = "bool"})
-			result[3] = makeSubProp(prop,".Front",{Name = "bool"})
-			result[4] = makeSubProp(prop,".Left",{Name = "bool"})
-			result[5] = makeSubProp(prop,".Right",{Name = "bool"})
-			result[6] = makeSubProp(prop,".Top",{Name = "bool"})
-		elseif typeName == "Axes" then
-			result[1] = makeSubProp(prop,".X",{Name = "bool"})
-			result[2] = makeSubProp(prop,".Y",{Name = "bool"})
-			result[3] = makeSubProp(prop,".Z",{Name = "bool"})
+		local result = {}
+	
+		local expandTable = {
+			Vector2 = {
+				{".X", "float"},
+				{".Y", "float"},
+			},
+			Vector3 = {
+				{".X", "float"},
+				{".Y", "float"},
+				{".Z", "float"},
+			},
+			CFrame = {
+				{".Position", "Vector3"},
+				{".RightVector", "Vector3"},
+				{".UpVector", "Vector3"},
+				{".LookVector", "Vector3"},
+			},
+			UDim = {
+				{".Scale", "float"},
+				{".Offset", "int"},
+			},
+			UDim2 = {
+				{".X", "UDim"},
+				{".Y", "UDim"},
+			},
+			Rect = {
+				{".Min.X", "float", "X0"},
+				{".Min.Y", "float", "Y0"},
+				{".Max.X", "float", "X1"},
+				{".Max.Y", "float", "Y1"},
+			},
+			PhysicalProperties = {
+				{".Density", "float"},
+				{".Elasticity", "float"},
+				{".ElasticityWeight", "float"},
+				{".Friction", "float"},
+				{".FrictionWeight", "float"},
+			},
+			Ray = {
+				{".Origin", "Vector3"},
+				{".Direction", "Vector3"},
+			},
+			NumberRange = {
+				{".Min", "float"},
+				{".Max", "float"},
+			},
+			Faces = {
+				{".Back", "bool"},
+				{".Bottom", "bool"},
+				{".Front", "bool"},
+				{".Left", "bool"},
+				{".Right", "bool"},
+				{".Top", "bool"},
+			},
+			Axes = {
+				{".X", "bool"},
+				{".Y", "bool"},
+				{".Z", "bool"},
+			},
+		}
+	
+		local format = expandTable[typeName]
+		if format then
+			for i = 1, #format do
+				local entry = format[i]
+				result[i] = makeSubProp(prop, entry[1], {Name = entry[2]}, entry[3])
+			end
 		end
-		
+	
 		if prop.Name == "SoundId" and prop.Class == "Sound" then
 			result[1] = Properties.SoundPreviewProp
 		end
-		
+	
 		return result
 	end
 
@@ -5215,7 +4432,7 @@ end,
 
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, Notepad, ModelViewer, Console, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -5237,6 +4454,9 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
+	Notepad = Apps.Notepad
+	ModelViewer = Apps.ModelViewer
+	Console = Apps.Console
 	Notebook = Apps.Notebook
 end
 
@@ -5302,12 +4522,11 @@ local function main()
 		dumpbtn.MouseButton1Click:Connect(function()
 			if PreviousScr ~= nil then
 				pcall(function()
-					-- thanks King.Kevin#6025 you'll obviously be credited (no discord tag since that can easily be impersonated)
 					local getgc = getgc or get_gc_objects
 					local getupvalues = (debug and debug.getupvalues) or getupvalues or getupvals
 					local getconstants = (debug and debug.getconstants) or getconstants or getconsts
 					local getinfo = (debug and (debug.getinfo or debug.info)) or getinfo
-					local original = ("\n-- // Function Dumper made by King.Kevin\n-- // Script Path: %s\n\n--[["):format(PreviousScr:GetFullName())
+					local original = ("\n-- // Function Dumper \n-- // Script Path: %s\n\n--[["):format(PreviousScr:GetFullName())
 					local dump = original
 					local functions, function_count, data_base = {}, 0, {}
 					function functions:add_to_dump(str, indentation, new_line)
@@ -5394,16 +4613,10 @@ end
 
 return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
 end,
-["Lib"] = function()
---[[
-	Lib Module
-	
-	Container for functions and classes
-]]
-
+["Notepad"] = function()
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, Notepad, ModelViewer, Console, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -5425,6 +4638,1222 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
+	Notepad = Apps.Notepad
+	ModelViewer = Apps.ModelViewer
+	Console = Apps.Console
+	Notebook = Apps.Notebook
+end
+
+local function main()
+	local Notepad = {}
+
+	local window, codeFrame
+
+	Notepad.Init = function()
+		window = Lib.Window.new()
+		window:SetTitle("Notepad")
+		window:Resize(500, 400)
+		Notepad.Window = window
+
+		codeFrame = Lib.CodeFrame.new()
+		codeFrame.Frame.Position = UDim2.new(0, 0, 0, 20)
+		codeFrame.Frame.Size = UDim2.new(1, 0, 1, -20)
+		codeFrame.Frame.Parent = window.GuiElems.Content
+
+		local execute = Instance.new("TextButton", window.GuiElems.Content)
+		execute.BackgroundTransparency = 1
+		execute.Position = UDim2.new(0, 0, 0, 0)
+		execute.Size = UDim2.new(0.25, 0, 0, 20)
+		execute.Text = "Execute"
+		execute.TextColor3 = Color3.new(1, 1, 1)
+
+		execute.MouseButton1Click:Connect(function()
+			local source = codeFrame:GetText()
+			loadstring(source)()
+		end)
+
+		local clear = Instance.new("TextButton", window.GuiElems.Content)
+		clear.BackgroundTransparency = 1
+		clear.Position = UDim2.new(0.25, 0, 0, 0)
+		clear.Size = UDim2.new(0.25, 0, 0, 20)
+		clear.Text = "Clear"
+		clear.TextColor3 = Color3.new(1, 1, 1)
+
+		clear.MouseButton1Click:Connect(function()
+			codeFrame:SetText("")
+		end)
+
+		local copy = Instance.new("TextButton", window.GuiElems.Content)
+		copy.BackgroundTransparency = 1
+		copy.Position = UDim2.new(0.5, 0, 0, 0)
+		copy.Size = UDim2.new(0.25, 0, 0, 20)
+		copy.Text = "Copy to Clipboard"
+		copy.TextColor3 = Color3.new(1, 1, 1)
+
+		copy.MouseButton1Click:Connect(function()
+			local source = codeFrame:GetText()
+			setclipboard(source)
+		end)
+
+		local save = Instance.new("TextButton", window.GuiElems.Content)
+		save.BackgroundTransparency = 1
+		save.Position = UDim2.new(0.75, 0, 0, 0)
+		save.Size = UDim2.new(0.25, 0, 0, 20)
+		save.Text = "Save to File"
+		save.TextColor3 = Color3.new(1, 1, 1)
+
+		save.MouseButton1Click:Connect(function()
+			local source = codeFrame:GetText()
+			local filename = "Place_" .. game.PlaceId .. "_Script_" .. os.time() .. ".txt"
+			writefile(filename, source)
+			if movefileas then
+				movefileas(filename, ".txt")
+			end
+		end)
+	end
+
+	return Notepad
+end
+
+return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
+end,
+["ModelViewer"] = function()
+--[[
+	Model Viewer App Module
+	
+	A model viewer
+]]
+
+-- Common Locals
+local Main,Lib,Apps,Settings -- Main Containers
+local Explorer, Properties, ScriptViewer, Notepad, ModelViewer, Console, Notebook -- Major Apps
+local API,RMD,env,service,plr,create,createSimple -- Main Locals
+
+local function initDeps(data)
+	Main = data.Main
+	Lib = data.Lib
+	Apps = data.Apps
+	Settings = data.Settings
+
+	API = data.API
+	RMD = data.RMD
+	env = data.env
+	service = data.service
+	plr = data.plr
+	create = data.create
+	createSimple = data.createSimple
+end
+
+local function initAfterMain()
+	Explorer = Apps.Explorer
+	Properties = Apps.Properties
+	ScriptViewer = Apps.ScriptViewer
+	Notepad = Apps.Notepad
+	ModelViewer = Apps.ModelViewer
+	Console = Apps.Console
+	Notebook = Apps.Notebook
+end
+
+local function getPath(obj)
+	if obj.Parent == nil then
+		return "Nil parented"
+	else
+		return Explorer.GetInstancePath(obj)
+	end
+end
+
+local function main()
+	local RunService = game:GetService("RunService")
+	
+	local ModelViewer = {
+		EnableInputCamera = true,
+		IsViewing = false,
+		AutoRefresh = false,
+		ZoomMultiplier = 2,
+		AutoRotate = true,
+		RotationSpeed = 0.01,
+		RefreshRate = 30 -- hertz
+	}
+	
+	local window, viewportFrame, pathLabel, settingsButton
+	local model, camera, originalModel
+	
+	
+	ModelViewer.StopViewModel = function(updating)
+		if updating then
+			viewportFrame:FindFirstChildOfClass("Model"):Destroy()
+		else
+			if camera then camera = nil end
+			if model then model = nil end
+			viewportFrame:ClearAllChildren()
+			
+			ModelViewer.IsViewing = false
+			window:SetTitle("Model Viewer")
+			pathLabel.Gui.Text = ""
+		end
+	end
+
+	ModelViewer.ViewModel = function(item, updating)
+		if not item then return end
+		ModelViewer.StopViewModel(updating)
+		
+		if item:IsA("BasePart") and not item:IsA("Model") then			
+			model = Instance.new("Model")
+			model.Parent = viewportFrame
+			
+			local clone = item:Clone()
+			clone.Parent = model
+			model.PrimaryPart = clone
+			model:SetPrimaryPartCFrame(CFrame.new(0, 0, 0))
+		elseif item:IsA("Model") and item ~= workspace and not item:IsA("Terrain")  then
+			local noClone = false
+			if not item.Archivable then item.Archivable = true noClone = true end
+		
+			if not item.PrimaryPart then
+				pathLabel.Gui.Text = "Failed to view model: No PrimaryPart is found."
+				return
+			end
+			
+			model = item:Clone()
+			
+			item.Archivable = false
+			
+			model.Parent = viewportFrame
+			model:SetPrimaryPartCFrame(CFrame.new(0, 0, 0))
+		else
+			return
+		end
+		
+		originalModel = item
+		
+		if ModelViewer.AutoRefresh and not updating then
+			task.spawn(function()
+				while model and ModelViewer.AutoRefresh do
+					
+					ModelViewer.ViewModel(originalModel, true)
+					task.wait(1 / ModelViewer.RefreshRate)
+				end
+			end)
+		end
+		
+		if not updating then
+			camera = Instance.new("Camera")
+			viewportFrame.CurrentCamera = camera
+
+			camera.Parent = viewportFrame
+			camera.FieldOfView = 60
+			
+			window:SetTitle(item.Name.." - Model Viewer")
+			pathLabel.Gui.Text = "path: " .. getPath(originalModel)
+			window:Show()
+			ModelViewer.IsViewing = true
+		end
+	end
+
+	ModelViewer.Init = function()
+		window = Lib.Window.new()
+		window:SetTitle("Model Viewer")
+		window:Resize(350,200)
+		ModelViewer.Window =  window
+		
+		viewportFrame = Instance.new("ViewportFrame")
+		viewportFrame.Parent = window.GuiElems.Content
+		viewportFrame.BackgroundTransparency = 1
+		viewportFrame.Size = UDim2.new(1,0,1,0)
+		
+		pathLabel = Lib.Label.new()
+		pathLabel.Gui.Parent = window.GuiElems.Content
+		pathLabel.Gui.AnchorPoint = Vector2.new(0,1)
+		pathLabel.Gui.Text = ""
+		pathLabel.Gui.TextSize = 12
+		pathLabel.Gui.TextTransparency = 0.8
+		pathLabel.Gui.Position = UDim2.new(0,1,1,0)
+		pathLabel.Gui.Size = UDim2.new(1,-1,0,15)
+		pathLabel.Gui.BackgroundTransparency = 1
+		
+		settingsButton = Instance.new("ImageButton",window.GuiElems.Content)
+		settingsButton.AnchorPoint = Vector2.new(1,0)
+		settingsButton.BackgroundTransparency = 1
+		settingsButton.Size = UDim2.new(0,15,0,15)
+		settingsButton.Position = UDim2.new(1,-3,0,3)
+		settingsButton.Image = "rbxassetid://6578871732"
+		settingsButton.ImageTransparency = 0.5
+
+		local rotationX, rotationY = -15, 0
+		local distance = 10
+		local dragging = false
+		local hovering = false
+		local lastpos = Vector2.zero
+
+		local UIS = game:GetService("UserInputService")
+
+		viewportFrame.InputBegan:Connect(function(input)
+			if not ModelViewer.EnableInputCamera then return end
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+				dragging = true
+				lastpos = input.Position
+			elseif input.KeyCode == Enum.KeyCode.LeftShift then
+				ModelViewer.ZoomMultiplier = 10
+			end
+		end)
+		
+
+		viewportFrame.MouseEnter:Connect(function()
+			hovering = true
+		end)
+		viewportFrame.MouseLeave:Connect(function()
+			hovering = false
+		end)
+
+		viewportFrame.InputEnded:Connect(function(input)
+			if not ModelViewer.EnableInputCamera then return end
+			if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+				dragging = false
+			elseif input.KeyCode == Enum.KeyCode.LeftShift then
+				ModelViewer.ZoomMultiplier = 2
+			end
+		end)
+
+		viewportFrame.InputChanged:Connect(function(input)
+			if not ModelViewer.EnableInputCamera then return end
+			if dragging and input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+				local delta = input.Position - lastpos
+				lastpos = input.Position
+
+				rotationY -= delta.X * 0.01
+				rotationX -= delta.Y * 0.01
+				rotationX = math.clamp(rotationX, -math.pi/2 + 0.1, math.pi/2 - 0.1)
+			end
+
+			if input.UserInputType == Enum.UserInputType.MouseWheel and hovering then
+				distance = math.clamp(distance - (input.Position.Z * ModelViewer.ZoomMultiplier), 0.1, math.huge)
+			end
+		end)
+
+		game:GetService("RunService").RenderStepped:Connect(function()
+			if camera and model then
+				if not dragging and ModelViewer.AutoRotate then
+					rotationY += ModelViewer.RotationSpeed
+				end
+				
+				local center = model.PrimaryPart.Position
+				local offset = CFrame.new(0, 0, distance)
+				local rotation = CFrame.Angles(0, rotationY, 0) * CFrame.Angles(rotationX, 0, 0)
+
+				local camCF = CFrame.new(center) * rotation * offset
+
+				camera.CFrame = CFrame.lookAt(camCF.Position, center)
+				
+			end
+		end)
+		
+		-- context stuffs
+		local context = Lib.ContextMenu.new()
+		
+		local absoluteSize = context.Gui.AbsoluteSize
+		context.MaxHeight = (absoluteSize.Y <= 600 and (absoluteSize.Y - 40)) or nil
+
+		-- Registers
+		context:Register("STOP",{Name = "Stop Viewing", OnClick = function()
+			ModelViewer.StopViewModel()
+		end})
+		context:Register("EXIT",{Name = "Exit", OnClick = function()
+			ModelViewer.StopViewModel()
+			context:Hide()
+			window:Hide()
+		end})
+		context:Register("COPY_PATH",{Name = "Copy Path", OnClick = function()
+			if model then
+				env.setclipboard(getPath(originalModel))
+			end
+		end})
+		context:Register("REFRESH",{Name = "Refresh", OnClick = function()
+			if originalModel then
+				ModelViewer.ViewModel(originalModel)
+			end
+		end})
+		context:Register("ENABLE_AUTO_REFRESH",{Name = "Enable Auto Refresh", OnClick = function()
+			if originalModel then
+				ModelViewer.AutoRefresh = true
+				ModelViewer.ViewModel(originalModel)
+			end
+		end})
+		context:Register("DISABLE_AUTO_REFRESH",{Name = "Disable Auto Refresh", OnClick = function()
+			if originalModel then
+				ModelViewer.AutoRefresh = false
+				ModelViewer.ViewModel(originalModel)
+			end
+		end})
+		context:Register("SAVE_INST",{Name = "Save to File", OnClick = function()
+			if model then
+				window:SetTitle(originalModel.Name.." - Model Viewer - Saving")
+				local success, result = pcall(env.saveinstance,
+					originalModel, "Place_"..game.PlaceId.."_"..originalModel.Name.."_"..os.time(),
+					{
+						Decompile = true
+					}
+				)
+				if success then
+					window:SetTitle(originalModel.Name.." - Model Viewer - Saved")
+					context:Hide()
+					task.wait(5)
+					if model then
+						window:SetTitle(originalModel.Name.." - Model Viewer")
+					end
+				else
+					window:SetTitle(originalModel.Name.." - Model Viewer - Error")
+					warn("Error while saving model: "..result)
+					context:Hide()
+					task.wait(5)
+					if model then
+						window:SetTitle(originalModel.Name.." - Model Viewer")
+					end
+				end
+			end
+		end})
+		
+		context:Register("ENABLE_AUTO_ROTATE",{Name = "Enable Auto Rotate", OnClick = function()
+			ModelViewer.AutoRotate = true
+			
+		end})
+		context:Register("DISABLE_AUTO_ROTATE",{Name = "Disable Auto Rotate", OnClick = function()
+			ModelViewer.AutoRotate = false
+		end})
+		context:Register("LOCK_CAM",{Name = "Lock Camera", OnClick = function()
+			ModelViewer.EnableInputCamera = false
+		end})
+		context:Register("UNLOCK_CAM",{Name = "Unlock Camera", OnClick = function()
+			ModelViewer.EnableInputCamera = true
+		end})
+		
+		context:Register("ZOOM_IN",{Name = "Zoom In", OnClick = function()
+			distance = math.clamp(distance - (ModelViewer.ZoomMultiplier * 2), 2, math.huge)
+		end})
+		
+		context:Register("ZOOM_OUT",{Name = "Zoom Out", OnClick = function()
+			distance = math.clamp(distance + (ModelViewer.ZoomMultiplier * 2), 2, math.huge)
+		end})
+		
+		local function ShowContext()
+			context:Clear()
+
+			context:AddRegistered("STOP", not ModelViewer.IsViewing)	
+			context:AddRegistered("REFRESH", not ModelViewer.IsViewing)
+			context:AddRegistered("COPY_PATH", not ModelViewer.IsViewing)
+			context:AddRegistered("SAVE_INST", not ModelViewer.IsViewing)
+			context:AddDivider()
+			
+			if env.isonmobile then
+				context:AddRegistered("ZOOM_IN")
+				context:AddRegistered("ZOOM_OUT")
+				context:AddDivider()
+			end
+
+			if ModelViewer.AutoRotate then
+				context:AddRegistered("DISABLE_AUTO_ROTATE")
+			else
+				context:AddRegistered("ENABLE_AUTO_ROTATE")
+			end
+			if ModelViewer.AutoRefresh then
+				context:AddRegistered("DISABLE_AUTO_REFRESH")
+			else
+				context:AddRegistered("ENABLE_AUTO_REFRESH")
+			end
+			if ModelViewer.EnableInputCamera then
+				context:AddRegistered("LOCK_CAM")
+			else
+				context:AddRegistered("UNLOCK_CAM")
+			end
+
+			context:AddDivider()
+
+			context:AddRegistered("EXIT")
+
+			context:Show()
+		end
+		
+		local function HideContext()
+			context:Hide()
+		end
+		
+		viewportFrame.InputBegan:Connect(function(input)
+			if input.UserInputType == Enum.UserInputType.MouseButton2 then
+				ShowContext()
+			elseif input.UserInputType == Enum.UserInputType.MouseButton1 and Lib.CheckMouseInGui(context.Gui) then
+				HideContext()
+			end
+		end)
+		settingsButton.MouseButton1Click:Connect(function()
+			ShowContext()
+		end)
+	end
+
+	return ModelViewer
+end
+
+	return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
+end,
+["Console"] = function()
+--[[
+	Console App Module
+	
+    Just a Console 
+]]
+
+-- Common Locals
+local Main,Lib,Apps,Settings -- Main Containers
+local Explorer, Properties, ScriptViewer, Notepad, ModelViewer, Console, Notebook -- Major Apps
+local API,RMD,env,service,plr,create,createSimple -- Main Locals
+
+local function initDeps(data)
+	Main = data.Main
+	Lib = data.Lib
+	Apps = data.Apps
+	Settings = data.Settings
+
+	API = data.API
+	RMD = data.RMD
+	env = data.env
+	service = data.service
+	plr = data.plr
+	create = data.create
+	createSimple = data.createSimple
+end
+
+local function initAfterMain()
+	Explorer = Apps.Explorer
+	Properties = Apps.Properties
+	ScriptViewer = Apps.ScriptViewer
+	Notepad = Apps.Notepad
+	ModelViewer = Apps.ModelViewer
+	Console = Apps.Console
+	Notebook = Apps.Notebook
+end
+
+local function main()
+	local Console = {}
+
+	local window,ConsoleFrame
+	
+	local OutputLimit = 500 -- Same as Roblox.
+	
+	Console.Init = function()
+		
+		
+		
+		-- Instances: 29 | Scripts: 1 | Modules: 1 | Tags: 0
+		local G2L = {};
+
+		-- StarterGui.ScreenGui
+		window = Lib.Window.new()
+		window:SetTitle("Console")
+		window:Resize(500,400)
+		Console.Window = window
+		
+		-- StarterGui.ScreenGui.Console
+		ConsoleFrame = Instance.new("ImageButton", window.GuiElems.Content);
+		ConsoleFrame["BorderSizePixel"] = 0;
+		ConsoleFrame["AutoButtonColor"] = false;
+		ConsoleFrame["BackgroundTransparency"] = 1;
+		ConsoleFrame["BackgroundColor3"] = Color3.fromRGB(47, 47, 47);
+		ConsoleFrame["Selectable"] = false;
+		ConsoleFrame["Size"] = UDim2.new(1,0,1,0);
+		ConsoleFrame["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+		ConsoleFrame["Name"] = [[Console]];
+		ConsoleFrame["Position"] = UDim2.new(0,0,0,0);
+
+
+		-- StarterGui.ScreenGui.Console.CommandLine
+		G2L["3"] = Instance.new("Frame", ConsoleFrame);
+		G2L["3"]["BorderSizePixel"] = 0;
+		G2L["3"]["BackgroundColor3"] = Color3.fromRGB(37, 37, 37);
+		G2L["3"]["AnchorPoint"] = Vector2.new(0.5, 1);
+		G2L["3"]["ClipsDescendants"] = true;
+		G2L["3"]["Size"] = UDim2.new(1, -8, 0, 22);
+		G2L["3"]["Position"] = UDim2.new(0.5, 0, 1, -5);
+		G2L["3"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+		G2L["3"]["Name"] = [[CommandLine]];
+
+
+		-- StarterGui.ScreenGui.Console.CommandLine.UIStroke
+		G2L["4"] = Instance.new("UIStroke", G2L["3"]);
+		G2L["4"]["Transparency"] = 0.65;
+		G2L["4"]["Thickness"] = 1.25;
+
+
+		-- StarterGui.ScreenGui.Console.CommandLine.ScrollingFrame
+		G2L["5"] = Instance.new("ScrollingFrame", G2L["3"]);
+		G2L["5"]["Active"] = true;
+		G2L["5"]["ScrollingDirection"] = Enum.ScrollingDirection.X;
+		G2L["5"]["BorderSizePixel"] = 0;
+		G2L["5"]["CanvasSize"] = UDim2.new(0, 0, 0, 0);
+		G2L["5"]["ElasticBehavior"] = Enum.ElasticBehavior.Never;
+		G2L["5"]["TopImage"] = [[rbxasset://textures/ui/Scroll/scroll-middle.png]];
+		G2L["5"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+		G2L["5"]["HorizontalScrollBarInset"] = Enum.ScrollBarInset.Always;
+		G2L["5"]["BottomImage"] = [[rbxasset://textures/ui/Scroll/scroll-middle.png]];
+		G2L["5"]["AutomaticCanvasSize"] = Enum.AutomaticSize.X;
+		G2L["5"]["Size"] = UDim2.new(1, 0, 1, 0);
+		G2L["5"]["ScrollBarImageColor3"] = Color3.fromRGB(57, 57, 57);
+		G2L["5"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+		G2L["5"]["ScrollBarThickness"] = 2;
+		G2L["5"]["BackgroundTransparency"] = 1;
+
+		-- StarterGui.ScreenGui.Console.CommandLine.ScrollingFrame.TextBox
+		G2L["6"] = Instance.new("TextBox", G2L["5"]);
+		G2L["6"]["CursorPosition"] = -1;
+		G2L["6"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+		G2L["6"]["PlaceholderColor3"] = Color3.fromRGB(211, 211, 211);
+		G2L["6"]["BorderSizePixel"] = 0;
+		G2L["6"]["TextSize"] = 13;
+		G2L["6"]["TextColor3"] = Color3.fromRGB(211, 211, 211);
+		G2L["6"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+		G2L["6"]["FontFace"] = Font.new([[rbxasset://fonts/families/Inconsolata.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+		G2L["6"]["AutomaticSize"] = Enum.AutomaticSize.X;
+		G2L["6"]["ClearTextOnFocus"] = false;
+		G2L["6"]["PlaceholderText"] = [[Run a command]];
+		G2L["6"]["Size"] = UDim2.new(0, 246, 0, 22);
+		G2L["6"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+		G2L["6"]["Text"] = [[]];
+		G2L["6"]["BackgroundTransparency"] = 1;
+
+
+		-- StarterGui.ScreenGui.Console.CommandLine.ScrollingFrame.TextBox.UIPadding
+		G2L["7"] = Instance.new("UIPadding", G2L["6"]);
+		G2L["7"]["PaddingLeft"] = UDim.new(0, 7);
+
+
+		-- StarterGui.ScreenGui.Console.CommandLine.ScrollingFrame.Highlight
+		G2L["8"] = Instance.new("TextLabel", G2L["5"]);
+		G2L["8"]["Interactable"] = false;
+		G2L["8"]["ZIndex"] = 2;
+		G2L["8"]["BorderSizePixel"] = 0;
+		G2L["8"]["TextSize"] = 13;
+		G2L["8"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+		G2L["8"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+		G2L["8"]["FontFace"] = Font.new([[rbxasset://fonts/families/Inconsolata.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+		G2L["8"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+		G2L["8"]["BackgroundTransparency"] = 1;
+		G2L["8"]["RichText"] = true;
+		G2L["8"]["Size"] = UDim2.new(0, 246, 0, 22);
+		G2L["8"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+		G2L["8"]["Text"] = [[]];
+		G2L["8"]["Selectable"] = true;
+		G2L["8"]["AutomaticSize"] = Enum.AutomaticSize.X;
+		G2L["8"]["Name"] = [[Highlight]];
+
+
+		-- StarterGui.ScreenGui.Console.CommandLine.ScrollingFrame.Highlight.UIPadding
+		G2L["9"] = Instance.new("UIPadding", G2L["8"]);
+		G2L["9"]["PaddingLeft"] = UDim.new(0, 7);
+
+
+		-- StarterGui.ScreenGui.Console.Output
+		G2L["a"] = Instance.new("ScrollingFrame", ConsoleFrame);
+		G2L["a"]["Active"] = true;
+		G2L["a"]["BorderSizePixel"] = 0;
+		G2L["a"]["CanvasSize"] = UDim2.new(0, 0, 0, 0);
+		G2L["a"]["TopImage"] = [[rbxasset://textures/ui/Scroll/scroll-middle.png]];
+		G2L["a"]["BackgroundColor3"] = Color3.fromRGB(36, 36, 36);
+		G2L["a"]["Name"] = [[Output]];
+		G2L["a"]["ScrollBarImageTransparency"] = 0.6;
+		G2L["a"]["BottomImage"] = [[rbxasset://textures/ui/Scroll/scroll-middle.png]];
+		G2L["a"]["AnchorPoint"] = Vector2.new(0.5, 0);
+		G2L["a"]["AutomaticCanvasSize"] = Enum.AutomaticSize.Y;
+		G2L["a"]["Size"] = UDim2.new(1, -8, 1, -55);
+		G2L["a"]["Position"] = UDim2.new(0.5, 0, 0, 23);
+		G2L["a"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+		G2L["a"]["ScrollBarThickness"] = 6;
+
+
+		-- StarterGui.ScreenGui.Console.Output.UIListLayout
+		G2L["b"] = Instance.new("UIListLayout", G2L["a"]);
+		G2L["b"]["SortOrder"] = Enum.SortOrder.LayoutOrder;
+
+
+		-- StarterGui.ScreenGui.Console.Output.UIStroke
+		G2L["c"] = Instance.new("UIStroke", G2L["a"]);
+		G2L["c"]["Transparency"] = 0.7;
+		G2L["c"]["Thickness"] = 1.25;
+		G2L["c"]["Color"] = Color3.fromRGB(12, 12, 12);
+
+
+		-- StarterGui.ScreenGui.Console.Output.OutputTextSize
+		G2L["d"] = Instance.new("NumberValue", G2L["a"]);
+		G2L["d"]["Name"] = [[OutputTextSize]];
+		G2L["d"]["Value"] = 15;
+
+
+		-- StarterGui.ScreenGui.Console.Output.OutputLimit
+		G2L["e"] = Instance.new("NumberValue", G2L["a"]);
+		G2L["e"]["Name"] = [[OutputLimit]];
+		G2L["e"]["Value"] = OutputLimit;
+
+
+		-- StarterGui.ScreenGui.Console.Output.UIPadding
+		G2L["f"] = Instance.new("UIPadding", G2L["a"]);
+		G2L["f"]["PaddingTop"] = UDim.new(0, 2);
+
+
+		-- StarterGui.ScreenGui.Console.TextSizeBox
+		G2L["10"] = Instance.new("Frame", ConsoleFrame);
+		G2L["10"]["BorderSizePixel"] = 0;
+		G2L["10"]["BackgroundColor3"] = Color3.fromRGB(37, 37, 37);
+		G2L["10"]["ClipsDescendants"] = true;
+		G2L["10"]["Size"] = UDim2.new(0, 37, 0, 15);
+		G2L["10"]["Position"] = UDim2.new(0, 4, 0, 4);
+		G2L["10"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+		G2L["10"]["Name"] = [[TextSizeBox]];
+
+
+		-- StarterGui.ScreenGui.Console.TextSizeBox.TextBox
+		G2L["11"] = Instance.new("TextBox", G2L["10"]);
+		G2L["11"]["PlaceholderColor3"] = Color3.fromRGB(108, 108, 108);
+		G2L["11"]["BorderSizePixel"] = 0;
+		G2L["11"]["TextWrapped"] = true;
+		G2L["11"]["TextSize"] = 15;
+		G2L["11"]["TextColor3"] = Color3.fromRGB(211, 211, 211);
+		G2L["11"]["TextScaled"] = true;
+		G2L["11"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+		G2L["11"]["FontFace"] = Font.new([[rbxasset://fonts/families/Inconsolata.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+		G2L["11"]["PlaceholderText"] = [[Size]];
+		G2L["11"]["Size"] = UDim2.new(1, 0, 1, 0);
+		G2L["11"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+		G2L["11"]["Text"] = [[]];
+		G2L["11"]["BackgroundTransparency"] = 1;
+
+
+		-- StarterGui.ScreenGui.Console.TextSizeBox.TextBox.UIPadding
+		G2L["12"] = Instance.new("UIPadding", G2L["11"]);
+		G2L["12"]["PaddingTop"] = UDim.new(0, 2);
+		G2L["12"]["PaddingRight"] = UDim.new(0, 5);
+		G2L["12"]["PaddingLeft"] = UDim.new(0, 5);
+		G2L["12"]["PaddingBottom"] = UDim.new(0, 2);
+
+
+		-- StarterGui.ScreenGui.Console.TextSizeBox.UIStroke
+		G2L["13"] = Instance.new("UIStroke", G2L["10"]);
+		G2L["13"]["Transparency"] = 0.65;
+		G2L["13"]["Thickness"] = 1.25;
+
+
+		-- StarterGui.ScreenGui.Console.Clear
+		G2L["14"] = Instance.new("ImageButton", ConsoleFrame);
+		G2L["14"]["BorderSizePixel"] = 0;
+		G2L["14"]["BackgroundColor3"] = Color3.fromRGB(57, 57, 57);
+		G2L["14"]["Size"] = UDim2.new(0, 37, 0, 15);
+		G2L["14"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+		G2L["14"]["Name"] = [[Clear]];
+		G2L["14"]["Position"] = UDim2.new(1, -42, 0, 4);
+
+
+		-- StarterGui.ScreenGui.Console.Clear.TextLabel
+		G2L["15"] = Instance.new("TextLabel", G2L["14"]);
+		G2L["15"]["TextWrapped"] = true;
+		G2L["15"]["Interactable"] = false;
+		G2L["15"]["BorderSizePixel"] = 0;
+		G2L["15"]["TextSize"] = 20;
+		G2L["15"]["TextScaled"] = true;
+		G2L["15"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+		G2L["15"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+		G2L["15"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+		G2L["15"]["BackgroundTransparency"] = 1;
+		G2L["15"]["Size"] = UDim2.new(1, 0, 1, 0);
+		G2L["15"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+		G2L["15"]["Text"] = [[Clear]];
+
+
+		-- StarterGui.ScreenGui.Console.Clear.UIPadding
+		G2L["16"] = Instance.new("UIPadding", G2L["14"]);
+		G2L["16"]["PaddingTop"] = UDim.new(0, 1);
+		G2L["16"]["PaddingBottom"] = UDim.new(0, 1);
+
+
+		-- StarterGui.ScreenGui.Console.OutputTemplate
+		G2L["17"] = Instance.new("TextBox", ConsoleFrame);
+		G2L["17"]["Visible"] = false;
+		G2L["17"]["Active"] = false;
+		G2L["17"]["Name"] = [[OutputTemplate]];
+		G2L["17"]["TextXAlignment"] = Enum.TextXAlignment.Left;
+		G2L["17"]["BorderSizePixel"] = 0;
+		G2L["17"]["TextEditable"] = false;
+		G2L["17"]["TextWrapped"] = true;
+		G2L["17"]["TextSize"] = 15;
+		G2L["17"]["TextColor3"] = Color3.fromRGB(171, 171, 171);
+		G2L["17"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+		G2L["17"]["RichText"] = true;
+		G2L["17"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+		G2L["17"]["AutomaticSize"] = Enum.AutomaticSize.Y;
+		G2L["17"]["Selectable"] = false;
+		G2L["17"]["ClearTextOnFocus"] = false;
+		G2L["17"]["Size"] = UDim2.new(1, 0, 0, 1);
+		G2L["17"]["Position"] = UDim2.new(0, 20, 0, 0);
+		G2L["17"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+		G2L["17"]["Text"] = [[(timestamp) <font color="rgb(255, 255, 255)">Output</font>]];
+		G2L["17"]["BackgroundTransparency"] = 1;
+
+
+		-- StarterGui.ScreenGui.Console.OutputTemplate.UIPadding
+		G2L["18"] = Instance.new("UIPadding", G2L["17"]);
+		G2L["18"]["PaddingRight"] = UDim.new(0, 6);
+		G2L["18"]["PaddingLeft"] = UDim.new(0, 6);
+
+
+		-- StarterGui.ScreenGui.Console.CtrlScroll
+		G2L["19"] = Instance.new("ImageButton", ConsoleFrame);
+		G2L["19"]["BorderSizePixel"] = 0;
+		G2L["19"]["BackgroundColor3"] = Color3.fromRGB(57, 57, 57);
+		G2L["19"]["Size"] = UDim2.new(0, 60, 0, 15);
+		G2L["19"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+		G2L["19"]["Name"] = [[CtrlScroll]];
+		G2L["19"]["Position"] = UDim2.new(0, 46, 0, 4);
+
+
+		-- StarterGui.ScreenGui.Console.CtrlScroll.TextLabel
+		G2L["1a"] = Instance.new("TextLabel", G2L["19"]);
+		G2L["1a"]["TextWrapped"] = true;
+		G2L["1a"]["Interactable"] = false;
+		G2L["1a"]["BorderSizePixel"] = 0;
+		G2L["1a"]["TextSize"] = 20;
+		G2L["1a"]["TextScaled"] = true;
+		G2L["1a"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+		G2L["1a"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Regular, Enum.FontStyle.Normal);
+		G2L["1a"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+		G2L["1a"]["BackgroundTransparency"] = 1;
+		G2L["1a"]["Size"] = UDim2.new(1, 0, 1, 0);
+		G2L["1a"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+		G2L["1a"]["Text"] = [[Ctrl Scroll]];
+
+
+		-- StarterGui.ScreenGui.Console.CtrlScroll.UIPadding
+		G2L["1b"] = Instance.new("UIPadding", G2L["19"]);
+		G2L["1b"]["PaddingTop"] = UDim.new(0, 1);
+		G2L["1b"]["PaddingBottom"] = UDim.new(0, 1);
+
+
+		-- StarterGui.ScreenGui.ConsoleHandler
+		G2L["1c"] = Instance.new("LocalScript", G2L["1"]);
+		G2L["1c"]["Name"] = [[ConsoleHandler]];
+
+
+		-- StarterGui.ScreenGui.ConsoleHandler.SyntaxHighlighter
+		G2L["1d"] = Instance.new("ModuleScript", G2L["1c"]);
+		G2L["1d"]["Name"] = [[SyntaxHighlighter]];
+
+
+		-- Require G2L wrapper
+		local G2L_REQUIRE = require;
+		local G2L_MODULES = {};
+		local function require(Module:ModuleScript)
+			local ModuleState = G2L_MODULES[Module];
+			if ModuleState then
+				if not ModuleState.Required then
+					ModuleState.Required = true;
+					ModuleState.Value = ModuleState.Closure();
+				end
+				return ModuleState.Value;
+			end;
+			return G2L_REQUIRE(Module);
+		end
+
+		G2L_MODULES[G2L["1d"]] = {
+			Closure = function()
+				local script = G2L["1d"];local highlighter = {}
+				local keywords = {
+					lua = {
+						"and", "break", "or", "else", "elseif", "if", "then", "until", "repeat", "while", "do", "for", "in", "end",
+						"local", "return", "function", "export"
+					},
+					rbx = {
+						"game", "workspace", "script", "math", "string", "table", "task", "wait", "select", "next", "Enum",
+						"error", "warn", "tick", "assert", "shared", "loadstring", "tonumber", "tostring", "type",
+						"typeof", "unpack", "print", "Instance", "CFrame", "Vector3", "Vector2", "Color3", "UDim", "UDim2", "Ray", "BrickColor",
+						"OverlapParams", "RaycastParams", "Axes", "Random", "Region3", "Rect", "TweenInfo",
+						"collectgarbage", "not", "utf8", "pcall", "xpcall", "_G", "setmetatable", "getmetatable", "os", "pairs", "ipairs"
+					},
+					exploit = {
+						"hookmetamethod", "hookfunction", "getgc", "filtergc", "Drawing", "getgenv", "getsenv", "getrenv", "getfenv", "setfenv",
+						"decompile", "saveinstance", "getrawmetatable", "setrawmetatable", "checkcaller", "cloneref", "clonefunction",
+						"iscclosure", "islclosure", "isexecutorclosure", "newcclosure", "getfunctionhash", "crypt", "writefile", "appendfile", "loadfile", "readfile", "listfiles",
+						"makefolder", "isfolder", "isfile", "delfile", "delfolder", "getcustomasset", "fireclickdetector", "firetouchinterest", "fireproximityprompt"
+					},
+					operators = {
+						"#", "+", "-", "*", "%", "/", "^", "=", "~", "=", "<", ">", ",", ".", "(", ")", "{", "}", "[", "]", ";", ":"
+					}
+				}
+
+				local colors = {
+					numbers = Color3.fromRGB(255, 198, 0),
+					boolean = Color3.fromRGB(255, 198, 0),
+					operator = Color3.fromRGB(204, 204, 204),
+					lua = Color3.fromRGB(132, 214, 247),
+					exploit = Color3.fromRGB(171, 84, 247),
+					rbx = Color3.fromRGB(248, 109, 124),
+					str = Color3.fromRGB(173, 241, 132),
+					comment = Color3.fromRGB(102, 102, 102),
+					null = Color3.fromRGB(255, 198, 0),
+					call = Color3.fromRGB(253, 251, 172),
+					self_call = Color3.fromRGB(253, 251, 172),
+					local_color = Color3.fromRGB(248, 109, 115),
+					function_color = Color3.fromRGB(248, 109, 115),
+					self_color = Color3.fromRGB(248, 109, 115),
+					local_property = Color3.fromRGB(97, 161, 241),
+				}
+
+				local function createKeywordSet(keywords)
+					local keywordSet = {}
+					for _, keyword in ipairs(keywords) do
+						keywordSet[keyword] = true
+					end
+					return keywordSet
+				end
+
+				local luaSet = createKeywordSet(keywords.lua)
+				local exploitSet = createKeywordSet(keywords.exploit)
+				local rbxSet = createKeywordSet(keywords.rbx)
+				local operatorsSet = createKeywordSet(keywords.operators)
+
+				local function getHighlight(tokens, index)
+					local token = tokens[index]
+
+					if colors[token .. "_color"] then
+						return colors[token .. "_color"]
+					end
+
+					if tonumber(token) then
+						return colors.numbers
+					elseif token == "nil" then
+						return colors.null
+					elseif token:sub(1, 2) == "--" then
+						return colors.comment
+					elseif operatorsSet[token] then
+						return colors.operator
+					elseif luaSet[token] then
+						return colors.rbx
+					elseif rbxSet[token] then
+						return colors.lua
+					elseif exploitSet[token] then
+						return colors.exploit
+					elseif token:sub(1, 1) == "\"" or token:sub(1, 1) == "\'" then
+						return colors.str
+					elseif token == "true" or token == "false" then
+						return colors.boolean
+					end
+
+					if tokens[index + 1] == "(" then
+						if tokens[index - 1] == ":" then
+							return colors.self_call
+						end
+
+						return colors.call
+					end
+
+					if tokens[index - 1] == "." then
+						if tokens[index - 2] == "Enum" then
+							return colors.rbx
+						end
+
+						return colors.local_property
+					end
+				end
+
+				function highlighter.run(source)
+					local tokens = {}
+					local currentToken = ""
+
+					local inString = false
+					local inComment = false
+					local commentPersist = false
+
+					for i = 1, #source do
+						local character = source:sub(i, i)
+
+						if inComment then
+							if character == "\n" and not commentPersist then
+								table.insert(tokens, currentToken)
+								table.insert(tokens, character)
+								currentToken = ""
+
+								inComment = false
+							elseif source:sub(i - 1, i) == "]]" and commentPersist then
+								currentToken ..= "]"
+
+								table.insert(tokens, currentToken)
+								currentToken = ""
+
+								inComment = false
+								commentPersist = false
+							else
+								currentToken = currentToken .. character
+							end
+						elseif inString then
+							if character == inString and source:sub(i-1, i-1) ~= "\\" or character == "\n" then
+								currentToken = currentToken .. character
+								inString = false
+							else
+								currentToken = currentToken .. character
+							end
+						else
+							if source:sub(i, i + 1) == "--" then
+								table.insert(tokens, currentToken)
+								currentToken = "-"
+								inComment = true
+								commentPersist = source:sub(i + 2, i + 3) == "[["
+							elseif character == "\"" or character == "\'" then
+								table.insert(tokens, currentToken)
+								currentToken = character
+								inString = character
+							elseif operatorsSet[character] then
+								table.insert(tokens, currentToken)
+								table.insert(tokens, character)
+								currentToken = ""
+							elseif character:match("[%w_]") then
+								currentToken = currentToken .. character
+							else
+								table.insert(tokens, currentToken)
+								table.insert(tokens, character)
+								currentToken = ""
+							end
+						end
+					end
+
+					table.insert(tokens, currentToken)
+
+					local highlighted = {}
+
+					for i, token in ipairs(tokens) do
+						local highlight = getHighlight(tokens, i)
+
+						if highlight then
+							local syntax = string.format("<font color = \"#%s\">%s</font>", highlight:ToHex(), token:gsub("<", "&lt;"):gsub(">", "&gt;"))
+
+							table.insert(highlighted, syntax)
+						else
+							table.insert(highlighted, token)
+						end
+					end
+
+					return table.concat(highlighted)
+				end
+
+				return highlighter
+			end;
+		};
+		-- StarterGui.ScreenGui.ConsoleHandler
+		local function C_1c()
+			local script = G2L["1c"];
+			
+			local CtrlScroll = false
+
+			local LogService = game:GetService("LogService")
+			local Players = game:GetService("Players")
+			local LocalPlayer = Players.LocalPlayer
+			local Mouse = LocalPlayer:GetMouse()
+			local UserInputService = game:GetService("UserInputService")
+			local RunService = game:GetService("RunService")
+
+			local Console = ConsoleFrame
+			local SyntaxHighlightingModule = require(script.SyntaxHighlighter)
+			local OutputTextSize = Console.Output.OutputTextSize
+
+			local function Tween(obj, info, prop)
+				local tween = game:GetService("TweenService"):Create(obj, info, prop)
+				tween:Play()
+				return tween
+			end
+
+
+
+			-- MOUSE STUFFS
+
+			if CtrlScroll == true then
+				Console.CtrlScroll.BackgroundColor3 = Color3.fromRGB(11, 90, 175)
+			elseif CtrlScroll == false then
+				Console.CtrlScroll.BackgroundColor3 = Color3.fromRGB(56, 56, 56)
+			end
+			Console.CtrlScroll.MouseButton1Click:Connect(function()
+				CtrlScroll = not CtrlScroll
+				if CtrlScroll == true then
+					Console.CtrlScroll.BackgroundColor3 = Color3.fromRGB(11, 90, 175)
+				elseif CtrlScroll == false then
+					Console.CtrlScroll.BackgroundColor3 = Color3.fromRGB(56, 56, 56)
+				end
+			end)
+
+			local IsHoldingCTRL = false
+			UserInputService.InputBegan:Connect(function(input, gameproc)
+				if not gameproc then
+					if input.KeyCode == Enum.KeyCode.LeftControl or input.KeyCode == Enum.KeyCode.RightControl then
+						IsHoldingCTRL = true
+					end
+				end
+			end)
+			UserInputService.InputEnded:Connect(function(input, gameproc)
+				if not gameproc then
+					if input.KeyCode == Enum.KeyCode.LeftControl or input.KeyCode == Enum.KeyCode.RightControl then
+						IsHoldingCTRL = false
+					end
+				end
+			end)
+			-- Console part
+			local displayedOutput = {}
+			local OutputLimit = Console.Output.OutputLimit
+
+			Console.TextSizeBox.TextBox.Text = tostring(OutputTextSize.Value)
+
+			Console.TextSizeBox.TextBox:GetPropertyChangedSignal("Text"):Connect(function()
+				local tonum = tonumber(Console.TextSizeBox.TextBox.Text)
+				if tonum then
+					OutputTextSize.Value = tonum
+				end
+			end)
+			OutputTextSize:GetPropertyChangedSignal("Value"):Connect(function()
+				Console.TextSizeBox.TextBox.Text = tostring(OutputTextSize.Value)
+			end)
+
+			local scrollConsoleInput
+			Console.Output.MouseEnter:Connect(function()
+				scrollConsoleInput = UserInputService.InputChanged:Connect(function(input)
+					if CtrlScroll and input.UserInputType == Enum.UserInputType.MouseWheel and IsHoldingCTRL == true then
+						Console.Output.ScrollingEnabled = false
+						local newTextSize = OutputTextSize.Value + input.Position.Z
+						if newTextSize >= 1 then
+							OutputTextSize.Value = newTextSize
+						end
+					else
+						Console.Output.ScrollingEnabled = true
+					end
+				end)
+			end)
+			Console.Output.MouseLeave:Connect(function()
+				if scrollConsoleInput then
+					scrollConsoleInput:Disconnect()
+					scrollConsoleInput = nil
+				end
+			end)
+
+
+			Console.Clear.MouseButton1Click:Connect(function()
+				for _, log in pairs(Console.Output:GetChildren()) do
+					if log:IsA("TextBox") then
+						log:Destroy()
+					end
+				end
+			end)
+
+			local focussedOutput
+
+			LogService.MessageOut:Connect(function(msg, msgtype)
+				local formattedText = ""
+				local unformattedText = ""
+				local newOutputText = Console.OutputTemplate:Clone()
+				table.insert(displayedOutput, newOutputText)
+
+				if #displayedOutput > OutputLimit.Value then
+					local oldest = table.remove(displayedOutput, 1)
+					if oldest and typeof(oldest) == "Instance" then
+						oldest:Destroy()
+					end
+				end
+
+				unformattedText = os.date("%H:%M:%S")..'   '..msg
+				if msgtype == Enum.MessageType.MessageOutput then
+					formattedText = os.date("%H:%M:%S")..'   <font color="rgb(204, 204, 204)">'..msg..'</font>'
+					newOutputText.Text = formattedText
+				elseif msgtype == Enum.MessageType.MessageWarning then
+					formattedText = os.date("%H:%M:%S")..'   <b><font color="rgb(255, 142, 60)">'..msg..'</font></b>'
+					newOutputText.Text = formattedText
+				elseif msgtype == Enum.MessageType.MessageError then
+					formattedText = os.date("%H:%M:%S")..'   <b><font color="rgb(255, 68, 68)">'..msg..'</font></b>'
+					newOutputText.Text = formattedText
+				elseif msgtype == Enum.MessageType.MessageInfo then
+					formattedText = os.date("%H:%M:%S")..'   <font color="rgb(128, 215, 255)">'..msg..'</font>'
+					newOutputText.Text = formattedText
+				end
+
+				newOutputText.TextSize = OutputTextSize.Value
+				OutputTextSize:GetPropertyChangedSignal("Value"):Connect(function()
+					newOutputText.TextSize = OutputTextSize.Value
+				end)
+
+				newOutputText.Focused:Connect(function()
+					focussedOutput = newOutputText
+					newOutputText.Text = unformattedText
+				end)
+				newOutputText.FocusLost:Connect(function()
+					focussedOutput = nil
+					newOutputText.Text = formattedText
+				end)
+
+				newOutputText.Parent = Console.Output
+				newOutputText.Visible = true
+			end)
+
+			Console.Output.MouseLeave:Connect(function()
+				if focussedOutput then
+					focussedOutput:ReleaseFocus()
+				end
+			end)
+
+			Console.CommandLine.ScrollingFrame.TextBox:GetPropertyChangedSignal("Text"):Connect(function()
+
+				local oneliner = string.gsub(Console.CommandLine.ScrollingFrame.TextBox.Text, "\n", "    ")
+				Console.CommandLine.ScrollingFrame.TextBox.Text = oneliner
+
+				Console.CommandLine.ScrollingFrame.Highlight.Text = SyntaxHighlightingModule.run(Console.CommandLine.ScrollingFrame.TextBox.Text)
+			end)
+
+
+
+			Console.CommandLine.ScrollingFrame.TextBox.FocusLost:Connect(function(enterPressed)
+				if enterPressed and Console.CommandLine.ScrollingFrame.TextBox.Text ~= "" then
+					print("> "..Console.CommandLine.ScrollingFrame.TextBox.Text)
+					loadstring(Console.CommandLine.ScrollingFrame.TextBox.Text)()
+				end
+			end)
+		end;
+		task.spawn(C_1c);
+	end
+
+	return Console
+end
+
+	return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
+end,
+["Lib"] = function()
+--[[
+	Lib Module
+	
+	Container for functions and classes
+]]
+
+-- Common Locals
+local Main,Lib,Apps,Settings -- Main Containers
+local Explorer, Properties, ScriptViewer, Notepad, ModelViewer, Console, Notebook -- Major Apps
+local API,RMD,env,service,plr,create,createSimple -- Main Locals
+
+local function initDeps(data)
+	Main = data.Main
+	Lib = data.Lib
+	Apps = data.Apps
+	Settings = data.Settings
+
+	API = data.API
+	RMD = data.RMD
+	env = data.env
+	service = data.service
+	plr = data.plr
+	create = data.create
+	createSimple = data.createSimple
+end
+
+local function initAfterMain()
+	Explorer = Apps.Explorer
+	Properties = Apps.Properties
+	ScriptViewer = Apps.ScriptViewer
+	Notepad = Apps.Notepad
+	ModelViewer = Apps.ModelViewer
+	Console = Apps.Console
 	Notebook = Apps.Notebook
 end
 
@@ -6748,27 +7177,34 @@ local function main()
 		end
 
 		local function resizeHook(self,resizer,dir)
+			local pressing = false
+			
 			local guiMain = self.GuiElems.Main
+			
+			resizer.MouseEnter:Connect(function() resizer.BackgroundTransparency = 0.5 end)
+			resizer.MouseButton1Down:Connect(function() pressing = true resizer.BackgroundTransparency = 0.5 end)
+			resizer.MouseButton1Up:Connect(function() pressing = false resizer.BackgroundTransparency = 1 end)
+			
+			
+			
 			resizer.InputBegan:Connect(function(input)
-				if not self.Dragging and not self.Resizing and self.Resizable and self.ResizableInternal then
+				if not self.Dragging and not self.Resizing and self.Resizable and self.ResizableInternal and pressing then
 					local isH = dir:find("[WE]") and true
 					local isV = dir:find("[NS]") and true
 					local signX = dir:find("W",1,true) and -1 or 1
 					local signY = dir:find("N",1,true) and -1 or 1
-			
+
 					if self.Minimized and isV then return end
-			
-					if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-						resizer.BackgroundTransparency = 0.5
-					elseif input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+					
+					if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+						
 						local releaseEvent, mouseEvent
-			
+
 						local offX = input.Position.X - resizer.AbsolutePosition.X
 						local offY = input.Position.Y - resizer.AbsolutePosition.Y
-			
+
 						self.Resizing = resizer
-						resizer.BackgroundTransparency = 1
-			
+						
 						releaseEvent = service.UserInputService.InputEnded:Connect(function(input)
 							if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
 								releaseEvent:Disconnect()
@@ -6777,17 +7213,17 @@ local function main()
 								resizer.BackgroundTransparency = 1
 							end
 						end)
-			
+
 						mouseEvent = service.UserInputService.InputChanged:Connect(function(input)
 							if self.Resizable and self.ResizableInternal and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
 								self:StopTweens()
 								local deltaX = input.Position.X - resizer.AbsolutePosition.X - offX
 								local deltaY = input.Position.Y - resizer.AbsolutePosition.Y - offY
-			
+
 								if guiMain.AbsoluteSize.X + deltaX * signX < self.MinX then deltaX = signX * (self.MinX - guiMain.AbsoluteSize.X) end
 								if guiMain.AbsoluteSize.Y + deltaY * signY < self.MinY then deltaY = signY * (self.MinY - guiMain.AbsoluteSize.Y) end
 								if signY < 0 and guiMain.AbsolutePosition.Y + deltaY < 0 then deltaY = -guiMain.AbsolutePosition.Y end
-			
+
 								guiMain.Position = guiMain.Position + UDim2.new(0, (signX < 0 and deltaX or 0), 0, (signY < 0 and deltaY or 0))
 								self.SizeX = self.SizeX + (isH and deltaX * signX or 0)
 								self.SizeY = self.SizeY + (isV and deltaY * signY or 0)
@@ -7406,7 +7842,7 @@ local function main()
 			if not silent then
 				side.Hidden = false
 			end
-			-- updateWindows(silent)
+			updateWindows(silent)
 		end
 
 		funcs.Close = function(self)
@@ -9228,9 +9664,9 @@ local function main()
 			end
 		end
 
-		funcs.GetText = function(self) -- TODO: better (use new tab format)
-			local source = table.concat(self.Lines,"\n")
-			return self:ConvertText(source,false) -- Tab Convert
+		function funcs.GetText(tab)
+		    if typeof(tab) ~= "table" then return tostring(tab) end
+		    return table.concat(tab, "\n")
 		end
 
 		funcs.SetText = function(self,txt)
@@ -11442,7 +11878,7 @@ end
 }
 
 -- Main vars
-local Main, Explorer, Properties, ScriptViewer, Notepad, Console, DefaultSettings, Notebook, Serializer, Lib
+local Main, Explorer, Properties, ScriptViewer, Notepad, ModelViewer, Console, DefaultSettings, Notebook, Serializer, Lib
 local API, RM
 
 -- Default Settings
@@ -11555,7 +11991,7 @@ end
 Main = (function()
 	local Main = {}
 	
-	Main.ModuleList = {"Explorer","Properties","ScriptViewer","Notepad","Console"}
+	Main.ModuleList = {"Explorer","Properties","ScriptViewer","Notepad","ModelViewer","Console"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
 	Main.Version = "" -- pre-aplha ( in-dev )
@@ -11639,14 +12075,16 @@ Main = (function()
 		Explorer = Apps.Explorer
 		Properties = Apps.Properties
 		ScriptViewer = Apps.ScriptViewer
-		Console = Apps.Console
         Notepad = Apps.Notepad
+		ModelViewer = Apps.ModelViewer
+		Console = Apps.Console
 		Notebook = Apps.Notebook
 		local appTable = {
 			Explorer = Explorer,
 			Properties = Properties,
 			ScriptViewer = ScriptViewer,
             Notepad = Notepad,
+			ModelViewer = ModelViewer,
 			Console = Console,
 			Notebook = Notebook
 		}
@@ -11665,6 +12103,8 @@ Main = (function()
 						if not func then Main.MissingEnv[#Main.MissingEnv + 1] = name return end
 						rawset(self, name, func)
 				end})
+
+        		env.isonmobile = game:GetService("UserInputService").TouchEnabled
 
 				-- file
 				env.readfile = readfile
@@ -12359,9 +12799,11 @@ Main = (function()
 		
 		Main.CreateApp({Name = "Script Viewer", IconMap = Main.LargeIcons, Icon = "Script_Viewer", Window = ScriptViewer.Window})
 		
-		Main.CreateApp({Name = "Notepad", IconMap = Main.LargeIcons, Icon = "Script_Viewer", Window = Notepad.Window})
+		Main.CreateApp({Name = "Notepad", IconMap = Main.LargeIcons, Icon = "Notepad", Window = Notepad.Window})
 
-		Main.CreateApp({Name = "Console", IconMap = Main.LargeIcons, Icon = "Output", Window = Console.Window})
+		Main.CreateApp({Name = "Model Viewer", IconMap = Main.LargeIcons, Icon = 6, Window = ModelViewer.Window})
+
+		Main.CreateApp({Name = "Console", IconMap = Main.LargeIcons, Icon = "Console", Window = Console.Window})
 		
 		local cptsOnMouseClick = nil
 		Main.CreateApp({Name = "Click part to select", IconMap = Main.LargeIcons, Icon = 6, OnClick = function(callback)
@@ -12456,7 +12898,7 @@ Main = (function()
 		})
 		Main.LargeIcons = Lib.IconMap.new("rbxassetid://6579106223",256,256,32,32)
 		Main.LargeIcons:SetDict({
-			Explorer = 0, Properties = 1, Script_Viewer = 2,
+			Explorer = 0, Properties = 1, Script_Viewer = 2, Watcher = 3, Console = 4, Notepad = 5
 		})
 		
 		-- Fetch version if needed
@@ -12500,6 +12942,7 @@ Main = (function()
 		Properties.Init()
 		ScriptViewer.Init()
         Notepad.Init()
+		ModelViewer.Init()
 		Console.Init()
 		Lib.FastWait()
 		
