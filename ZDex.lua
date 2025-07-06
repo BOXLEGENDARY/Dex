@@ -74,24 +74,31 @@ debug = setmetatable({}, {
 
 -- Safe environment
 local original_env = (getgenv and getgenv()) or (getfenv and getfenv(1)) or _ENV
+local fake_env_table = {}
 local fake_env = setmetatable({}, {
-	__index = function(_, k)
-		if k == "_G" then return fake_env end
-		return original_env[k]
-	end,
-	__newindex = function(_, k, v)
-		rawset(original_env, k, v)
-	end
+    __index = function(_, k)
+        if k == "_G" then return fake_env end
+        if fake_env_table[k] ~= nil then
+            return fake_env_table[k]
+        end
+        return original_env[k]
+    end,
+    __newindex = function(_, k, v)
+        fake_env_table[k] = v
+    end,
+    __metatable = "Locked"
 })
 
 local function try_setfenv(level, env)
-	if setfenv then
-		return pcall(setfenv, level + 1, env)
-	elseif _ENV then
-		return false
-	else
-		return false
-	end
+    if setfenv then
+        return pcall(setfenv, level + 1, env)
+    elseif _ENV then
+        local f = debug.getinfo(level + 1, "f").func
+        local newf = load(string.dump(f), nil, "b", env)
+        return pcall(newf)
+    else
+        return false
+    end
 end
 
 local ok = try_setfenv(1, fake_env)
@@ -122,6 +129,30 @@ runService.RenderStepped:Connect(function(dt)
 		perfStats.Memory = collectgarbage("count")
 		perfStats.Delta = dt
 		frames, acc = 0, 0
+	end
+end)
+
+-- Auto update Memory frequently
+task.spawn(function()
+	while true do
+		perfStats.Memory = collectgarbage("count")
+		task.wait(0.5)
+	end
+end)
+
+-- Auto GC trigger loop
+task.spawn(function()
+	local step = 20
+	while true do
+		if perfStats.Memory > 115 and perfStats.FPS < 50 then
+			collectgarbage("step", step)
+			if perfStats.FPS < 40 then
+				step = math.min(step + 5, 60)
+			else
+				step = math.max(step - 1, 20)
+			end
+		end
+		task.wait(0.25 + math.random() * 0.2)
 	end
 end)
 
