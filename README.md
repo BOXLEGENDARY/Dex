@@ -7,7 +7,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
  ## Support
  * Mobile/Pc
  ## Features
- * Performance Engine: Optimized for efficient and smooth operation.
+ * Performance Engine: Optimized for efficient and smooth operation
  * Explorer
  * Properties
  * ScriptView
