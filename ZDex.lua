@@ -255,7 +255,9 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
+	Notepad = Apps.Notepad
 	ModelViewer = Apps.ModelViewer
+	Console = Apps.Console
 	Notebook = Apps.Notebook
 end
 
@@ -2507,6 +2509,9 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
+	Notepad = Apps.Notepad
+	ModelViewer = Apps.ModelViewer
+	Console = Apps.Console
 	Notebook = Apps.Notebook
 end
 
@@ -4449,6 +4454,9 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
+	Notepad = Apps.Notepad
+	ModelViewer = Apps.ModelViewer
+	Console = Apps.Console
 	Notebook = Apps.Notebook
 end
 
@@ -4629,7 +4637,10 @@ end
 local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
+	ScriptViewer = Apps.ScriptViewer
 	Notepad = Apps.Notepad
+	ModelViewer = Apps.ModelViewer
+	Console = Apps.Console
 	Notebook = Apps.Notebook
 end
 
@@ -4737,6 +4748,9 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
+	Notepad = Apps.Notepad
+	ModelViewer = Apps.ModelViewer
+	Console = Apps.Console
 	Notebook = Apps.Notebook
 end
 
@@ -5109,6 +5123,9 @@ end
 local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
+	ScriptViewer = Apps.ScriptViewer
+	Notepad = Apps.Notepad
+	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
 	Notebook = Apps.Notebook
 end
@@ -5834,6 +5851,9 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
+	Notepad = Apps.Notepad
+	ModelViewer = Apps.ModelViewer
+	Console = Apps.Console
 	Notebook = Apps.Notebook
 end
 
