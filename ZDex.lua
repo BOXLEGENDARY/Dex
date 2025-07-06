@@ -959,7 +959,7 @@ local function main()
 
         local GENV = getGlobalEnv()
         
-        GENV.SmartUpdate(function()
+        GENV.Perf.SmartUpdate(function()
     		if not updateDebounce then return end
 	    	updateDebounce = false
     		if not Explorer.Window:IsVisible() then return end
