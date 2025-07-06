@@ -4514,12 +4514,11 @@ local function main()
 		dumpbtn.MouseButton1Click:Connect(function()
 			if PreviousScr ~= nil then
 				pcall(function()
-					-- thanks King.Kevin#6025 you'll obviously be credited (no discord tag since that can easily be impersonated)
 					local getgc = getgc or get_gc_objects
 					local getupvalues = (debug and debug.getupvalues) or getupvalues or getupvals
 					local getconstants = (debug and debug.getconstants) or getconstants or getconsts
 					local getinfo = (debug and (debug.getinfo or debug.info)) or getinfo
-					local original = ("\n-- // Function Dumper made by King.Kevin\n-- // Script Path: %s\n\n--[["):format(PreviousScr:GetFullName())
+					local original = ("\n-- // Function Dumper \n-- // Script Path: %s\n\n--[["):format(PreviousScr:GetFullName())
 					local dump = original
 					local functions, function_count, data_base = {}, 0, {}
 					function functions:add_to_dump(str, indentation, new_line)
