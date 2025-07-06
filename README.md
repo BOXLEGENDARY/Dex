@@ -1,5 +1,5 @@
  # ZDex
- ## IN-DEV ( version 4 )
+ ## IN-DEV ( version 5 )
  * Script
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/main/ZDex.lua"))()
