@@ -110,8 +110,8 @@ PerformanceEngine.Settings = {
 	MIN_THROTTLE = 0.02, -- Minimum delay between updates (lower = smoother but higher CPU usage)
 	MAX_THROTTLE = 0.07, -- Maximum delay between updates (higher = lighter on CPU but may cause stutter)
 	MEMORY_THRESHOLD = 100, -- Memory (in MB) threshold to trigger garbage collection
-	FPS_THRESHOLD = 50, -- If FPS drops below this, GC will activate to reduce memory usage
-	FPS_LOW_THRESHOLD = 40, -- If FPS drops even lower, GC will increase intensity (step up)
+	FPS_THRESHOLD = 50, -- If FPS drops below this GC will activate to reduce memory usage
+	FPS_LOW_THRESHOLD = 40, -- If FPS drops even lower GC will increase intensity (step up)
 	GC_STEP_MIN = 25, -- Minimum GC step size (lower = lighter and less aggressive garbage collection)
 	GC_STEP_MAX = 70, -- Maximum GC step size (higher = more aggressive cleanup risk of lag)
 	AUTO_BALANCE_HIGH_DELAY = 0.085, -- Delay after heavy tasks (gives CPU time to recover)
