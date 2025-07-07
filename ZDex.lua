@@ -1697,19 +1697,23 @@ local function main()
 			if scr then ScriptViewer.ViewScript(scr) end
 		end})
 		
-		context:Register("SAVE_BYTECODE",{Name = "Save ScriptBytecode in Files", IconMap = Explorer.MiscIcons, Icon = "Save", OnClick = function()
-			for _,v in next, selection.List do
-                local scr = v.Obj
-				if v.Obj:IsA("LuaSourceContainer") then
-					local success, bytecode = pcall(getscriptbytecode, scr)
-					if success and type(bytecode) == "string" then
-						local Name = ("%i.Script.%s.txt"):format(game.PlaceId, scr.Name)
-						writefile(Name, bytecode)
-						task.wait(0.2)
-					end
-				end
-			end
-		end})
+		context:Register("SAVE_BYTECODE", {
+		    Name = "Save ScriptBytecode in Files",
+		    IconMap = Explorer.MiscIcons,
+		    Icon = "Save",
+		    OnClick = function()
+		        for _, v in next, selection.List do
+		            local scr = v.Obj
+		            if v.Obj:IsA("LuaSourceContainer") then
+		                local success, bytecode = pcall(getscriptbytecode, scr)
+		                if success and type(bytecode) == "string" then
+		                    local Name = ("dex/saved/%i.Script.%s.txt"):format(game.PlaceId, scr.Name)
+		                    writefile(Name, bytecode)
+		                    task.wait(0.2)
+		                end
+		            end
+		        end
+		    end})
 		
 		context:Register("SELECT_CHARACTER",{Name = "Select Character", IconMap = Explorer.ClassIcons, Icon = 9, OnClick = function()
 			local newSelection = {}
