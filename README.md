@@ -4,6 +4,8 @@
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/main/ZDex.lua"))()
 ```
+ ## Update
+ * Manual safe i will fix it later
  ## Support
  * Mobile/Pc
  ## Features
