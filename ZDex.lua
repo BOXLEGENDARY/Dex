@@ -5049,15 +5049,12 @@ local function main()
 		context:Register("SAVE_INST",{Name = "Save to File", OnClick = function()
 			if model then
 				window:SetTitle(originalModel.Name.." - Model Viewer - Saving")
-		
-				pcall(decompile or function() end, originalModel)
-		
 				local success, result = pcall(env.saveinstance,
-					originalModel,
-					"Place_"..game.PlaceId.."_"..originalModel.Name.."_"..os.time(),
-					{}
+					originalModel, "Place_"..game.PlaceId.."_"..originalModel.Name.."_"..os.time(),
+					{
+						decompile = true
+					}
 				)
-		
 				if success then
 					window:SetTitle(originalModel.Name.." - Model Viewer - Saved")
 					context:Hide()
@@ -5066,7 +5063,8 @@ local function main()
 						window:SetTitle(originalModel.Name.." - Model Viewer")
 					end
 				else
-					window:SetTitle(originalModel.Name.." - Model Viewer - Fail")
+					window:SetTitle(originalModel.Name.." - Model Viewer - Error")
+					warn("Error while saving model: "..result)
 					context:Hide()
 					task.wait(5)
 					if model then
