@@ -274,7 +274,6 @@ local EmbeddedModules = {
 ]]
 
 -- Common Locals
-
 local Decompile do
 	local Decompile_Source = assert(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/LuauDecompile/refs/heads/main/init.lua", true))
 
