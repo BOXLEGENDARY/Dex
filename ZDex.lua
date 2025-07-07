@@ -1183,7 +1183,7 @@ local function main()
 		if expanded == Explorer.SearchExpanded then context:AddRegistered("CLEAR_SEARCH_AND_JUMP_TO") end
 		if env.setclipboard then context:AddRegistered("COPY_PATH") end
 		context:AddRegistered("INSERT_OBJECT")
-		context:AddRegistered("SAVE_INST")
+		-- context:AddRegistered("SAVE_INST")
 		-- context:AddRegistered("CALL_FUNCTION")
 		-- context:AddRegistered("VIEW_CONNECTIONS")
 		-- context:AddRegistered("GET_REFERENCES")
@@ -1601,13 +1601,13 @@ local function main()
 			
 		end})
 
-		context:Register("GET_REFERENCES",{Name = "Get Lua References", IconMap = Explorer.ClassIcons, Icon = 34, OnClick = function()
+		--[[context:Register("GET_REFERENCES",{Name = "Get Lua References", IconMap = Explorer.ClassIcons, Icon = 34, OnClick = function()
 			
 		end})]]
 		
-		context:Register("SAVE_INST",{Name = "Save to File", IconMap = Explorer.MiscIcons, Icon = "Save", OnClick = function()
+		--[[context:Register("SAVE_INST",{Name = "Save to File", IconMap = Explorer.MiscIcons, Icon = "Save", OnClick = function()
 			
-		end})
+		end})]]
 		
 		--[[context:Register("VIEW_CONNECTIONS",{Name = "View Connections", OnClick = function()
 			
