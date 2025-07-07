@@ -113,7 +113,7 @@ PerformanceEngine.Settings = {
 	FPS_THRESHOLD = 50, -- If FPS drops below this GC will activate to reduce memory usage
 	FPS_LOW_THRESHOLD = 40, -- If FPS drops even lower GC will increase intensity (step up)
 	GC_STEP_MIN = 25, -- Minimum GC step size (lower = lighter and less aggressive garbage collection)
-	GC_STEP_MAX = 70, -- Maximum GC step size (higher = more aggressive cleanup risk of lag)
+	GC_STEP_MAX = 65, -- Maximum GC step size (higher = more aggressive cleanup risk of lag)
 	AUTO_BALANCE_HIGH_DELAY = 0.085, -- Delay after heavy tasks (gives CPU time to recover)
 	AUTO_BALANCE_MEDIUM_DELAY = 0.025, -- Delay after medium tasks (keeps things smooth but responsive)
 }
