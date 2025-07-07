@@ -1,4 +1,5 @@
-# ZDex ( not close to release )
+# ZDex
+* not close to release
 ## IN-DEV ( version 6 )
 * Script
 ```lua
