@@ -1678,6 +1678,7 @@ local function main()
 		
 		context:Register("SAVE_BYTECODE",{Name = "Save ScriptBytecode in Files", IconMap = Explorer.MiscIcons, Icon = "Save", OnClick = function()
 			for _,v in next, selection.List do
+                local scr = v.Obj
 				if v.Obj:IsA("LuaSourceContainer") then
 					local success, bytecode = pcall(getscriptbytecode, scr)
 					if success and type(bytecode) == "string" then
