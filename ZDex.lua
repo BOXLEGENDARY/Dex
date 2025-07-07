@@ -104,35 +104,9 @@ local ok = try_setfenv(1, fake_env)
 
 -- PerformanceEngine Core
 local PerformanceEngine = {}
-
--- If you are not lag do not touch the settings But if you really lag read before changing anything
-PerformanceEngine.Settings = {
-	MIN_THROTTLE = 0.02, -- Minimum delay between updates (lower = smoother but higher CPU usage)
-	MAX_THROTTLE = 0.07, -- Maximum delay between updates (higher = lighter on CPU but may cause stutter)
-	MEMORY_THRESHOLD = 100, -- Memory (in KB) threshold to trigger garbage collection
-	FPS_THRESHOLD = 50, -- If FPS drops below this GC will activate to reduce memory usage
-	FPS_LOW_THRESHOLD = 40, -- If FPS drops even lower GC will increase intensity (step up)
-	GC_STEP_MIN = 25, -- Minimum GC step size (lower = lighter and less aggressive garbage collection)
-	GC_STEP_MAX = 70, -- Maximum GC step size (higher = more aggressive cleanup risk of lag)
-	AUTO_BALANCE_HIGH_DELAY = 0.085, -- Delay after heavy tasks (gives CPU time to recover)
-	AUTO_BALANCE_MEDIUM_DELAY = 0.025, -- Delay after medium tasks (keeps things smooth but responsive)
-}
-
-function PerformanceEngine.SetSettings(newSettings)
-	if type(newSettings) ~= "table" then return false end
-	for k, v in pairs(newSettings) do
-		if PerformanceEngine.Settings[k] ~= nil then
-			PerformanceEngine.Settings[k] = v
-		end
-	end
-	MIN_THROTTLE = PerformanceEngine.Settings.MIN_THROTTLE
-	MAX_THROTTLE = PerformanceEngine.Settings.MAX_THROTTLE
-	return true
-end
-
 local lastUpdate = os.clock()
-local MIN_THROTTLE = PerformanceEngine.Settings.MIN_THROTTLE
-local MAX_THROTTLE = PerformanceEngine.Settings.MAX_THROTTLE
+local MIN_THROTTLE = 0.03
+local MAX_THROTTLE = 0.1
 local throttleLevel = MIN_THROTTLE
 
 -- Stats
@@ -167,14 +141,14 @@ end)
 
 -- Auto GC trigger loop
 task.spawn(function()
-	local step = PerformanceEngine.Settings.GC_STEP_MIN
+	local step = 20
 	while true do
-		if perfStats.Memory > PerformanceEngine.Settings.MEMORY_THRESHOLD and perfStats.FPS < PerformanceEngine.Settings.FPS_THRESHOLD then
+		if perfStats.Memory > 115 and perfStats.FPS < 50 then
 			collectgarbage("step", step)
-			if perfStats.FPS < PerformanceEngine.Settings.FPS_LOW_THRESHOLD then
-				step = math.min(step + 5, PerformanceEngine.Settings.GC_STEP_MAX)
+			if perfStats.FPS < 40 then
+				step = math.min(step + 5, 60)
 			else
-				step = math.max(step - 1, PerformanceEngine.Settings.GC_STEP_MIN)
+				step = math.max(step - 1, 20)
 			end
 		end
 		task.wait(0.1 + math.random() * 0.1)
@@ -236,9 +210,9 @@ function PerformanceEngine.AutoBalance(func)
 	local timeUsed = t2 - t1
 	if timeUsed > 0.08 then
 		perfStats.LastSpike = timeUsed
-		task.wait(PerformanceEngine.Settings.AUTO_BALANCE_HIGH_DELAY)
+		task.wait(0.1)
 	elseif timeUsed > 0.04 then
-		task.wait(PerformanceEngine.Settings.AUTO_BALANCE_MEDIUM_DELAY)
+		task.wait(0.03)
 	else
 		task.wait()
 	end
@@ -1678,7 +1652,6 @@ local function main()
 		
 		context:Register("SAVE_BYTECODE",{Name = "Save ScriptBytecode in Files", IconMap = Explorer.MiscIcons, Icon = "Save", OnClick = function()
 			for _,v in next, selection.List do
-                local scr = v.Obj
 				if v.Obj:IsA("LuaSourceContainer") then
 					local success, bytecode = pcall(getscriptbytecode, scr)
 					if success and type(bytecode) == "string" then
@@ -5049,15 +5022,12 @@ local function main()
 		context:Register("SAVE_INST",{Name = "Save to File", OnClick = function()
 			if model then
 				window:SetTitle(originalModel.Name.." - Model Viewer - Saving")
-		
-				pcall(decompile or function() end, originalModel)
-		
 				local success, result = pcall(env.saveinstance,
-					originalModel,
-					"Place_"..game.PlaceId.."_"..originalModel.Name.."_"..os.time(),
-					{}
+					originalModel, "Place_"..game.PlaceId.."_"..originalModel.Name.."_"..os.time(),
+					{
+						Decompile = true
+					}
 				)
-		
 				if success then
 					window:SetTitle(originalModel.Name.." - Model Viewer - Saved")
 					context:Hide()
@@ -5066,7 +5036,8 @@ local function main()
 						window:SetTitle(originalModel.Name.." - Model Viewer")
 					end
 				else
-					window:SetTitle(originalModel.Name.." - Model Viewer - Fail")
+					window:SetTitle(originalModel.Name.." - Model Viewer - Error")
+					warn("Error while saving model: "..result)
 					context:Hide()
 					task.wait(5)
 					if model then
@@ -5074,7 +5045,7 @@ local function main()
 					end
 				end
 			end
-		end}
+		end})
 		
 		context:Register("ENABLE_AUTO_ROTATE",{Name = "Enable Auto Rotate", OnClick = function()
 			ModelViewer.AutoRotate = true
@@ -12241,7 +12212,7 @@ Main = (function()
 					
 				end
 			else
-			    warn("[ZDex] Failed to load settings Using default settings instead")
+				-- TODO: Notification
 			end
 		else
 			Main.ResetSettings()
