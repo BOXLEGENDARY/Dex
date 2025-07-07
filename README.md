@@ -1,21 +1,21 @@
 # ZDex ( not close to release )
- ## IN-DEV ( version 6 )
- * Script
+## IN-DEV ( version 6 )
+* Script
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/main/ZDex.lua"))()
 ```
- ## Update
- * Manual safe i will fix it later
- ## Support
- * Mobile/Pc
- ## Features
- * Performance Engine: Optimized for efficient and smooth operation
- * Explorer
- * Properties
- * ScriptView
- * Notepad
- * ModelView
- * Console
+## Update
+* Manual safe i will fix it later
+## Support
+* Mobile/Pc
+## Features
+* Performance Engine: Optimized for efficient and smooth operation
+* Explorer
+* Properties
+* ScriptView
+* Notepad
+* ModelView
+* Console
 ## Credits
 [ZxL](https://youtu.be/dQw4w9WgXcQ?si=IkAXjfO3Uf2UOJ9V) (Owner)
 
