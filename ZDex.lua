@@ -5058,13 +5058,12 @@ local function main()
 				if success then
 					window:SetTitle(originalModel.Name.." - Model Viewer - Saved")
 					context:Hide()
-					task.wait(5)
+					task.wait(3)
 					if model then
 						window:SetTitle(originalModel.Name.." - Model Viewer")
 					end
 				else
 					window:SetTitle(originalModel.Name.." - Model Viewer - Error")
-					warn("Error while saving model: "..result)
 					context:Hide()
 					task.wait(5)
 					if model then
