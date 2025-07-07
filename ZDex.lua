@@ -5071,33 +5071,32 @@ local function main()
 				ModelViewer.ViewModel(originalModel)
 			end
 		end})
-		context:Register("SAVE_INST", {
-		    Name = "Save to File",
-		    OnClick = function()
-		        if model then
-		            window:SetTitle(originalModel.Name .. " - Model Viewer - Saving")
-		
-		            local success, source = pcall(decompile or function() end, originalModel)
-		            if success then
-		                local fileName = "dex/saved/" .. "Place_" .. game.PlaceId .. "_" .. originalModel.Name .. "_" .. os.time() .. ".txt"
-		                writefile(fileName, source)
-		
-		                window:SetTitle(originalModel.Name .. " - Model Viewer - Saved")
-		                context:Hide()
-		                task.wait(3)
-		                if model then
-		                    window:SetTitle(originalModel.Name .. " - Model Viewer")
-		                end
-		            else
-		                window:SetTitle(originalModel.Name .. " - Model Viewer - Error")
-		                context:Hide()
-		                task.wait(5)
-		                if model then
-		                    window:SetTitle(originalModel.Name .. " - Model Viewer")
-		                end
-		            end
-		        end
-		    end})
+		context:Register("SAVE_INST",{Name = "Save to File", OnClick = function()
+			if model then
+				window:SetTitle(originalModel.Name.." - Model Viewer - Saving")
+				local success, result = pcall(env.saveinstance,
+					originalModel, "Place_"..game.PlaceId.."_"..originalModel.Name.."_"..os.time(),
+					{
+						decompile = true
+					}
+				)
+				if success then
+					window:SetTitle(originalModel.Name.." - Model Viewer - Saved")
+					context:Hide()
+					task.wait(3)
+					if model then
+						window:SetTitle(originalModel.Name.." - Model Viewer")
+					end
+				else
+					window:SetTitle(originalModel.Name.." - Model Viewer - Error")
+					context:Hide()
+					task.wait(5)
+					if model then
+						window:SetTitle(originalModel.Name.." - Model Viewer")
+					end
+				end
+			end
+		end})
 		
 		context:Register("ENABLE_AUTO_ROTATE",{Name = "Enable Auto Rotate", OnClick = function()
 			ModelViewer.AutoRotate = true
