@@ -1615,12 +1615,8 @@ local function main()
 					local scr = sList[1].Obj
 					if scr:IsA("LuaSourceContainer") then
 						local success, source = pcall(decompile or function() end, scr)
-						if not success or not source then
-							source, PreviousScr = "-- DEX - Source failed to decompile", nil
-						else
-							PreviousScr = scr
-						end
-						local fileName = "Place_"..game.PlaceId.."_"..scr.ClassName.."_"..scr.Name.."_"..os.time()..".lua"
+						PreviousScr = scr
+						local fileName = "Place_" .. game.PlaceId .. "_" .. scr.ClassName .. "_" .. scr.Name .. "_" .. os.time() .. ".txt"
 						writefile(fileName, source)
 					end
 				elseif #sList > 1 then
@@ -1628,12 +1624,8 @@ local function main()
 						local scr = sList[i].Obj
 						if scr:IsA("LuaSourceContainer") then
 							local success, source = pcall(decompile or function() end, scr)
-							if not success or not source then
-								source, PreviousScr = "-- DEX - Source failed to decompile", nil
-							else
-								PreviousScr = scr
-							end
-							local fileName = "Place_"..game.PlaceId.."_"..scr.ClassName.."_"..scr.Name.."_"..os.time()..".lua"
+							PreviousScr = scr
+							local fileName = "Place_" .. game.PlaceId .. "_" .. scr.ClassName .. "_" .. scr.Name .. "_" .. os.time() .. ".txt"
 							writefile(fileName, source)
 						end
 						task.wait(0.1)
