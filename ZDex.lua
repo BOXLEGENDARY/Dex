@@ -5047,33 +5047,31 @@ local function main()
 			end
 		end})
 		context:Register("SAVE_INST",{Name = "Save to File", OnClick = function()
-			if model then
-				window:SetTitle(originalModel.Name.." - Model Viewer - Saving")
+		    if model then
+		        window:SetTitle(originalModel.Name.." - Model Viewer - Saving")
 		
-				pcall(decompile or function() end, originalModel)
+		        local success, result = pcall(env.saveinstance,
+		            originalModel,
+		            "Place_"..game.PlaceId.."_"..originalModel.Name.."_"..os.time(),
+		            {}
+		        )
 		
-				local success, result = pcall(env.saveinstance,
-					originalModel,
-					"Place_"..game.PlaceId.."_"..originalModel.Name.."_"..os.time(),
-					{}
-				)
-		
-				if success then
-					window:SetTitle(originalModel.Name.." - Model Viewer - Saved")
-					context:Hide()
-					task.wait(5)
-					if model then
-						window:SetTitle(originalModel.Name.." - Model Viewer")
-					end
-				else
-					window:SetTitle(originalModel.Name.." - Model Viewer - Error")
-					context:Hide()
-					task.wait(5)
-					if model then
-						window:SetTitle(originalModel.Name.." - Model Viewer")
-					end
-				end
-			end
+		        if success then
+		            window:SetTitle(originalModel.Name.." - Model Viewer - Saved")
+		            context:Hide()
+		            task.wait(5)
+		            if model then
+		                window:SetTitle(originalModel.Name.." - Model Viewer")
+		            end
+		        else
+		            window:SetTitle(originalModel.Name.." - Model Viewer - Fail")
+		            context:Hide()
+		            task.wait(5)
+		            if model then
+		                window:SetTitle(originalModel.Name.." - Model Viewer")
+		            end
+		        end
+		    end
 		end})
 		
 		context:Register("ENABLE_AUTO_ROTATE",{Name = "Enable Auto Rotate", OnClick = function()
