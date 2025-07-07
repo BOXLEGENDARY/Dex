@@ -1011,8 +1011,6 @@ local function main()
 
     Explorer.PerformUpdate = function(instant)
 	    updateDebounce = true
-
-        local GENV = getGlobalEnv()
         
         GENV.Perf.SmartUpdate(function()
     		if not updateDebounce then return end
