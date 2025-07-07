@@ -35,4 +35,4 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 [Fast ReflectionMetadata XML](https://raw.githubusercontent.com/BOXLEGENDARY/ReflectionMetadata/refs/heads/main/ReflectionMetadata.xml)
 
-[Normal ReflectionMetadata XML](https://github.com/MaximumADHD/Roblox-Client-Tracker)
+[Normal ReflectionMetadata XML](https://raw.githubusercontent.com/MaximumADHD/Roblox-Client-Tracker/refs/heads/roblox/ReflectionMetadata.xml)
