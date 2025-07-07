@@ -1620,7 +1620,7 @@ local function main()
 						else
 							PreviousScr = scr
 						end
-						local fileName = "Place_"..game.PlaceId.."_"..scr.ClassName.."_"..scr.Name.."_"..os.time()..".txt"
+						local fileName = "Place_"..game.PlaceId.."_"..scr.ClassName.."_"..scr.Name.."_"..os.time()..".lua"
 						writefile(fileName, source)
 					end
 				elseif #sList > 1 then
@@ -1633,7 +1633,7 @@ local function main()
 							else
 								PreviousScr = scr
 							end
-							local fileName = "Place_"..game.PlaceId.."_"..scr.ClassName.."_"..scr.Name.."_"..os.time()..".txt"
+							local fileName = "Place_"..game.PlaceId.."_"..scr.ClassName.."_"..scr.Name.."_"..os.time()..".lua"
 							writefile(fileName, source)
 						end
 						task.wait(0.1)
