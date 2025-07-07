@@ -1605,21 +1605,41 @@ local function main()
 			
 		end})]]
 		
-		context:Register("SAVE_INST",{Name = "Save to File", IconMap = Explorer.MiscIcons, Icon = "Save", OnClick = function()
-			local sList = selection.List
-			if #sList == 1 then
-				env.saveinstance(sList[1].Obj, "Place_"..game.PlaceId.."_"..sList[1].Obj.ClassName.."_"..sList[1].Obj.Name.."_"..os.time(), {
-					decompile = true
-				})
-			elseif #sList > 1 then
-				for i = 1,#sList do
-					env.saveinstance(sList[i].Obj, "Place_"..game.PlaceId.."_"..sList[i].Obj.ClassName.."_"..sList[i].Obj.Name.."_"..os.time(), {
-						decompile = true
-					})
-					task.wait(0.1)
+		context:Register("SAVE_INST", {
+			Name = "Save to File",
+			IconMap = Explorer.MiscIcons,
+			Icon = "Save",
+			OnClick = function()
+				local sList = selection.List
+				if #sList == 1 then
+					local scr = sList[1].Obj
+					if scr:IsA("LuaSourceContainer") then
+						local success, source = pcall(decompile or function() end, scr)
+						if not success or not source then
+							source, PreviousScr = "-- DEX - Source failed to decompile", nil
+						else
+							PreviousScr = scr
+						end
+						local fileName = "Place_"..game.PlaceId.."_"..scr.ClassName.."_"..scr.Name.."_"..os.time()..".txt"
+						writefile(fileName, source)
+					end
+				elseif #sList > 1 then
+					for i = 1, #sList do
+						local scr = sList[i].Obj
+						if scr:IsA("LuaSourceContainer") then
+							local success, source = pcall(decompile or function() end, scr)
+							if not success or not source then
+								source, PreviousScr = "-- DEX - Source failed to decompile", nil
+							else
+								PreviousScr = scr
+							end
+							local fileName = "Place_"..game.PlaceId.."_"..scr.ClassName.."_"..scr.Name.."_"..os.time()..".txt"
+							writefile(fileName, source)
+						end
+						task.wait(0.1)
+					end
 				end
-			end
-		end})
+			end})
 		
 		--[[context:Register("VIEW_CONNECTIONS",{Name = "View Connections", OnClick = function()
 			
