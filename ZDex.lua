@@ -1608,40 +1608,9 @@ local function main()
 			
 		end})]]
 		
-		context:Register("SAVE_INST", {
-		    Name = "Save to File",
-		    IconMap = Explorer.MiscIcons,
-		    Icon = "Save",
-		    OnClick = function()
-		        local sList = selection.List
-		        if #sList == 1 then
-		            local success, result = pcall(decompile or function() end, sList[1].Obj)
-		            if not success then
-		                warn("Failed to decompile "..tostring(sList[1].Obj.Name))
-		            end
-		
-		            success = pcall(env.saveinstance, sList[1].Obj, "Place_"..game.PlaceId.."_"..sList[1].Obj.ClassName.."_"..sList[1].Obj.Name.."_"..os.time())
-		            if not success then
-		                warn("Failed to save instance "..tostring(sList[1].Obj.Name))
-		            end
-		
-		        elseif #sList > 1 then
-		            for i = 1, #sList do
-		                local success, result = pcall(decompile or function() end, sList[i].Obj)
-		                if not success then
-		                    warn("Failed to decompile "..tostring(sList[i].Obj.Name))
-		                end
-		
-		                success = pcall(env.saveinstance, sList[i].Obj, "Place_"..game.PlaceId.."_"..sList[i].Obj.ClassName.."_"..sList[i].Obj.Name.."_"..os.time())
-		                if not success then
-		                    warn("Failed to save instance "..tostring(sList[i].Obj.Name))
-		                end
-		
-		                task.wait(0.1)
-		            end
-		        end
-		    end
-		})
+		context:Register("SAVE_INST",{Name = "Save to File", IconMap = Explorer.MiscIcons, Icon = "Save", OnClick = function()
+			
+		end})
 		
 		--[[context:Register("VIEW_CONNECTIONS",{Name = "View Connections", OnClick = function()
 			
