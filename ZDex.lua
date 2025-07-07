@@ -1617,7 +1617,7 @@ local function main()
 						local success, source = pcall(decompile or function() end, scr)
 						PreviousScr = scr
 						local fileName = "Place_" .. game.PlaceId .. "_" .. scr.ClassName .. "_" .. scr.Name .. "_" .. os.time() .. ".txt"
-						local success, result = pcall(env.saveinstance, scr, fileName)
+						writefile(fileName, source)
 					end
 				elseif #sList > 1 then
 					for i = 1, #sList do
@@ -1626,7 +1626,7 @@ local function main()
 							local success, source = pcall(decompile or function() end, scr)
 							PreviousScr = scr
 							local fileName = "Place_" .. game.PlaceId .. "_" .. scr.ClassName .. "_" .. scr.Name .. "_" .. os.time() .. ".txt"
-							local success, result = pcall(env.saveinstance, scr, fileName)
+							writefile(fileName, source)
 						end
 						task.wait(0.1)
 					end
