@@ -5074,7 +5074,7 @@ local function main()
 					end
 				end
 			end
-		end}
+		end})
 		
 		context:Register("ENABLE_AUTO_ROTATE",{Name = "Enable Auto Rotate", OnClick = function()
 			ModelViewer.AutoRotate = true
