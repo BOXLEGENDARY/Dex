@@ -1212,6 +1212,7 @@ local function main()
 		end
 		if presentClasses["LuaSourceContainer"] then
 			context:AddRegistered("VIEW_SCRIPT")
+            context:AddRegistered("SAVE_SCRIPT")
 			-- context:AddRegistered("SAVE_BYTECODE")
 		end
 		
@@ -1687,6 +1688,28 @@ local function main()
 			if scr then ScriptViewer.ViewScript(scr) end
 		end})
 		
+		context:Register("SAVE_SCRIPT", {
+			Name = "Save Script",
+			IconMap = Explorer.MiscIcons,
+			Icon = "Save",
+			OnClick = function()
+				for _, v in next, selection.List do
+					if v.Obj:IsA("LuaSourceContainer") and env.isViableDecompileScript(v.Obj) then
+						local success, source = pcall(decompile or function() end, v.Obj)
+						if success and source then
+							PreviousScr = v.Obj
+							local fileName = ("dex/saved/%i.%s.%s.Source.txt"):format(
+								game.PlaceId,
+								v.Obj.ClassName,
+								env.parsefile(v.Obj.Name)
+							)
+							env.writefile(fileName, source)
+							task.wait(0.2)
+						end
+					end
+				end
+			end})
+			
 		--[[context:Register("SAVE_BYTECODE", {
 		    Name = "Save ScriptBytecode in Files",
 		    IconMap = Explorer.MiscIcons,
