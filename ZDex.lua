@@ -1614,11 +1614,11 @@ local function main()
 		        local sList = selection.List
 		        if #sList == 1 then
 		            local obj = sList[1].Obj
-		            env.saveinstance(obj, "ZDex/saved/Place_" .. game.PlaceId .. "_" .. obj.ClassName .. "_" .. obj.Name .. "_" .. os.time())
+		            env.saveinstance(obj, "dex/saved/Place_" .. game.PlaceId .. "_" .. obj.ClassName .. "_" .. obj.Name .. "_" .. os.time())
 		        elseif #sList > 1 then
 		            for i = 1, #sList do
 		                local obj = sList[i].Obj
-		                env.saveinstance(obj, "ZDex/saved/Place_" .. game.PlaceId .. "_" .. obj.ClassName .. "_" .. obj.Name .. "_" .. os.time())
+		                env.saveinstance(obj, "dex/saved/Place_" .. game.PlaceId .. "_" .. obj.ClassName .. "_" .. obj.Name .. "_" .. os.time())
 		                task.wait(0.1)
 		            end
 		        end
@@ -1699,7 +1699,7 @@ local function main()
 							return (decompile or function() return "" end)(v.Obj)
 						end)
 						if success and source and source ~= "" then
-							local fileName = ("ZDex/saved/%i.%s.%s.Source.txt"):format(
+							local fileName = ("dex/saved/%i.%s.%s.Source.txt"):format(
 								game.PlaceId,
 								v.Obj.ClassName,
 								v.Obj.Name
@@ -1721,7 +1721,7 @@ local function main()
 		            if v.Obj:IsA("LuaSourceContainer") then
 		                local success, bytecode = pcall(getscriptbytecode, scr)
 		                if success and type(bytecode) == "string" then
-		                    local Name = ("ZDex/saved/%i.Script.%s.txt"):format(game.PlaceId, scr.Name)
+		                    local Name = ("dex/saved/%i.Script.%s.txt"):format(game.PlaceId, scr.Name)
 		                    env.writefile(Name, bytecode)
 		                    task.wait(0.2)
 		                end
@@ -4605,7 +4605,7 @@ local function main()
 		
 		save.MouseButton1Click:Connect(function()
 			local source = codeFrame:GetText()
-			local filename = "ZDex/saved/Place_"..game.PlaceId.."_Script_"..os.time()..".txt"
+			local filename = "dex/saved/Place_"..game.PlaceId.."_Script_"..os.time()..".txt"
 
 			env.writefile(filename, source)
 			if env.movefileas then
@@ -4805,7 +4805,7 @@ local function main()
 
 		save.MouseButton1Click:Connect(function()
 			local source = codeFrame:GetText()
-			local filename = "ZDex/saved/Place_" .. game.PlaceId .. "_Script_" .. os.time() .. ".txt"
+			local filename = "dex/saved/Place_" .. game.PlaceId .. "_Script_" .. os.time() .. ".txt"
 			writefile(filename, source)
 			if movefileas then
 				movefileas(filename, ".txt")
@@ -5089,7 +5089,7 @@ local function main()
 			if model then
 				window:SetTitle(originalModel.Name.." - Model Viewer - Saving")
 				local success, result = pcall(env.saveinstance,
-					originalModel, "ZDex/saved/Place_"..game.PlaceId.."_"..originalModel.Name.."_"..os.time(),
+					originalModel, "dex/saved/Place_"..game.PlaceId.."_"..originalModel.Name.."_"..os.time(),
 					{
 						decompile = true
 					}
@@ -12305,7 +12305,7 @@ Main = (function()
 		local api,rawAPI
 		if Main.Elevated then
 			if Main.LocalDepsUpToDate() then
-				local localAPI = Lib.ReadFile("ZDex/rbx_api.dat")
+				local localAPI = Lib.ReadFile("dex/rbx_api.dat")
 				if localAPI then 
 					rawAPI = localAPI
 				else
@@ -12453,7 +12453,7 @@ Main = (function()
 		local rawXML
 		if Main.Elevated then
 			if Main.LocalDepsUpToDate() then
-				local localRMD = Lib.ReadFile("ZDex/rbx_rmd.dat")
+				local localRMD = Lib.ReadFile("dex/rbx_rmd.dat")
 				if localRMD then 
 					rawXML = localRMD
 				else
@@ -12927,11 +12927,11 @@ Main = (function()
 	Main.SetupFilesystem = function()
 		if not env.writefile or not env.makefolder then return end
 		local writefile, makefolder = env.writefile, env.makefolder
-		makefolder("ZDex")
-		makefolder("ZDex/assets")
-		makefolder("ZDex/saved")
-		makefolder("ZDex/plugins")
-		makefolder("ZDex/ModuleCache")
+		makefolder("dex")
+		makefolder("dex/assets")
+		makefolder("dex/saved")
+		makefolder("dex/plugins")
+		makefolder("dex/ModuleCache")
 	end
 	
 	Main.LocalDepsUpToDate = function()
@@ -13025,9 +13025,9 @@ Main = (function()
 		
 		-- Save external deps locally if needed
 		if Main.Elevated and env.writefile and not Main.LocalDepsUpToDate() then
-			env.writefile("ZDex/deps_version.dat",Main.ClientVersion.."\n"..Main.RobloxVersion)
-			env.writefile("ZDex/rbx_api.dat",Main.RawAPI)
-			env.writefile("ZDex/rbx_rmd.dat",Main.RawRMD)
+			env.writefile("dex/deps_version.dat",Main.ClientVersion.."\n"..Main.RobloxVersion)
+			env.writefile("dex/rbx_api.dat",Main.RawAPI)
+			env.writefile("dex/rbx_rmd.dat",Main.RawRMD)
 		end
 		
 		-- Load other modules
