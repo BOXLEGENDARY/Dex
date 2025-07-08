@@ -1212,7 +1212,7 @@ local function main()
 		end
 		if presentClasses["LuaSourceContainer"] then
 			context:AddRegistered("VIEW_SCRIPT")
-			context:AddRegistered("SAVE_BYTECODE")
+			-- context:AddRegistered("SAVE_BYTECODE")
 		end
 		
 		if sMap[nilNode] then
@@ -1617,7 +1617,7 @@ local function main()
 		                local success, source = pcall(decompile or function() end, scr)
 		                PreviousScr = scr
 		                local fileName = "dex/saved/Place_" .. game.PlaceId .. "_" .. scr.ClassName .. "_" .. scr.Name .. "_" .. os.time() .. ".txt"
-		                writefile(fileName, source)
+		                env.writefile(fileName, source)
 		            end
 		        elseif #sList > 1 then
 		            for i = 1, #sList do
@@ -1626,7 +1626,7 @@ local function main()
 		                    local success, source = pcall(decompile or function() end, scr)
 		                    PreviousScr = scr
 		                    local fileName = "dex/saved/Place_" .. game.PlaceId .. "_" .. scr.ClassName .. "_" .. scr.Name .. "_" .. os.time() .. ".txt"
-		                    writefile(fileName, source)
+		                    env.writefile(fileName, source)
 		                end
 		                task.wait(0.1)
 		            end
@@ -1697,7 +1697,7 @@ local function main()
 			if scr then ScriptViewer.ViewScript(scr) end
 		end})
 		
-		context:Register("SAVE_BYTECODE", {
+		--[[context:Register("SAVE_BYTECODE", {
 		    Name = "Save ScriptBytecode in Files",
 		    IconMap = Explorer.MiscIcons,
 		    Icon = "Save",
@@ -1708,12 +1708,12 @@ local function main()
 		                local success, bytecode = pcall(getscriptbytecode, scr)
 		                if success and type(bytecode) == "string" then
 		                    local Name = ("dex/saved/%i.Script.%s.txt"):format(game.PlaceId, scr.Name)
-		                    writefile(Name, bytecode)
+		                    env.writefile(Name, bytecode)
 		                    task.wait(0.2)
 		                end
 		            end
 		        end
-		    end})
+		    end})]]
 		
 		context:Register("SELECT_CHARACTER",{Name = "Select Character", IconMap = Explorer.ClassIcons, Icon = 9, OnClick = function()
 			local newSelection = {}
