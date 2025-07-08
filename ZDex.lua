@@ -12224,7 +12224,7 @@ Main = (function()
 				env.checkcaller = checkcaller
 				--env.getreg = getreg
 				env.getgc = getgc or get_gc_objects
-				env.base64encode = crypt and crypt.base64 and crypt.base64.encode
+				--env.base64encode = crypt and crypt.base64 and crypt.base64.encode
 				env.getscriptbytecode = getscriptbytecode
 
 				-- other
