@@ -1612,22 +1612,12 @@ local function main()
 		    OnClick = function()
 		        local sList = selection.List
 		        if #sList == 1 then
-		            local scr = sList[1].Obj
-		            if scr:IsA("LuaSourceContainer") then
-		                local success, source = pcall(decompile or function() end, scr)
-		                PreviousScr = scr
-		                local fileName = "dex/saved/Place_" .. game.PlaceId .. "_" .. scr.ClassName .. "_" .. scr.Name .. "_" .. os.time() .. ".txt"
-		                env.writefile(fileName, source)
-		            end
+		            local obj = sList[1].Obj
+		            env.saveinstance(obj, "dex/saved/Place_" .. game.PlaceId .. "_" .. obj.ClassName .. "_" .. obj.Name .. "_" .. os.time())
 		        elseif #sList > 1 then
 		            for i = 1, #sList do
-		                local scr = sList[i].Obj
-		                if scr:IsA("LuaSourceContainer") then
-		                    local success, source = pcall(decompile or function() end, scr)
-		                    PreviousScr = scr
-		                    local fileName = "dex/saved/Place_" .. game.PlaceId .. "_" .. scr.ClassName .. "_" .. scr.Name .. "_" .. os.time() .. ".txt"
-		                    env.writefile(fileName, source)
-		                end
+		                local obj = sList[i].Obj
+		                env.saveinstance(obj, "dex/saved/Place_" .. game.PlaceId .. "_" .. obj.ClassName .. "_" .. obj.Name .. "_" .. os.time())
 		                task.wait(0.1)
 		            end
 		        end
