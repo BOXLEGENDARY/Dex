@@ -4805,7 +4805,7 @@ local function main()
 
 		save.MouseButton1Click:Connect(function()
 			local source = codeFrame:GetText()
-			local filename = "Place_" .. game.PlaceId .. "_Script_" .. os.time() .. ".txt"
+			local filename = "ZDex/saved/Place_" .. game.PlaceId .. "_Script_" .. os.time() .. ".txt"
 			writefile(filename, source)
 			if movefileas then
 				movefileas(filename, ".txt")
