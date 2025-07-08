@@ -1702,7 +1702,7 @@ local function main()
 							local fileName = ("dex/saved/%i.%s.%s.Source.txt"):format(
 								game.PlaceId,
 								v.Obj.ClassName,
-								env.parsefile(v.Obj.Name)
+								v.Obj.Name
 							)
 							env.writefile(fileName, source)
 							task.wait(0.2)
