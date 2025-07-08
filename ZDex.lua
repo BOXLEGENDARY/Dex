@@ -1607,7 +1607,7 @@ local function main()
 			
 		end})]]
 		
-		--[[context:Register("SAVE_INST", {
+		context:Register("SAVE_INST", {
 		    Name = "Save to File",
 		    IconMap = Explorer.MiscIcons,
 		    Icon = "Save",
@@ -1633,7 +1633,7 @@ local function main()
 		                task.wait(0.1)
 		            end
 		        end
-		    end})]]
+		    end})
 		
 		--[[context:Register("VIEW_CONNECTIONS",{Name = "View Connections", OnClick = function()
 			
