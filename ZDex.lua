@@ -5075,7 +5075,7 @@ local function main()
 			if model then
 				window:SetTitle(originalModel.Name.." - Model Viewer - Saving")
 				local success, result = pcall(env.saveinstance,
-					originalModel, "Place_"..game.PlaceId.."_"..originalModel.Name.."_"..os.time(),
+					originalModel, "dex/saved/Place_"..game.PlaceId.."_"..originalModel.Name.."_"..os.time(),
 					{
 						decompile = true
 					}
