@@ -1695,9 +1695,10 @@ local function main()
 			OnClick = function()
 				for _, v in next, selection.List do
 					if v.Obj:IsA("LuaSourceContainer") then
-						local success, source = pcall(decompile or function() end, v.Obj)
-						if success and source then
-							PreviousScr = v.Obj
+						local success, source = pcall(function()
+							return (decompile or function() return "" end)(v.Obj)
+						end)
+						if success and source and source ~= "" then
 							local fileName = ("dex/saved/%i.%s.%s.Source.txt"):format(
 								game.PlaceId,
 								v.Obj.ClassName,
