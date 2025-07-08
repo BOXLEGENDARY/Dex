@@ -4591,7 +4591,7 @@ local function main()
 		
 		save.MouseButton1Click:Connect(function()
 			local source = codeFrame:GetText()
-			local filename = "Place_"..game.PlaceId.."_Script_"..os.time()..".txt"
+			local filename = "dex/saved/Place_"..game.PlaceId.."_Script_"..os.time()..".txt"
 
 			env.writefile(filename, source)
 			if env.movefileas then
