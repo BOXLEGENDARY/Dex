@@ -12229,7 +12229,7 @@ Main = (function()
 
 				-- other
 				--env.setfflag = setfflag
-				env.request = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request
+				--[[env.request = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request
 				env.decompile = decompile or (env.getscriptbytecode and env.request and env.base64encode and function(scr)
 						local s, bytecode = pcall(env.getscriptbytecode, scr)
 						if not s then
@@ -12254,7 +12254,7 @@ Main = (function()
 						end
 
 						return decoded.output
-				end)
+				end)]]
 				env.protectgui = protect_gui or (syn and syn.protect_gui)
 				env.gethui = gethui or get_hidden_gui
 				env.setclipboard = setclipboard or toclipboard or set_clipboard or (Clipboard and Clipboard.set)
