@@ -1212,6 +1212,7 @@ local function main()
 		end
 		if presentClasses["LuaSourceContainer"] then
 			context:AddRegistered("VIEW_SCRIPT")
+            context:AddRegistered("DUMP_FUNCTIONS")
 			-- context:AddRegistered("SAVE_BYTECODE")
 		end
 		
@@ -1695,6 +1696,11 @@ local function main()
 		context:Register("VIEW_SCRIPT",{Name = "View Script", IconMap = Explorer.MiscIcons, Icon = "ViewScript", OnClick = function()
 			local scr = selection.List[1] and selection.List[1].Obj
 			if scr then ScriptViewer.ViewScript(scr) end
+		end})
+
+		context:Register("DUMP_FUNCTIONS",{Name = "Dump Functions", IconMap = Explorer.MiscIcons, Icon = "ViewScript", OnClick = function()
+			local scr = selection.List[1] and selection.List[1].Obj
+			if scr then ScriptViewer.DumpFunctions(scr) end
 		end})
 		
 		--[[context:Register("SAVE_BYTECODE", {
