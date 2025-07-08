@@ -1214,6 +1214,7 @@ local function main()
 			context:AddRegistered("VIEW_SCRIPT")
             context:AddRegistered("DUMP_FUNCTIONS")
 			-- context:AddRegistered("SAVE_BYTECODE")
+            context:AddRegistered("SAVE_SCRIPT")
 		end
 		
 		if sMap[nilNode] then
@@ -1606,7 +1607,7 @@ local function main()
 			
 		end})]]
 		
-		context:Register("SAVE_INST", {
+		--[[context:Register("SAVE_INST", {
 		    Name = "Save to File",
 		    IconMap = Explorer.MiscIcons,
 		    Icon = "Save",
@@ -1632,7 +1633,7 @@ local function main()
 		                task.wait(0.1)
 		            end
 		        end
-		    end})
+		    end})]]
 		
 		--[[context:Register("VIEW_CONNECTIONS",{Name = "View Connections", OnClick = function()
 			
@@ -1720,6 +1721,24 @@ local function main()
 		            end
 		        end
 		    end})]]
+		
+		context:Register("SAVE_SCRIPT", {
+			Name = "Save Script",
+			IconMap = Explorer.MiscIcons,
+			Icon = "Save",
+			OnClick = function()
+				if not selection or not selection.List then return end		
+				for _, v in next, selection.List do
+					local obj = v.Obj
+					if obj and obj:IsA("LuaSourceContainer") then
+						local scr = obj
+						local success, source = pcall(decompile or function() end, scr)
+						local fileName = ("dex/saved/%i.%s.%s.Source.txt"):format(game.PlaceId, obj.ClassName, env.parsefile(obj.Name))
+						env.writefile(fileName, source)
+						task.wait(0.2)
+					end
+				end
+			end})
 		
 		context:Register("SELECT_CHARACTER",{Name = "Select Character", IconMap = Explorer.ClassIcons, Icon = 9, OnClick = function()
 			local newSelection = {}
