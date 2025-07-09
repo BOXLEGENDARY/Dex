@@ -2143,7 +2143,7 @@ local function main()
 			if Main.Elevated then
 				local start = tick()
 				searchFunc,specFilters = Explorer.BuildSearchFunc(query)
-				print("BUILD SEARCH",tick()-start)
+				--print("BUILD SEARCH",tick()-start)
 			else
 				searchFunc = defaultSearch
 			end
@@ -2167,7 +2167,7 @@ local function main()
 				local start = tick()
 				searchFunc(nodes[game])
 				searchFunc(nilNode)
-				warn(tick()-start)
+				--warn(tick()-start)
 			end
 		end]=]
 		
@@ -3065,7 +3065,7 @@ local function main()
 		-- Find conflicts and get auto-update instances
 		Properties.ClassLists = classLists
 		Properties.ComputeConflicts()
-		warn("CONFLICT",tick()-start)
+		--warn("CONFLICT",tick()-start)
 		if #props > 0 then
 			props[#props+1] = Properties.AddAttributeProp
 		end
@@ -9323,7 +9323,7 @@ local function main()
 		funcs.PreHighlight = function(self)
 			local start = tick()
 			local text = self.Text:gsub("\\\\","	")
-			print("BACKSLASH SUB",tick()-start)
+			--print("BACKSLASH SUB",tick()-start)
 			local textLen = #text
 			local found = {}
 			local foundMap = {}
@@ -9415,11 +9415,11 @@ local function main()
 				end
 
 				lastEnding = ending
-				if i < 200 then print(curLine) end
+				--if i < 200 then print(curLine) end
 			end
 			self.PreHighlights = foundHighlights
-			print(tick()-start)
-			print(#found,curLine)
+			--print(tick()-start)
+			--print(#found,curLine)
 		end
 
 		funcs.HighlightLine = function(self,line)
@@ -9446,7 +9446,7 @@ local function main()
 				if relativePos < 1 then
 					currentType = data[1]
 					lastEnding = data[2] - lineStart
-					warn(pos,data[2])
+					--warn(pos,data[2])
 				else
 					preHighlightMap[relativePos] = {data[1],data[2]-lineStart}
 				end
@@ -9664,7 +9664,7 @@ local function main()
 				end
 
 				local lastText = gsub(sub(lineText,colStart,viewX+maxCols),"['\"<>&amp;]",richReplace)
-				warn("SUB",colStart,viewX+maxCols-1)
+				--warn("SUB",colStart,viewX+maxCols-1)
 				if #lastText > 0 then
 					resText = resText .. (curTemplate ~= textTemplate and (curTemplate .. lastText .. "</font>") or lastText)
 				end
@@ -9684,7 +9684,7 @@ local function main()
 			self.Frame.LineNumbers.Text = lineNumberStr
 			self:UpdateCursor()
 
-			print("REFRESH TIME",tick()-start)
+			--print("REFRESH TIME",tick()-start)
 		end
 
 		funcs.UpdateView = function(self)
