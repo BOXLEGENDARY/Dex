@@ -12277,7 +12277,7 @@ Main = (function()
 					
 				end
 			else
-			    warn("[ZDex] Failed to load settings Using default settings instead")
+			    warn("[ZDex] Failed to load settings")
 			end
 		else
 			Main.ResetSettings()
