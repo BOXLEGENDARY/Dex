@@ -9756,11 +9756,16 @@ local function main()
 			--self.TextChanged:Fire()
 		end
 		
-		funcs.ConvertText = function(self,text,toEditor)
+		funcs.ConvertText = function(self, text, toEditor)
+			local tabString = (Settings and Settings.Editor and Settings.Editor.TabString)
+			if type(tabString) ~= "string" then
+				tabString = "    "
+			end
+		
 			if toEditor then
-				return text:gsub("\t",(" %s%s "):format(tabSub,tabSub))
+				return text:gsub("\t", tabString)
 			else
-				return text:gsub((" %s%s "):format(tabSub,tabSub),"\t")
+				return text:gsub(tabString, "\t")
 			end
 		end
 
