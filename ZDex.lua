@@ -9764,9 +9764,10 @@ local function main()
 			end
 		end
 
-		funcs.GetText = function(self) -- TODO: better (use new tab format)
-			local source = table.concat(self.Lines,"\n")
-			return self:ConvertText(source,false) -- Tab Convert
+		funcs.GetText = function(self)
+			local raw = table.concat(self.Lines, "\n")
+			local text = funcs.ConvertText(self, raw, false)
+			return text
 		end
 
 		funcs.SetText = function(self,txt)
