@@ -9764,10 +9764,9 @@ local function main()
 			end
 		end
 		
-		funcs.GetText = function(self) -- staff ( line 9767 )
-			local raw = table.concat(self.Lines, "\n")
-			local text = funcs.ConvertText(self, raw, false)
-			return text
+		funcs.GetText = function(self) -- TODO: better (use new tab format)
+			local source = table.concat(self.Lines,"\n")
+			return self:ConvertText(source,false) -- Tab Convert
 		end
 
 		funcs.SetText = function(self,txt)
