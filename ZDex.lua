@@ -9764,7 +9764,7 @@ local function main()
 			end
 		end
 		
-		funcs.GetText = function(self) -- staff
+		funcs.GetText = function(self) -- staff ( line 9767 )
 			local raw = table.concat(self.Lines, "\n")
 			local text = funcs.ConvertText(self, raw, false)
 			return text
