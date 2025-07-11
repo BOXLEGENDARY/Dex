@@ -6200,6 +6200,7 @@ local function main()
 		    end
 		end
 		
+    GENV.Perf.SmartUpdate(function()
 		local a, b, c, d = GetEvents(), GetFunctions(), GetBEvents(), GetBFunctions()
 		
 		for _, v in pairs(a) do
@@ -6216,10 +6217,8 @@ local function main()
 		
 		for _, v in pairs(d) do
 		    BFunctionMain(v)
-		end
-
-		return RemoteSpy
 	end
+end)
 
 	return RemoteSpy
 end
@@ -12401,7 +12400,7 @@ Main = (function()
 	Main.ModuleList = {"Explorer","Properties","ScriptViewer","Notepad","ModelViewer","Console","RemoteSpy"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
-	Main.Version = "in-dev 8"
+	Main.Version = "in-dev 9"
 	Main.Mouse = plr:GetMouse()
 	Main.AppControls = {}
 	Main.Apps = Apps
