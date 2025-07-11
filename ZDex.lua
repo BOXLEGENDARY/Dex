@@ -7982,7 +7982,7 @@ local function main()
 			window.LastClose = tick()
 			window.GuiElems.Title.TextTransparency = 0
 			window.GuiElems.Minimize.ImageLabel.ImageTransparency = 0
-			window.GuiElems.Close.ImageLabel.ImageTransparency = 0
+			window.GuiElems.Close.ImageLabel.ImageTransparency = 0.5
 			window.GuiElems.TopBar.BackgroundTransparency = 0
 			window.GuiElems.Outlines.ImageTransparency = 0
 			window.GuiElems.Minimize.ImageLabel.Image = "rbxassetid://5034768003"
