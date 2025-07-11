@@ -9,22 +9,6 @@
 
 local cloneref = cloneref or function(...) return ... end
 local getnilinstances = getnilinstances or function() return {} end
-
--- Local shortcuts
-local math_floor    = math.floor
-local table_insert  = table.insert
-local table_sort    = table.sort
-local table_clear   = table.clear or function(t) for k in pairs(t) do t[k] = nil end end
-local tostring      = tostring
-local string_find   = string.find
-local string_gsub   = string.gsub
-local string_match  = string.match
-local Vector2_new   = Vector2.new
-local Color3_new    = Color3.new
-local UDim2_new     = UDim2.new
-local Instance_new  = Instance.new
-local type          = type
-
 local safe_pcall    = xpcall
 local function ERRhandler(err) return nil end
 
