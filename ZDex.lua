@@ -12210,7 +12210,7 @@ Main = (function()
 					
 				end
 			else
-			    warn("[ZDex] Failed to load settings")
+			    -- TODO: Notification
 			end
 		else
 			Main.ResetSettings()
