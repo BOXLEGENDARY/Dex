@@ -7,7 +7,6 @@
 
 	
 
--- PerformanceEngine
 local cloneref = cloneref or function(...) return ... end
 local getnilinstances = getnilinstances or function() return {} end
 
@@ -102,20 +101,13 @@ end
 
 local ok = try_setfenv(1, fake_env)
 
--- PerformanceEngine Core
+-- PerformanceEngine
 local PerformanceEngine = {}
 
--- If you are not lag do not touch the settings But if you really lag read before changing anything
+-- Basic throttle settings
 PerformanceEngine.Settings = {
-	MIN_THROTTLE = 0.02, -- Minimum delay between updates (lower = smoother but higher CPU usage)
-	MAX_THROTTLE = 0.07, -- Maximum delay between updates (higher = lighter on CPU but may cause stutter)
-	MEMORY_THRESHOLD = 100, -- Memory (in KB) threshold to trigger garbage collection
-	FPS_THRESHOLD = 50, -- If FPS drops below this GC will activate to reduce memory usage
-	FPS_LOW_THRESHOLD = 40, -- If FPS drops even lower GC will increase intensity (step up)
-	GC_STEP_MIN = 25, -- Minimum GC step size (lower = lighter and less aggressive garbage collection)
-	GC_STEP_MAX = 70, -- Maximum GC step size (higher = more aggressive cleanup risk of lag)
-	AUTO_BALANCE_HIGH_DELAY = 0.085, -- Delay after heavy tasks (gives CPU time to recover)
-	AUTO_BALANCE_MEDIUM_DELAY = 0.025, -- Delay after medium tasks (keeps things smooth but responsive)
+	MIN_THROTTLE = 0.02,
+	MAX_THROTTLE = 0.07,
 }
 
 function PerformanceEngine.SetSettings(newSettings)
@@ -130,60 +122,10 @@ function PerformanceEngine.SetSettings(newSettings)
 	return true
 end
 
-local lastUpdate = os.clock()
 local MIN_THROTTLE = PerformanceEngine.Settings.MIN_THROTTLE
 local MAX_THROTTLE = PerformanceEngine.Settings.MAX_THROTTLE
 local throttleLevel = MIN_THROTTLE
-
--- Stats
-local perfStats = {
-	FPS = 0,
-	Memory = 0,
-	Delta = 0,
-	LastSpike = 0
-}
-
--- FPS tracker
-local runService = game:GetService("RunService")
-local frames, acc = 0, 0
-runService.RenderStepped:Connect(function(dt)
-	frames += 1
-	acc += dt
-	if acc >= 1 then
-		perfStats.FPS = frames
-		perfStats.Memory = collectgarbage("count")
-		perfStats.Delta = dt
-		frames, acc = 0, 0
-	end
-end)
-
--- Auto update Memory frequently
-task.spawn(function()
-	while true do
-		perfStats.Memory = collectgarbage("count")
-		task.wait(0.5)
-	end
-end)
-
--- Auto GC trigger loop
-task.spawn(function()
-	local step = PerformanceEngine.Settings.GC_STEP_MIN
-	while true do
-		if perfStats.Memory > PerformanceEngine.Settings.MEMORY_THRESHOLD and perfStats.FPS < PerformanceEngine.Settings.FPS_THRESHOLD then
-			collectgarbage("step", step)
-			if perfStats.FPS < PerformanceEngine.Settings.FPS_LOW_THRESHOLD then
-				step = math.min(step + 5, PerformanceEngine.Settings.GC_STEP_MAX)
-			else
-				step = math.max(step - 1, PerformanceEngine.Settings.GC_STEP_MIN)
-			end
-		end
-		task.wait(0.1 + math.random() * 0.1)
-	end
-end)
-
-function PerformanceEngine.GetStats()
-	return perfStats
-end
+local lastUpdate = os.clock()
 
 function PerformanceEngine.AdaptiveThrottle()
 	local now = os.clock()
@@ -199,13 +141,13 @@ end
 
 function PerformanceEngine.FastCall(func, ...)
 	local args = table.pack(...)
-	local ok, err = pcall(function()
+	local ok = pcall(function()
 		task.defer(function()
 			func(table.unpack(args))
 		end)
 	end)
 	if not ok then
-		safe_pcall(func, table.unpack(args))
+		pcall(func, table.unpack(args))
 	end
 end
 
@@ -217,34 +159,18 @@ end
 -- Task Queue
 local taskQueue = {}
 function PerformanceEngine.QueueTask(fn, ...)
-	table_insert(taskQueue, {fn = fn, args = {...}})
+	table.insert(taskQueue, {fn = fn, args = {...}})
 end
 
 function PerformanceEngine.RunTaskQueue()
 	for i = #taskQueue, 1, -1 do
 		local item = taskQueue[i]
-		safe_pcall(item.fn, table.unpack(item.args))
+		pcall(item.fn, table.unpack(item.args))
 		table.remove(taskQueue, i)
 	end
 end
 
--- Auto Balance
-function PerformanceEngine.AutoBalance(func)
-	local t1 = os.clock()
-	local ok, result = pcall(func)
-	local t2 = os.clock()
-	local timeUsed = t2 - t1
-	if timeUsed > 0.08 then
-		perfStats.LastSpike = timeUsed
-		task.wait(PerformanceEngine.Settings.AUTO_BALANCE_HIGH_DELAY)
-	elseif timeUsed > 0.04 then
-		task.wait(PerformanceEngine.Settings.AUTO_BALANCE_MEDIUM_DELAY)
-	else
-		task.wait()
-	end
-	return ok, result
-end
-
+-- Inject to global env with the getGlobalEnv() function you gave
 local function getGlobalEnv()
 	local g = (getgenv and getgenv()) or (getfenv and getfenv(1)) or _ENV
 	rawset(g, "Perf", PerformanceEngine)
@@ -12118,7 +12044,7 @@ Main = (function()
 	Main.ModuleList = {"Explorer","Properties","ScriptViewer","Notepad","ModelViewer","Console"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
-	Main.Version = "in-dev 6"
+	Main.Version = "in-dev 7"
 	Main.Mouse = plr:GetMouse()
 	Main.AppControls = {}
 	Main.Apps = Apps
