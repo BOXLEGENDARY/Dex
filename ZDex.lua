@@ -6221,6 +6221,8 @@ local function main()
     	return RemoteSpy
     end
 
+    return RemoteSpy
+end
 return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
 end,
 ["Lib"] = function()
