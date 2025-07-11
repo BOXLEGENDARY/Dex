@@ -5918,7 +5918,7 @@ local function main()
 
 		local save = Instance.new("TextButton", window.GuiElems.Content)
 		save.BackgroundTransparency = 1
-		save.Position = UDim2.new(0, 0, 0, 0)
+		save.Position = UDim2.new(0.5, 0, 0, 0)
 		save.Size = UDim2.new(0.25, 0, 0, 20)
 		save.Text = "Save"
 		save.TextColor3 = Color3.new(1, 1, 1)
