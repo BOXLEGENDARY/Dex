@@ -202,7 +202,7 @@ local Decompile do
 end
 
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Notepad, ModelViewer, Console, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, Notepad, ModelViewer, Console, ZSpy, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -227,6 +227,7 @@ local function initAfterMain()
 	Notepad = Apps.Notepad
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
+    ZSpy = Apps.ZSpy
 	Notebook = Apps.Notebook
 end
 
