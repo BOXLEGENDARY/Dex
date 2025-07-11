@@ -12749,7 +12749,7 @@ Main = (function()
 	Main.SetMainGuiOpen = function(val)
 		Main.MainGuiOpen = val
 		
-		Main.MainGui.OpenButton.Text = val and "X" or "Dex"
+		Main.MainGui.OpenButton.Text = val and "X" or "ZDex"
 		if val then Main.MainGui.OpenButton.MainFrame.Visible = true end
 		Main.MainGui.OpenButton.MainFrame:TweenSize(val and UDim2.new(0,224,0,200) or UDim2.new(0,0,0,0),Enum.EasingDirection.Out,Enum.EasingStyle.Quad,0.2,true)
 		--Main.MainGui.OpenButton.BackgroundTransparency = val and 0 or (Lib.CheckMouseInGui(Main.MainGui.OpenButton) and 0 or 0.2)
@@ -12777,7 +12777,7 @@ Main = (function()
 	Main.CreateMainGui = function()
 		local gui = create({
             {1,"ScreenGui",{IgnoreGuiInset=true,Name="MainMenu"}},
-            {2,"TextButton",{AnchorPoint=Vector2.new(0.5,0),AutoButtonColor=false,BackgroundColor3=Color3.fromRGB(25, 0, 51),BorderSizePixel=0,Font=Enum.Font.GothamBold,Name="OpenButton",Parent={1},Position=UDim2.new(0.5,0,0,2),Size=UDim2.new(0,38,0,38),Text="Dex",TextColor3=Color3.fromRGB(170, 0, 255),TextSize=20,TextTransparency=0}},
+            {2,"TextButton",{AnchorPoint=Vector2.new(0.5,0),AutoButtonColor=false,BackgroundColor3=Color3.fromRGB(25, 0, 51),BorderSizePixel=0,Font=Enum.Font.GothamBold,Name="OpenButton",Parent={1},Position=UDim2.new(0.5,0,0,2),Size=UDim2.new(0,38,0,38),Text="ZDex",TextColor3=Color3.fromRGB(170, 0, 255),TextSize=20,TextTransparency=0}},
             {3,"UICorner",{CornerRadius=UDim.new(0,8),Parent={2}}},
             {4,"Frame",{AnchorPoint=Vector2.new(0.5,0),BackgroundColor3=Color3.fromRGB(40, 0, 70),ClipsDescendants=true,Name="MainFrame",Parent={2},Position=UDim2.new(0.5,0,1,-4),Size=UDim2.new(0,240,0,208)}},
             {5,"UICorner",{CornerRadius=UDim.new(0,6),Parent={4}}},
