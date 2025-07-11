@@ -4865,6 +4865,7 @@ end
 
 local function main()
 	local RunService = game:GetService("RunService")
+	local UserInputService = game:GetService("UserInputService")
 	
 	local ModelViewer = {
 		EnableInputCamera = true,
@@ -4898,31 +4899,49 @@ local function main()
 		if not item then return end
 		ModelViewer.StopViewModel(updating)
 		
-		if item:IsA("BasePart") and not item:IsA("Model") then			
-			model = Instance.new("Model")
-			model.Parent = viewportFrame
+		if item ~= workspace and not item:IsA("Terrain") then
+			-- why Model == workspace
 			
-			local clone = item:Clone()
-			clone.Parent = model
-			model.PrimaryPart = clone
-			model:SetPrimaryPartCFrame(CFrame.new(0, 0, 0))
-		elseif item:IsA("Model") and item ~= workspace and not item:IsA("Terrain")  then
-			local noClone = false
-			if not item.Archivable then item.Archivable = true noClone = true end
-		
-			if not item.PrimaryPart then
+			if item:IsA("BasePart") and not item:IsA("Model") then			
+				model = Instance.new("Model")
+				model.Parent = viewportFrame
+
+				local clone = item:Clone()
+				clone.Parent = model
+				model.PrimaryPart = clone
+				model:SetPrimaryPartCFrame(CFrame.new(0, 0, 0))
+			elseif item:IsA("Model") then
+				item.Archivable = true
+
+			--[[if not item.PrimaryPart then
 				pathLabel.Gui.Text = "Failed to view model: No PrimaryPart is found."
 				return
+			end]]
+				if #item:GetChildren() == 0 then return end
+				
+				model = item:Clone()
+				model.Parent = viewportFrame
+
+				-- fallback
+				if not model.PrimaryPart then
+					local found = false
+					for _, child in model:GetDescendants() do
+						if child:IsA("BasePart") then
+							model.PrimaryPart = child
+							model:SetPrimaryPartCFrame(CFrame.new(0, 0, 0))
+							found = true
+							break
+						end
+					end
+					if not found then
+						model:Destroy()
+						model = nil
+						return
+					end
+				end
+			else
+				return
 			end
-			
-			model = item:Clone()
-			
-			item.Archivable = false
-			
-			model.Parent = viewportFrame
-			model:SetPrimaryPartCFrame(CFrame.new(0, 0, 0))
-		else
-			return
 		end
 		
 		originalModel = item
@@ -4979,14 +4998,18 @@ local function main()
 		settingsButton.Position = UDim2.new(1,-3,0,3)
 		settingsButton.Image = "rbxassetid://6578871732"
 		settingsButton.ImageTransparency = 0.5
+		-- mobile input check
+		if UserInputService:GetLastInputType() == Enum.UserInputType.Touch then
+			settingsButton.Visible = true
+		else
+			settingsButton.Visible = false
+		end
 
 		local rotationX, rotationY = -15, 0
 		local distance = 10
 		local dragging = false
 		local hovering = false
 		local lastpos = Vector2.zero
-
-		local UIS = game:GetService("UserInputService")
 
 		viewportFrame.InputBegan:Connect(function(input)
 			if not ModelViewer.EnableInputCamera then return end
@@ -5031,7 +5054,7 @@ local function main()
 			end
 		end)
 
-		game:GetService("RunService").RenderStepped:Connect(function()
+		RunService.RenderStepped:Connect(function()
 			if camera and model then
 				if not dragging and ModelViewer.AutoRotate then
 					rotationY += ModelViewer.RotationSpeed
@@ -5091,18 +5114,19 @@ local function main()
 				local success, result = pcall(env.saveinstance,
 					originalModel, "dex/saved/Place_"..game.PlaceId.."_"..originalModel.Name.."_"..os.time(),
 					{
-						decompile = true
+						-- hello
 					}
 				)
 				if success then
 					window:SetTitle(originalModel.Name.." - Model Viewer - Saved")
 					context:Hide()
-					task.wait(3)
+					task.wait(5)
 					if model then
 						window:SetTitle(originalModel.Name.." - Model Viewer")
 					end
 				else
 					window:SetTitle(originalModel.Name.." - Model Viewer - Error")
+					warn("Error while saving model: "..result)
 					context:Hide()
 					task.wait(5)
 					if model then
