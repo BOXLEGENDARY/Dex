@@ -5890,7 +5890,7 @@ local function main()
 	local ZSpy = {}
 	local window, codeFrame
 
-	ZSpy = function()
+	ZSpy.Init = function()
 		window = Lib.Window.new()
 		window:SetTitle("ZSpy")
 		window:Resize(500, 400)
