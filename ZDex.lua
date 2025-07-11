@@ -8801,6 +8801,11 @@ local function main()
 			local frame = create({
 				{1,"Frame",{BackgroundColor3=Color3.new(0.15686275064945,0.15686275064945,0.15686275064945),BorderSizePixel = 0,Position=UDim2.new(0.5,-300,0.5,-200),Size=UDim2.new(0,600,0,400),}},
 			})
+
+			if Settings.Window.Transparency and Settings.Window.Transparency > 0 then
+				frame.BackgroundTransparency = 0.5
+			end
+
 			local elems = {}
 			
 			local linesFrame = Instance.new("Frame")
