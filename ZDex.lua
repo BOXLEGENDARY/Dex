@@ -6218,11 +6218,12 @@ local function main()
 		    BFunctionMain(v)
 		end
 
-    	return RemoteSpy
-    end
+		return RemoteSpy
+	end
 
-    return RemoteSpy
+	return RemoteSpy
 end
+
 return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
 end,
 ["Lib"] = function()
