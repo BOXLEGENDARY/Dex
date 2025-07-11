@@ -1,6 +1,6 @@
 # ZDex
 * not close to release
-## IN-DEV ( version 7 )
+## IN-DEV ( version 8 )
 * Script
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/main/ZDex.lua"))()
@@ -15,6 +15,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 * Notepad
 * ModelView
 * Console
+* RemoteSpy
 ## Credits
 [ZxL](https://youtu.be/dQw4w9WgXcQ?si=IkAXjfO3Uf2UOJ9V) (Owner)
 
