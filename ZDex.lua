@@ -5910,6 +5910,22 @@ local function main()
 			codeFrame:SetText("")
 		end)
 
+		local save = Instance.new("TextButton", window.GuiElems.Content)
+		save.BackgroundTransparency = 1
+		save.Position = UDim2.new(0, 0, 0, 0)
+		save.Size = UDim2.new(0.25, 0, 0, 20)
+		save.Text = "Save"
+		save.TextColor3 = Color3.new(1, 1, 1)
+		save.MouseButton1Click:Connect(function()
+			local source = codeFrame:GetText()
+			local filename = "dex/saved/Place_"..game.PlaceId.."_Script_"..os.time()..".txt"
+		
+			env.writefile(filename, source)
+			if env.movefileas then
+				env.movefileas(filename, ".txt")
+			end
+		end)
+
 		getgenv = getgenv or function() return getfenv(2) end
 		
 		local Logger = {} -- Type = {LastCall=os.time(), CallsPerSec=number}
@@ -12379,7 +12395,7 @@ Main = (function()
 	Main.ModuleList = {"Explorer","Properties","ScriptViewer","Notepad","ModelViewer","Console","RemoteSpy"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
-	Main.Version = "in-dev 7"
+	Main.Version = "in-dev 8"
 	Main.Mouse = plr:GetMouse()
 	Main.AppControls = {}
 	Main.Apps = Apps
