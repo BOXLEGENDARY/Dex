@@ -170,7 +170,6 @@ function PerformanceEngine.RunTaskQueue()
 	end
 end
 
--- Inject to global env with the getGlobalEnv() function you gave
 local function getGlobalEnv()
 	local g = (getgenv and getgenv()) or (getfenv and getfenv(1)) or _ENV
 	rawset(g, "Perf", PerformanceEngine)
