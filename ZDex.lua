@@ -6218,9 +6218,6 @@ local function main()
 		    BFunctionMain(v)
 		end
 
-		return RemoteSpy
-	end
-
 	return RemoteSpy
 end
 
