@@ -1,6 +1,6 @@
 # ZDex
 * not close to release
-## IN-DEV ( version 6 )
+## IN-DEV ( version 7 )
 * Script
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/main/ZDex.lua"))()
