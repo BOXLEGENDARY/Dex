@@ -5932,7 +5932,7 @@ local function main()
 			end
 		end)
 
-		getgenv = getgenv or function() return getfenv(2) end
+		getgenv = (getgenv and getgenv()) or (getfenv and getfenv(1)) or _ENV		
 		
 		local Logger = {} -- Type = {LastCall=os.time(), CallsPerSec=number}
 		local Limits = { -- How many times an instance can fire per second
