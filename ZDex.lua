@@ -4339,6 +4339,10 @@ local function main()
 		fullNameFrame.Visible = false
 		fullNameFrame.Parent = window.Gui
 		
+		if Settings.Window.Transparency and Settings.Window.Transparency > 0 then
+			Properties.EntryTemplate.BackgroundTransparency = 0.75
+		end
+
 		Properties.FullNameFrame = fullNameFrame
 		Properties.FullNameFrameAttach = Lib.AttachTo(fullNameFrame)
 	end
@@ -8075,6 +8079,14 @@ local function main()
 			rightFrame.WindowResizer.Parent = nil
 			rightFrame.Parent = sidesGui
 
+			if Settings.Window.Transparency and Settings.Window.Transparency > 0 then
+				leftSide.BackgroundTransparency = 1
+				rightSide.BackgroundTransparency = 1
+
+				leftFrame.BackgroundTransparency = 1
+				rightFrame.BackgroundTransparency = 1
+			end
+
 			sideResizerHook(leftFrame.Resizer,"H",leftSide)
 			sideResizerHook(rightFrame.Resizer,"H",rightSide)
 
@@ -8801,6 +8813,11 @@ local function main()
 			local frame = create({
 				{1,"Frame",{BackgroundColor3=Color3.new(0.15686275064945,0.15686275064945,0.15686275064945),BorderSizePixel = 0,Position=UDim2.new(0.5,-300,0.5,-200),Size=UDim2.new(0,600,0,400),}},
 			})
+
+			if Settings.Window.Transparency and Settings.Window.Transparency > 0 then
+				frame.BackgroundTransparency = 0.5
+			end
+
 			local elems = {}
 			
 			local linesFrame = Instance.new("Frame")
