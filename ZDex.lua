@@ -6209,8 +6209,6 @@ local function main()
 		    for _, v in pairs(d) do BFunctionMain(v) end
 		end)
 
-        return RemoteSpy
-
 	return RemoteSpy
 end
 
