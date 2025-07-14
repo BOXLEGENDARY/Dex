@@ -6202,26 +6202,14 @@ local function main()
 		
 		local a, b, c, d = GetEvents(), GetFunctions(), GetBEvents(), GetBFunctions()
 		
-	    GENV.Perf.SmartUpdate(function()
-			for _, v in pairs(a) do
-			    EventMain(v)
-			end
-			
-			for _, v in pairs(b) do
-			    FunctionMain(v)
-			end
-			
-			for _, v in pairs(c) do
-			    BEventMain(v)
-			end
-			
-			for _, v in pairs(d) do
-			    BFunctionMain(v)
-			end
-	
-			return RemoteSpy
-		end
-	end)
+		GENV.Perf.SmartUpdate(function()
+		    for _, v in pairs(a) do EventMain(v) end
+		    for _, v in pairs(b) do FunctionMain(v) end
+		    for _, v in pairs(c) do BEventMain(v) end
+		    for _, v in pairs(d) do BFunctionMain(v) end
+		end)
+
+        return RemoteSpy
 
 	return RemoteSpy
 end
