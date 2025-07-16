@@ -7,7 +7,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 ```
 * No RemoteSpy Version
 ```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex-other-version/refs/heads/main/ZDex.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/refs/heads/main/ZDex%20(%20other%20version%20).lua"))()
 ```
 ## Support
 * Mobile/Pc
