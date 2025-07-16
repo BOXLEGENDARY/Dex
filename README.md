@@ -5,6 +5,10 @@
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/main/ZDex.lua"))()
 ```
+* No RemoteSpy Version
+```lua
+loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex-other-version/refs/heads/main/ZDex.lua"))()
+```
 ## Support
 * Mobile/Pc
 ## Features
