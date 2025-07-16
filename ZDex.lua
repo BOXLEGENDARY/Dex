@@ -19,7 +19,7 @@ function missing(t, f, fallback)
     return fallback
 end
 
-wait(0.5)
+wait(0.1)
 
 local cloneref = cloneref or function(...) return ... end
 local getnilinstances = getnilinstances or function() return {} end
