@@ -9,9 +9,8 @@
 
 local cloneref = cloneref or function(...) return ... end
 local getnilinstances = getnilinstances or function() return {} end
-local safe_pcall    = xpcall
+local safe_pcall = xpcall
 local function ERRhandler(err) return nil end
-
 local debug = debug or {}
 
 -- Safe environment
@@ -20,14 +19,10 @@ local fake_env_table = {}
 local fake_env = setmetatable({}, {
     __index = function(_, k)
         if k == "_G" then return fake_env end
-        if fake_env_table[k] ~= nil then
-            return fake_env_table[k]
-        end
+        if fake_env_table[k] ~= nil then return fake_env_table[k] end
         return original_env[k]
     end,
-    __newindex = function(_, k, v)
-        fake_env_table[k] = v
-    end,
+    __newindex = function(_, k, v) fake_env_table[k] = v end,
     __metatable = "Locked"
 })
 
@@ -120,8 +115,7 @@ end
 
 local GENV = getGlobalEnv()
 
-local logs = {}
-
+-- Configuration
 local CONFIG = {
     MEMORY_THRESHOLD = 350,
     ENABLE_MEMORY_MONITOR = true,
@@ -135,15 +129,22 @@ local suspiciousCalls = {
 }
 
 local function logEvent(event, info)
-    table.insert(logs, {
-        event = event,
-        source = tostring(info and info.short_src or "?"),
-        linedefined = info and info.linedefined,
-        time = os.clock(),
-    })
-    warn(("[AutoSense] Suspicious call: %s from %s:%s"):format(event, info and info.short_src or "?", info and info.linedefined or "?"))
+    local time = os.date("%Y-%m-%d %H:%M:%S")
+    local trace = debug.traceback(nil, 3)
+    local funcName = info and info.name or "unknown"
+    local source = tostring(info and info.short_src or "?")
+    local line = tostring(info and info.linedefined or "?")
+
+    print(("\n[AutoSense: Debug Info]\n> Event    : %s\n> Function : %s\n> Source   : %s\n> Line     : %s\n> Time     : %s\n> Trace    :\n%s"):format(
+        event, funcName, source, line, time, trace
+    ))
+
+    warn(("\n[AutoSense: ⚠ Suspicious Call Detected ⚠]\n> Function : %s\n> Source   : %s\n> Line     : %s\n> Time     : %s\n> Traceback:\n%s"):format(
+        event, source, line, time, trace
+    ))
 end
 
+-- Access Monitor
 local function monitorAccess()
     if not CONFIG.ENABLE_ACCESS_MONITOR then return end
     local g = getfenv(0) or _G
@@ -164,10 +165,10 @@ local function monitorAccess()
             local original = root[final]
 
             if original._isHookedByAutoSense then
-                -- Already hooked, skip
+                -- Already hooked
             else
                 local function hooked(...)
-                    local success, info = pcall(debug.getinfo, 2, "Sl")
+                    local success, info = pcall(debug.getinfo, 2, "nSl")
                     if success then
                         logEvent(name, info)
                     else
@@ -176,7 +177,6 @@ local function monitorAccess()
                     return original(...)
                 end
                 hooked._isHookedByAutoSense = true
-
                 root[final] = hooked
             end
         end
@@ -185,7 +185,6 @@ end
 
 -- Coroutine tracking
 local coroutine_status = {}
-
 local original_coroutine_create = coroutine.create
 
 local my_coroutine_create = function(f)
@@ -202,7 +201,7 @@ function isCoroutineDead(co)
     return coroutine_status[co] == "dead"
 end
 
--- Heuristic memory spike detection via table.insert count
+-- Memory spike detection (Heuristic)
 if CONFIG.ENABLE_MEMORY_MONITOR then
     local original_table_insert = table.insert
     local memoryInsertCounter = 0
@@ -212,10 +211,11 @@ if CONFIG.ENABLE_MEMORY_MONITOR then
         memoryInsertCounter = memoryInsertCounter + 1
         if memoryInsertCounter > CONFIG.MEMORY_THRESHOLD then
             warn("[AutoSense] Possible memory spike detected by many table inserts")
-            original_table_insert(logs, {event = "memory_spike", detail = "many table inserts", time = os.clock()})
             memoryInsertCounter = 0
         end
     end
+
+    table.insert = monitored_insert
 end
 
 monitorAccess()
@@ -223,11 +223,11 @@ monitorAccess()
 -- Auto service fetch
 local nodes = {}
 local service = setmetatable({}, {
-	__index = function(self, name)
-		local serv = cloneref(game:GetService(name))
-		self[name] = serv
-		return serv
-	end
+    __index = function(self, name)
+        local serv = cloneref(game:GetService(name))
+        self[name] = serv
+        return serv
+    end
 })
 
 local selection = nil;
