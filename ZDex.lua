@@ -232,17 +232,27 @@ end
 
 monitorAccess()
 
-local logCons = getconnections(game:GetService("LogService").MessageOut)
-for _, c in ipairs(logCons) do
-    c:Disconnect()
+local success, err = pcall(function()
+    local logCons = getconnections(game:GetService("LogService").MessageOut)
+    for _, c in ipairs(logCons) do
+        c:Disconnect()
+    end
+    print("[ ⚠ ] [ClientLogger] Disconnected", #logCons, "LogService.MessageOut connections")
+end)
+if not success then
+    warn("[ClientLogger] LogService.MessageOut disconnect failed:", err)
 end
-print("[ ⚠ ] Disconnected", #logCons, "LogService.MessageOut connections")
 
-local errCons = getconnections(game:GetService("ScriptContext").Error)
-for _, c in ipairs(errCons) do
-    c:Disconnect()
+local success2, err2 = pcall(function()
+    local errCons = getconnections(game:GetService("ScriptContext").Error)
+    for _, c in ipairs(errCons) do
+        c:Disconnect()
+    end
+    print("[ ⚠ ] [ClientLogger] Disconnected", #errCons, "ScriptContext.Error connections")
+end)
+if not success2 then
+    warn("[ClientLogger] ScriptContext.Error disconnect failed ( not error ):", err2)
 end
-print("[ ⚠ ] Disconnected", #errCons, "ScriptContext.Error connections")
 
 -- Auto service fetch
 local nodes = {}
