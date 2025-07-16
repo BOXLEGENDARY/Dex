@@ -214,8 +214,6 @@ if CONFIG.ENABLE_MEMORY_MONITOR then
             memoryInsertCounter = 0
         end
     end
-
-    table.insert = monitored_insert
 end
 
 monitorAccess()
