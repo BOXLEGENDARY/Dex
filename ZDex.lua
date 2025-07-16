@@ -187,7 +187,8 @@ end
 local coroutine_status = {}
 
 local original_coroutine_create = coroutine.create
-coroutine.create = function(f)
+
+local my_coroutine_create = function(f)
     local co = original_coroutine_create(function(...)
         local res = {f(...)}
         coroutine_status[co] = "dead"
@@ -206,12 +207,12 @@ if CONFIG.ENABLE_MEMORY_MONITOR then
     local original_table_insert = table.insert
     local memoryInsertCounter = 0
 
-    table.insert = function(t, value)
+    local function monitored_insert(t, value)
         original_table_insert(t, value)
         memoryInsertCounter = memoryInsertCounter + 1
         if memoryInsertCounter > CONFIG.MEMORY_THRESHOLD then
             warn("[AutoSense] Possible memory spike detected by many table inserts")
-            table.insert(logs, {event = "memory_spike", detail = "many table inserts", time = os.clock()})
+            original_table_insert(logs, {event = "memory_spike", detail = "many table inserts", time = os.clock()})
             memoryInsertCounter = 0
         end
     end
@@ -220,17 +221,13 @@ end
 monitorAccess()
 
 -- Auto service fetch
-local nodes = {} -- cache table
+local nodes = {}
 local service = setmetatable({}, {
-    __index = function(_, name)
-        if not nodes[name] then
-            nodes[name] = cloneref(game:GetService(name))
-        end
-        return nodes[name]
-    end,
-    __newindex = function(_, name, value)
-        nodes[name] = value
-    end
+	__index = function(self, name)
+		local serv = cloneref(game:GetService(name))
+		self[name] = serv
+		return serv
+	end
 })
 
 local selection = nil;
