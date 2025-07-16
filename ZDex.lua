@@ -6198,9 +6198,11 @@ local function main()
 		function BEventMain(Event)
 		    Logger[Event] = 0
 		    Event.Event:Connect(function(...)
-		        if Logger[Event] > Limits[Event.ClassName] then
-		            return
-		        end
+				Logger[Event] = Logger[Event] or 0
+				local limit = Limits[Event.ClassName] or math.huge
+				if Logger[Event] > limit then
+				    return
+				end
 		        Logger[Event] = Logger[Event] + 1
 		        local StrArgs = tableloop({...})
 		        local FullData = string.format(
