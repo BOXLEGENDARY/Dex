@@ -227,6 +227,9 @@ local service = setmetatable({}, {
             nodes[name] = cloneref(game:GetService(name))
         end
         return nodes[name]
+    end,
+    __newindex = function(_, name, value)
+        nodes[name] = value
     end
 })
 
