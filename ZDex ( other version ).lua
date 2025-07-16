@@ -232,6 +232,8 @@ end
 
 monitorAccess()
 
+warn("Executor: " .. (identifyexecutor and identifyexecutor() or "?"))
+
 local success, err = pcall(function()
     local logCons = getconnections(game:GetService("LogService").MessageOut)
     for _, c in ipairs(logCons) do
