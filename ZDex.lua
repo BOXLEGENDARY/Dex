@@ -6179,11 +6179,12 @@ local function main()
 		function EventMain(Event)
 		    Logger[Event] = 0
 		    Event.OnClientEvent:Connect(function(...)
-				Logger[Event] = Logger[Event] or 0
-				local limit = Limits[Event.ClassName] or math.huge
-				if Logger[Event] > limit then
-				    return
-				end
+		        local oke, dead = pcall(function()
+		            return Logger[Event] > Limits[Event.ClassName]
+		        end)
+		        if oke and dead then
+		            return
+		        end
 		        Logger[Event] = Logger[Event] + 1
 		        local StrArgs = tableloop({...})
 		        local FullData = string.format(
@@ -6200,9 +6201,13 @@ local function main()
 		function BEventMain(Event)
 		    Logger[Event] = 0
 		    Event.Event:Connect(function(...)
-		        if Logger[Event] > Limits[Event.ClassName] then
+		        local oke, dead = pcall(function()
+		            return Logger[Event] > Limits[Event.ClassName]
+		        end)
+		        if oke and dead then
 		            return
 		        end
+		
 		        Logger[Event] = Logger[Event] + 1
 		        local StrArgs = tableloop({...})
 		        local FullData = string.format(
@@ -6217,12 +6222,14 @@ local function main()
 		end
 		
 		function FunctionMain(Func)
-		    -- We cannot obtain the old function of the RemoteFunction so we have to override it, Breaking SOME scripts and potentially getting you kicked
 		    Logger[Func] = 0
 		    Func.OnClientInvoke = function(...)
-		        if Logger[Func] > Limits[Func.ClassName] then
+		        local oke, dead = pcall(function()
+		            return Logger[Func] > Limits[Func.ClassName]
+		        end)
+		        if oke and dead then
 		            return
-		        end
+		        end		
 		        Logger[Func] = Logger[Func] + 1
 		        local StrArgs = tableloop({...})
 		        local FullData = string.format(
@@ -6241,7 +6248,10 @@ local function main()
 		    -- We cannot obtain the old function of the BindableFunction so we have to override it, Breaking SOME scripts and potentially getting you kicked
 		    Logger[Func] = 0
 		    Func.OnInvoke = function(...)
-		        if Logger[Func] > Limits[Func.ClassName] then
+		        local oke, dead = pcall(function()
+		            return Logger[Func] > Limits[Func.ClassName]
+		        end)
+		        if oke and dead then
 		            return
 		        end
 		        Logger[Func] = Logger[Func] + 1
