@@ -6179,10 +6179,7 @@ local function main()
 		function EventMain(Event)
 		    Logger[Event] = 0
 		    Event.OnClientEvent:Connect(function(...)
-		        local oke, dead = pcall(function()
-		            return Logger[Event] > Limits[Event.ClassName]
-		        end)
-		        if oke and dead then
+		        if Logger[Event] > Limits[Event.ClassName] then
 		            return
 		        end
 		        Logger[Event] = Logger[Event] + 1
@@ -6201,13 +6198,9 @@ local function main()
 		function BEventMain(Event)
 		    Logger[Event] = 0
 		    Event.Event:Connect(function(...)
-		        local oke, dead = pcall(function()
-		            return Logger[Event] > Limits[Event.ClassName]
-		        end)
-		        if oke and dead then
+		        if Logger[Event] > Limits[Event.ClassName] then
 		            return
 		        end
-		
 		        Logger[Event] = Logger[Event] + 1
 		        local StrArgs = tableloop({...})
 		        local FullData = string.format(
@@ -6222,14 +6215,12 @@ local function main()
 		end
 		
 		function FunctionMain(Func)
+		    -- We cannot obtain the old function of the RemoteFunction so we have to override it, Breaking SOME scripts and potentially getting you kicked
 		    Logger[Func] = 0
 		    Func.OnClientInvoke = function(...)
-		        local oke, dead = pcall(function()
-		            return Logger[Func] > Limits[Func.ClassName]
-		        end)
-		        if oke and dead then
+		        if Logger[Func] > Limits[Func.ClassName] then
 		            return
-		        end		
+		        end
 		        Logger[Func] = Logger[Func] + 1
 		        local StrArgs = tableloop({...})
 		        local FullData = string.format(
@@ -6248,10 +6239,7 @@ local function main()
 		    -- We cannot obtain the old function of the BindableFunction so we have to override it, Breaking SOME scripts and potentially getting you kicked
 		    Logger[Func] = 0
 		    Func.OnInvoke = function(...)
-		        local oke, dead = pcall(function()
-		            return Logger[Func] > Limits[Func.ClassName]
-		        end)
-		        if oke and dead then
+		        if Logger[Func] > Limits[Func.ClassName] then
 		            return
 		        end
 		        Logger[Func] = Logger[Func] + 1
