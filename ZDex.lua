@@ -49,20 +49,20 @@ local ok = try_setfenv(1, fake_env)
 local PerformanceEngine = {}
 
 PerformanceEngine.Settings = {
-	MIN_THROTTLE = 0.02,
-	MAX_THROTTLE = 0.07,
+    MIN_THROTTLE = 0.02,
+    MAX_THROTTLE = 0.07,
 }
 
 function PerformanceEngine.SetSettings(newSettings)
-	if type(newSettings) ~= "table" then return false end
-	for k, v in pairs(newSettings) do
-		if PerformanceEngine.Settings[k] ~= nil then
-			PerformanceEngine.Settings[k] = v
-		end
-	end
-	MIN_THROTTLE = PerformanceEngine.Settings.MIN_THROTTLE
-	MAX_THROTTLE = PerformanceEngine.Settings.MAX_THROTTLE
-	return true
+    if type(newSettings) ~= "table" then return false end
+    for k, v in pairs(newSettings) do
+        if PerformanceEngine.Settings[k] ~= nil then
+            PerformanceEngine.Settings[k] = v
+        end
+    end
+    MIN_THROTTLE = PerformanceEngine.Settings.MIN_THROTTLE
+    MAX_THROTTLE = PerformanceEngine.Settings.MAX_THROTTLE
+    return true
 end
 
 local MIN_THROTTLE = PerformanceEngine.Settings.MIN_THROTTLE
@@ -71,60 +71,59 @@ local throttleLevel = MIN_THROTTLE
 local lastUpdate = os.clock()
 
 function PerformanceEngine.AdaptiveThrottle()
-	local now = os.clock()
-	local delta = now - lastUpdate
-	if delta < MIN_THROTTLE then
-		throttleLevel = math.min(throttleLevel + 0.01, MAX_THROTTLE)
-	else
-		throttleLevel = math.max(throttleLevel - 0.05, MIN_THROTTLE)
-	end
-	lastUpdate = now
-	task.wait(throttleLevel)
+    local now = os.clock()
+    local delta = now - lastUpdate
+    if delta < MIN_THROTTLE then
+        throttleLevel = math.min(throttleLevel + 0.01, MAX_THROTTLE)
+    else
+        throttleLevel = math.max(throttleLevel - 0.05, MIN_THROTTLE)
+    end
+    lastUpdate = now
+    task.wait(throttleLevel)
 end
 
 function PerformanceEngine.FastCall(func, ...)
-	local args = table.pack(...)
-	local ok = pcall(function()
-		task.defer(function()
-			func(table.unpack(args))
-		end)
-	end)
-	if not ok then
-		pcall(func, table.unpack(args))
-	end
+    local args = table.pack(...)
+    local ok = pcall(function()
+        task.defer(function()
+            func(table.unpack(args))
+        end)
+    end)
+    if not ok then
+        pcall(func, table.unpack(args))
+    end
 end
 
 function PerformanceEngine.SmartUpdate(updateFunc)
-	PerformanceEngine.AdaptiveThrottle()
-	PerformanceEngine.FastCall(updateFunc)
+    PerformanceEngine.AdaptiveThrottle()
+    PerformanceEngine.FastCall(updateFunc)
 end
 
 local taskQueue = {}
 function PerformanceEngine.QueueTask(fn, ...)
-	table.insert(taskQueue, {fn = fn, args = {...}})
+    table.insert(taskQueue, {fn = fn, args = {...}})
 end
 
 function PerformanceEngine.RunTaskQueue()
-	for i = #taskQueue, 1, -1 do
-		local item = taskQueue[i]
-		pcall(item.fn, table.unpack(item.args))
-		table.remove(taskQueue, i)
-	end
+    for i = #taskQueue, 1, -1 do
+        local item = taskQueue[i]
+        pcall(item.fn, table.unpack(item.args))
+        table.remove(taskQueue, i)
+    end
 end
 
 local function getGlobalEnv()
-	local g = (getgenv and getgenv()) or (getfenv and getfenv(1)) or _ENV
-	rawset(g, "Perf", PerformanceEngine)
-	return g
+    local g = (getgenv and getgenv()) or (getfenv and getfenv(1)) or _ENV
+    rawset(g, "Perf", PerformanceEngine)
+    return g
 end
 
 local GENV = getGlobalEnv()
-local Monitor = {}
+
 local logs = {}
 
--- Configurable settings
 local CONFIG = {
-    MEMORY_THRESHOLD = 350,       -- memory spike
+    MEMORY_THRESHOLD = 350,
     ENABLE_MEMORY_MONITOR = true,
     ENABLE_ACCESS_MONITOR = true,
 }
@@ -145,7 +144,6 @@ local function logEvent(event, info)
     warn(("[AutoSense] Suspicious call: %s from %s:%s"):format(event, info and info.short_src or "?", info and info.linedefined or "?"))
 end
 
--- Monitor suspicious calls hooking
 local function monitorAccess()
     if not CONFIG.ENABLE_ACCESS_MONITOR then return end
     local g = getfenv(0) or _G
@@ -199,7 +197,7 @@ coroutine.create = function(f)
     return co
 end
 
-function Monitor.isCoroutineDead(co)
+function isCoroutineDead(co)
     return coroutine_status[co] == "dead"
 end
 
@@ -221,17 +219,14 @@ end
 
 monitorAccess()
 
-Monitor.logs = logs
-Monitor.config = CONFIG
-
 -- Auto service fetch
 local nodes = {}
 local service = setmetatable({}, {
-	__index = function(self, name)
-		local serv = cloneref(game:GetService(name))
-		self[name] = serv
-		return serv
-	end
+    __index = function(self, name)
+        local serv = cloneref(game:GetService(name))
+        self[name] = serv
+        return serv
+    end
 })
 
 local selection = nil;
@@ -13429,5 +13424,3 @@ end)()
 
 -- Start
 Main.Init()
-
-return Monitor
