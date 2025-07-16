@@ -7,6 +7,20 @@
 
 	
 
+if getgenv().ZDex_load and _G.ZDex_load ~= true then
+    return
+end
+
+pcall(function() getgenv().ZDex_load = true end)
+if not game:IsLoaded() then game.Loaded:Wait() end
+
+function missing(t, f, fallback)
+    if type(f) == t then return f end
+    return fallback
+end
+
+wait(0.5)
+
 local cloneref = cloneref or function(...) return ... end
 local getnilinstances = getnilinstances or function() return {} end
 local safe_pcall = xpcall
