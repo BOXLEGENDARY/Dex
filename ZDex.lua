@@ -224,8 +224,6 @@ monitorAccess()
 Monitor.logs = logs
 Monitor.config = CONFIG
 
-return Monitor
-
 -- Auto service fetch
 local nodes = {}
 local service = setmetatable({}, {
@@ -235,6 +233,8 @@ local service = setmetatable({}, {
 		return serv
 	end
 })
+
+return Monitor
 
 local selection = nil;
 
