@@ -12,47 +12,7 @@ local getnilinstances = getnilinstances or function() return {} end
 local safe_pcall    = xpcall
 local function ERRhandler(err) return nil end
 
--- Spoof garbage collector
-local real_gcinfo = gcinfo
-local spoofed_max_gc = real_gcinfo()
-local spoofed_min_gc = spoofed_max_gc - math.random(5, 15)
-
-gcinfo = function()
-	return math.random(spoofed_min_gc, spoofed_max_gc)
-end
-
-collectgarbage = function(mode)
-	if mode == "count" then
-		return math.random(100, 120), math.random(1, 5)
-	elseif mode == "step" or mode == "collect" then
-		return true
-	end
-	return 0
-end
-
-local real_debug = debug or {}
-local blocked = {
-	["getinfo"] = true,
-	["traceback"] = true,
-	["getupvalue"] = true
-}
-
-local function nil_return() return nil end
-
-debug = setmetatable({}, {
-	__index = function(_, key)
-		if blocked[key] then
-			return nil_return
-		end
-		local val = rawget(real_debug, key)
-		if type(val) == "function" then
-			return val
-		end
-		return nil
-	end,
-	__newindex = function() end,
-	__metatable = "Locked"
-})
+local debug = debug or {}
 
 -- Safe environment
 local original_env = (getgenv and getgenv()) or (getfenv and getfenv(1)) or _ENV
@@ -88,7 +48,6 @@ local ok = try_setfenv(1, fake_env)
 -- PerformanceEngine
 local PerformanceEngine = {}
 
--- Basic throttle settings
 PerformanceEngine.Settings = {
 	MIN_THROTTLE = 0.02,
 	MAX_THROTTLE = 0.07,
@@ -140,7 +99,6 @@ function PerformanceEngine.SmartUpdate(updateFunc)
 	PerformanceEngine.FastCall(updateFunc)
 end
 
--- Task Queue
 local taskQueue = {}
 function PerformanceEngine.QueueTask(fn, ...)
 	table.insert(taskQueue, {fn = fn, args = {...}})
@@ -161,6 +119,112 @@ local function getGlobalEnv()
 end
 
 local GENV = getGlobalEnv()
+local Monitor = {}
+local logs = {}
+
+-- Configurable settings
+local CONFIG = {
+    MEMORY_THRESHOLD = 350,       -- memory spike
+    ENABLE_MEMORY_MONITOR = true,
+    ENABLE_ACCESS_MONITOR = true,
+}
+
+local suspiciousCalls = {
+    "getgc", "getreg", "getfenv", "debug.getinfo", "debug.getupvalue",
+    "newproxy", "hookfunction", "setmetatable", "collectgarbage",
+    "loadstring", "string.dump", "getrenv", "rawget", "rawset",
+}
+
+local function logEvent(event, info)
+    table.insert(logs, {
+        event = event,
+        source = tostring(info and info.short_src or "?"),
+        linedefined = info and info.linedefined,
+        time = os.clock(),
+    })
+    warn(("[AutoSense] Suspicious call: %s from %s:%s"):format(event, info and info.short_src or "?", info and info.linedefined or "?"))
+end
+
+-- Monitor suspicious calls hooking
+local function monitorAccess()
+    if not CONFIG.ENABLE_ACCESS_MONITOR then return end
+    local g = getfenv(0) or _G
+    for _, name in pairs(suspiciousCalls) do
+        local parts = {}
+        for part in string.gmatch(name, "[^%.]+") do
+            table.insert(parts, part)
+        end
+
+        local root = g
+        for i = 1, #parts - 1 do
+            root = rawget(root, parts[i])
+            if not root then break end
+        end
+
+        local final = parts[#parts]
+        if root and rawget(root, final) and type(root[final]) == "function" then
+            local original = root[final]
+
+            if original._isHookedByAutoSense then
+                -- Already hooked, skip
+            else
+                local function hooked(...)
+                    local success, info = pcall(debug.getinfo, 2, "Sl")
+                    if success then
+                        logEvent(name, info)
+                    else
+                        logEvent(name, nil)
+                    end
+                    return original(...)
+                end
+                hooked._isHookedByAutoSense = true
+
+                root[final] = hooked
+            end
+        end
+    end
+end
+
+-- Coroutine tracking
+local coroutine_status = {}
+
+local original_coroutine_create = coroutine.create
+coroutine.create = function(f)
+    local co = original_coroutine_create(function(...)
+        local res = {f(...)}
+        coroutine_status[co] = "dead"
+        return table.unpack(res)
+    end)
+    coroutine_status[co] = "running"
+    return co
+end
+
+function Monitor.isCoroutineDead(co)
+    return coroutine_status[co] == "dead"
+end
+
+-- Heuristic memory spike detection via table.insert count
+if CONFIG.ENABLE_MEMORY_MONITOR then
+    local original_table_insert = table.insert
+    local memoryInsertCounter = 0
+
+    table.insert = function(t, value)
+        original_table_insert(t, value)
+        memoryInsertCounter = memoryInsertCounter + 1
+        if memoryInsertCounter > CONFIG.MEMORY_THRESHOLD then
+            warn("[AutoSense] Possible memory spike detected by many table inserts")
+            table.insert(logs, {event = "memory_spike", detail = "many table inserts", time = os.clock()})
+            memoryInsertCounter = 0
+        end
+    end
+end
+
+monitorAccess()
+
+Monitor.logs = logs
+Monitor.config = CONFIG
+
+return Monitor
 
 -- Auto service fetch
 local nodes = {}
