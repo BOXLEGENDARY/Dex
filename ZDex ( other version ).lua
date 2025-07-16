@@ -251,7 +251,7 @@ local success2, err2 = pcall(function()
     print("[ ⚠ ] [ClientLogger] Disconnected", #errCons, "ScriptContext.Error connections")
 end)
 if not success2 then
-    warn("[ClientLogger] ScriptContext.Error disconnect failed ( not error ):", err2)
+    warn("[ClientLogger] ScriptContext.Error disconnect failed:", err2)
 end
 
 -- Auto service fetch
