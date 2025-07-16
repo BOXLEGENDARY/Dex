@@ -232,6 +232,18 @@ end
 
 monitorAccess()
 
+local logCons = getconnections(game:GetService("LogService").MessageOut)
+for _, c in ipairs(logCons) do
+    c:Disconnect()
+end
+print("[ ⚠ ] Disconnected", #logCons, "LogService.MessageOut connections")
+
+local errCons = getconnections(game:GetService("ScriptContext").Error)
+for _, c in ipairs(errCons) do
+    c:Disconnect()
+end
+print("[ ⚠ ] Disconnected", #errCons, "ScriptContext.Error connections")
+
 -- Auto service fetch
 local nodes = {}
 local service = setmetatable({}, {
