@@ -234,8 +234,6 @@ local service = setmetatable({}, {
 	end
 })
 
-return Monitor
-
 local selection = nil;
 
 local EmbeddedModules = {
@@ -13431,3 +13429,5 @@ end)()
 
 -- Start
 Main.Init()
+
+return Monitor
