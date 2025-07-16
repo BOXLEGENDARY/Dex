@@ -6179,7 +6179,8 @@ local function main()
 		function EventMain(Event)
 		    Logger[Event] = 0
 		    Event.OnClientEvent:Connect(function(...)
-		        if Logger[Event] > Limits[Event.ClassName] then
+				local limit = Limits[Event.ClassName] or math.huge
+				if Logger[Event] > limit then
 		            return
 		        end
 		        Logger[Event] = Logger[Event] + 1
