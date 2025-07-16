@@ -220,12 +220,13 @@ end
 monitorAccess()
 
 -- Auto service fetch
-local nodes = {}
+local nodes = {} -- cache table
 local service = setmetatable({}, {
-    __index = function(self, name)
-        local serv = cloneref(game:GetService(name))
-        self[name] = serv
-        return serv
+    __index = function(_, name)
+        if not nodes[name] then
+            nodes[name] = cloneref(game:GetService(name))
+        end
+        return nodes[name]
     end
 })
 
