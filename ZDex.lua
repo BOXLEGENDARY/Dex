@@ -7,17 +7,9 @@
 
 	
 
-if getgenv().ZDex_load and _G.ZDex_load ~= true then
-    return
-end
-
-pcall(function() getgenv().ZDex_load = true end)
-if not game:IsLoaded() then game.Loaded:Wait() end
-
-function missing(t, f, fallback)
-    if type(f) == t then return f end
-    return fallback
-end
+local LOAD = (getgenv and getgenv()) or (getfenv and getfenv(1)) or _ENV
+if LOAD.ZDex_load and _G.ZDex_load ~= true then return end
+pcall(function() LOAD.ZDex_load = true end)
 
 wait(0.1)
 
