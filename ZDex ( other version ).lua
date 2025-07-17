@@ -12254,10 +12254,10 @@ Main = (function()
 
 				if identifyexecutor and type(identifyexecutor) == "function" then
 					Main.Executor = identifyexecutor()
-					print("[ System ] Executor Detected:", Main.Executor)
+					print("[System] Executor Detected:", Main.Executor)
 				else
 				    Main.Executor = "?"
-				    warn("[ System ] Executor Not Detected:", Main.Executor)
+				    warn("[System] Executor Not Detected:", Main.Executor)
 				end
 
 				Main.GuiHolder = Main.Elevated and service.CoreGui or plr:FindFirstChildWhichIsA("PlayerGui")
