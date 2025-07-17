@@ -12558,13 +12558,13 @@ Main = (function()
 	Main.CreateIntro = function(initStatus) -- TODO: Must theme and show errors
 		local gui = create({
 		    {1,"ScreenGui",{Name="Intro",}},
-		    {2,"Frame",{Active=true,BackgroundColor3=Color3.new(0.1, 0.1, 0.1),BorderSizePixel=0,Name="Main",Parent={1},Position=UDim2.new(0.5,-175,0.5,-100),Size=UDim2.new(0,350,0,200),}},
-		    {3,"Frame",{BackgroundColor3=Color3.new(0.1, 0.1, 0.1),BorderSizePixel=0,ClipsDescendants=true,Name="Holder",Parent={2},Size=UDim2.new(1,0,1,0),}},
+		    {2,"Frame",{Active=true,BackgroundColor3=Color3.new(0.95, 0.97, 1),BorderSizePixel=0,Name="Main",Parent={1},Position=UDim2.new(0.5,-175,0.5,-100),Size=UDim2.new(0,350,0,200),}},
+		    {3,"Frame",{BackgroundColor3=Color3.new(0.95, 0.97, 1),BorderSizePixel=0,ClipsDescendants=true,Name="Holder",Parent={2},Size=UDim2.new(1,0,1,0),}},
 		    {4,"UIGradient",{Parent={3},Rotation=30,Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(1,1)}),}},
 		    {5,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=4,Name="Title",Parent={3},Position=UDim2.new(0,-190,0,15),Size=UDim2.new(0,100,0,50),Text="ZDex",TextColor3=Color3.new(0.6, 0.85, 1.0),TextSize=50,TextTransparency=1,}},
 		    {6,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=3,Name="Desc",Parent={3},Position=UDim2.new(0,-230,0,60),Size=UDim2.new(0,180,0,25),Text="Debug Suite",TextColor3=Color3.new(0.7, 0.8, 0.9),TextSize=18,TextTransparency=1,}},
 		    {7,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=3,Name="StatusText",Parent={3},Position=UDim2.new(0,20,0,110),Size=UDim2.new(0,180,0,25),Text="Fetching API",TextColor3=Color3.new(0.4, 0.9, 1.0),TextSize=14,TextTransparency=1,}},
-		    {8,"Frame",{BackgroundColor3=Color3.new(0.08, 0.08, 0.08),BorderSizePixel=0,Name="ProgressBar",Parent={3},Position=UDim2.new(0,110,0,145),Size=UDim2.new(0,0,0,4),}},
+		    {8,"Frame",{BackgroundColor3=Color3.new(0.95, 0.97, 1),BorderSizePixel=0,Name="ProgressBar",Parent={3},Position=UDim2.new(0,110,0,145),Size=UDim2.new(0,0,0,4),}},
 		    {9,"Frame",{BackgroundColor3=Color3.new(0.3, 0.85, 1.0),BorderSizePixel=0,Name="Bar",Parent={8},Size=UDim2.new(0,0,1,0),}},
 		    {10,"ImageLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Image="rbxassetid://2764171053",ImageColor3=Color3.new(0.1, 0.1, 0.1),Parent={8},ScaleType=1,Size=UDim2.new(1,0,1,0),SliceCenter=Rect.new(2,2,254,254),}},
 		    {11,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=3,Name="Creator",Parent={2},Position=UDim2.new(1,-110,1,-20),Size=UDim2.new(0,105,0,20),Text="Developed by ZxL",TextColor3=Color3.new(0.6, 0.7, 0.8),TextSize=14,TextXAlignment=1,}},
