@@ -123,8 +123,6 @@ local GENV = getGlobalEnv()
 
 -- Configuration
 local CONFIG = {
-    MEMORY_THRESHOLD = 350,
-    ENABLE_MEMORY_MONITOR = true,
     ENABLE_ACCESS_MONITOR = true,
 }
 
@@ -205,21 +203,6 @@ end
 
 function isCoroutineDead(co)
     return coroutine_status[co] == "dead"
-end
-
--- Memory spike detection (Heuristic)
-if CONFIG.ENABLE_MEMORY_MONITOR then
-    local original_table_insert = table.insert
-    local memoryInsertCounter = 0
-
-    local function monitored_insert(t, value)
-        original_table_insert(t, value)
-        memoryInsertCounter = memoryInsertCounter + 1
-        if memoryInsertCounter > CONFIG.MEMORY_THRESHOLD then
-            warn("[AutoSense] Possible memory spike detected by many table inserts")
-            memoryInsertCounter = 0
-        end
-    end
 end
 
 monitorAccess()
