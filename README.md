@@ -3,11 +3,11 @@
 ## IN-DEV ( version 9 )
 * Script
 ```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/main/ZDex.lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/main/ZDex1.lua"))()
 ```
 * No RemoteSpy Version
 ```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/refs/heads/main/ZDex%20(%20other%20version%20).lua"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/main/ZDex2.lua"))()
 ```
 ## Support
 * Mobile/Pc
