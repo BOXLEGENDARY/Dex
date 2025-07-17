@@ -12620,7 +12620,7 @@ Main = (function()
 
 				if identifyexecutor and type(identifyexecutor) == "function" then
 					Main.Executor = identifyexecutor()
-					warn("[ System ] Executor Detected:", Main.Executor)
+					print("[ System ] Executor Detected:", Main.Executor)
 				else
 				    Main.Executor = "?"
 				    warn("[ System ] Executor Not Detected:", Main.Executor)
