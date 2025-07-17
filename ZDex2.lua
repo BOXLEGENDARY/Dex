@@ -12823,27 +12823,27 @@ Main = (function()
 	
 	Main.CreateMainGui = function()
 		local gui = create({
-            {1,"ScreenGui",{IgnoreGuiInset=true,Name="MainMenu"}},
-            {2,"TextButton",{AnchorPoint=Vector2.new(0.5,0),AutoButtonColor=false,BackgroundColor3=Color3.fromRGB(25, 0, 51),BorderSizePixel=0,Font=Enum.Font.GothamBold,Name="OpenButton",Parent={1},Position=UDim2.new(0.5,0,0,2),Size=UDim2.new(0,38,0,38),Text="ZDex",TextColor3=Color3.fromRGB(170, 0, 255),TextSize=16,TextTransparency=0}},
-            {3,"UICorner",{CornerRadius=UDim.new(0,8),Parent={2}}},
-            {4,"Frame",{AnchorPoint=Vector2.new(0.5,0),BackgroundColor3=Color3.fromRGB(40, 0, 70),ClipsDescendants=true,Name="MainFrame",Parent={2},Position=UDim2.new(0.5,0,1,-4),Size=UDim2.new(0,240,0,208)}},
-            {5,"UICorner",{CornerRadius=UDim.new(0,6),Parent={4}}},
-            {6,"Frame",{BackgroundColor3=Color3.fromRGB(30, 0, 60),Name="BottomFrame",Parent={4},Position=UDim2.new(0,0,1,-28),Size=UDim2.new(1,0,0,28)}},
-            {7,"UICorner",{CornerRadius=UDim.new(0,4),Parent={6}}},
-            {8,"Frame",{BackgroundColor3=Color3.fromRGB(55, 0, 90),BorderSizePixel=0,Name="CoverFrame",Parent={6},Size=UDim2.new(1,0,0,4)}},
-            {9,"Frame",{BackgroundColor3=Color3.fromRGB(170, 0, 255),BorderSizePixel=0,Name="Line",Parent={8},Position=UDim2.new(0,0,0,-1),Size=UDim2.new(1,0,0,1)}},
-            {10,"TextButton",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=Enum.Font.Gotham,Name="Settings",Parent={6},Position=UDim2.new(1,-52,0,2),Size=UDim2.new(0,24,0,24),Text="",TextColor3=Color3.fromRGB(255,255,255),TextSize=14}},
-            {11,"ImageLabel",{BackgroundTransparency=1,Image="rbxassetid://6578871732",ImageTransparency=0.1,Name="Icon",Parent={10},Position=UDim2.new(0,4,0,4),Size=UDim2.new(0,16,0,16)}},
-            {12,"TextButton",{BackgroundTransparency=1,Font=Enum.Font.Gotham,Name="Information",Parent={6},Position=UDim2.new(1,-26,0,2),Size=UDim2.new(0,24,0,24),Text="",TextColor3=Color3.fromRGB(255,255,255),TextSize=14}},
-            {13,"ImageLabel",{BackgroundTransparency=1,Image="rbxassetid://6578933307",ImageTransparency=0.1,Name="Icon",Parent={12},Position=UDim2.new(0,4,0,4),Size=UDim2.new(0,16,0,16)}},
-            {14,"ScrollingFrame",{Active=true,AnchorPoint=Vector2.new(0.5,0),BackgroundTransparency=1,BorderSizePixel=0,Name="AppsFrame",Parent={4},Position=UDim2.new(0.5,0,0,0),ScrollBarImageColor3=Color3.fromRGB(170, 0, 255),ScrollBarThickness=4,Size=UDim2.new(0,236,1,-30)}},
-            {15,"Frame",{BackgroundTransparency=1,Name="Container",Parent={14},Position=UDim2.new(0,7,0,8),Size=UDim2.new(1,-14,0,2)}},
-            {16,"UIGridLayout",{CellSize=UDim2.new(0,66,0,74),Parent={15},SortOrder=Enum.SortOrder.LayoutOrder}},
-            {17,"Frame",{BackgroundTransparency=1,Name="App",Parent={1},Size=UDim2.new(0,100,0,100),Visible=false}},
-            {18,"TextButton",{AutoButtonColor=false,BackgroundColor3=Color3.fromRGB(55, 0, 90),BorderSizePixel=0,Font=Enum.Font.GothamBold,Name="Main",Parent={17},Size=UDim2.new(1,0,0,60),Text="",TextColor3=Color3.fromRGB(170, 0, 255),TextSize=14}},
-            {19,"ImageLabel",{BackgroundTransparency=1,Image="rbxassetid://6579106223",ImageRectSize=Vector2.new(32,32),Name="Icon",Parent={18},Position=UDim2.new(0.5,-16,0,4),Size=UDim2.new(0,32,0,32)}},
-            {20,"TextLabel",{BackgroundTransparency=1,Font=Enum.Font.GothamSemibold,Name="AppName",Parent={18},Position=UDim2.new(0,2,0,38),Size=UDim2.new(1,-4,1,-40),Text="Explorer",TextColor3=Color3.fromRGB(255,255,255),TextSize=14,TextTransparency=0.1,TextWrapped=true}},
-            {21,"Frame",{BackgroundColor3=Color3.fromRGB(170, 0, 255),BorderSizePixel=0,Name="Highlight",Parent={18},Position=UDim2.new(0,0,1,-2),Size=UDim2.new(1,0,0,2)}}
+			{1,"ScreenGui",{IgnoreGuiInset=true,Name="MainMenu"}},
+			{2,"TextButton",{AnchorPoint=Vector2.new(0.5,0),AutoButtonColor=false,BackgroundColor3=Color3.fromRGB(20, 20, 25),BorderSizePixel=0,Font=Enum.Font.GothamBold,Name="OpenButton",Parent={1},Position=UDim2.new(0.5,0,0,2),Size=UDim2.new(0,38,0,38),Text="ZDex",TextColor3=Color3.fromRGB(150, 230, 255),TextSize=16,TextTransparency=0}},
+			{3,"UICorner",{CornerRadius=UDim.new(0,8),Parent={2}}},
+			{4,"Frame",{AnchorPoint=Vector2.new(0.5,0),BackgroundColor3=Color3.fromRGB(30, 30, 35),ClipsDescendants=true,Name="MainFrame",Parent={2},Position=UDim2.new(0.5,0,1,-4),Size=UDim2.new(0,240,0,208)}},
+			{5,"UICorner",{CornerRadius=UDim.new(0,6),Parent={4}}},
+			{6,"Frame",{BackgroundColor3=Color3.fromRGB(20, 20, 25),Name="BottomFrame",Parent={4},Position=UDim2.new(0,0,1,-28),Size=UDim2.new(1,0,0,28)}},
+			{7,"UICorner",{CornerRadius=UDim.new(0,4),Parent={6}}},
+			{8,"Frame",{BackgroundColor3=Color3.fromRGB(40, 40, 45),BorderSizePixel=0,Name="CoverFrame",Parent={6},Size=UDim2.new(1,0,0,4)}},
+			{9,"Frame",{BackgroundColor3=Color3.fromRGB(100, 240, 255),BorderSizePixel=0,Name="Line",Parent={8},Position=UDim2.new(0,0,0,-1),Size=UDim2.new(1,0,0,1)}},
+			{10,"TextButton",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=Enum.Font.Gotham,Name="Settings",Parent={6},Position=UDim2.new(1,-52,0,2),Size=UDim2.new(0,24,0,24),Text="",TextColor3=Color3.fromRGB(200, 255, 255),TextSize=14}},
+			{11,"ImageLabel",{BackgroundTransparency=1,Image="rbxassetid://6578871732",ImageTransparency=0.1,Name="Icon",Parent={10},Position=UDim2.new(0,4,0,4),Size=UDim2.new(0,16,0,16)}},
+			{12,"TextButton",{BackgroundTransparency=1,Font=Enum.Font.Gotham,Name="Information",Parent={6},Position=UDim2.new(1,-26,0,2),Size=UDim2.new(0,24,0,24),Text="",TextColor3=Color3.fromRGB(200, 255, 255),TextSize=14}},
+			{13,"ImageLabel",{BackgroundTransparency=1,Image="rbxassetid://6578933307",ImageTransparency=0.1,Name="Icon",Parent={12},Position=UDim2.new(0,4,0,4),Size=UDim2.new(0,16,0,16)}},
+			{14,"ScrollingFrame",{Active=true,AnchorPoint=Vector2.new(0.5,0),BackgroundTransparency=1,BorderSizePixel=0,Name="AppsFrame",Parent={4},Position=UDim2.new(0.5,0,0,0),ScrollBarImageColor3=Color3.fromRGB(100, 240, 255),ScrollBarThickness=4,Size=UDim2.new(0,236,1,-30)}},
+			{15,"Frame",{BackgroundTransparency=1,Name="Container",Parent={14},Position=UDim2.new(0,7,0,8),Size=UDim2.new(1,-14,0,2)}},
+			{16,"UIGridLayout",{CellSize=UDim2.new(0,66,0,74),Parent={15},SortOrder=Enum.SortOrder.LayoutOrder}},
+			{17,"Frame",{BackgroundTransparency=1,Name="App",Parent={1},Size=UDim2.new(0,100,0,100),Visible=false}},
+			{18,"TextButton",{AutoButtonColor=false,BackgroundColor3=Color3.fromRGB(40, 40, 45),BorderSizePixel=0,Font=Enum.Font.GothamBold,Name="Main",Parent={17},Size=UDim2.new(1,0,0,60),Text="",TextColor3=Color3.fromRGB(100, 240, 255),TextSize=14}},
+			{19,"ImageLabel",{BackgroundTransparency=1,Image="rbxassetid://6579106223",ImageRectSize=Vector2.new(32,32),Name="Icon",Parent={18},Position=UDim2.new(0.5,-16,0,4),Size=UDim2.new(0,32,0,32)}},
+			{20,"TextLabel",{BackgroundTransparency=1,Font=Enum.Font.GothamSemibold,Name="AppName",Parent={18},Position=UDim2.new(0,2,0,38),Size=UDim2.new(1,-4,1,-40),Text="Explorer",TextColor3=Color3.fromRGB(220, 240, 255),TextSize=14,TextTransparency=0.1,TextWrapped=true}},
+			{21,"Frame",{BackgroundColor3=Color3.fromRGB(100, 240, 255),BorderSizePixel=0,Name="Highlight",Parent={18},Position=UDim2.new(0,0,1,-2),Size=UDim2.new(1,0,0,2)}}
 		})
 		Main.MainGui = gui
 		Main.AppsFrame = gui.OpenButton.MainFrame.AppsFrame
