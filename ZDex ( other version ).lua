@@ -224,8 +224,6 @@ end
 
 monitorAccess()
 
-warn("Executor: " .. (identifyexecutor and identifyexecutor() or "?"))
-
 local success, err = pcall(function()
     local logCons = getconnections(game:GetService("LogService").MessageOut)
     for _, c in ipairs(logCons) do
@@ -12280,7 +12278,10 @@ Main = (function()
 				env.getnilinstances = getnilinstances or get_nil_instances
 				env.getloadedmodules = getloadedmodules
 
-				-- if identifyexecutor and type(identifyexecutor) == "function" then Main.Executor = identifyexecutor() end
+				if identifyexecutor and type(identifyexecutor) == "function" then
+					Main.Executor = identifyexecutor()
+					warn("[⚙] Executor Detected:", Main.Executor)
+				end
 
 				Main.GuiHolder = Main.Elevated and service.CoreGui or plr:FindFirstChildWhichIsA("PlayerGui")
 
