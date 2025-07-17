@@ -12605,39 +12605,13 @@ Main = (function()
 				env.getinfo = (debug and (debug.getinfo or debug.info)) or getinfo
 				env.islclosure = islclosure or is_l_closure or is_lclosure
 				env.checkcaller = checkcaller
-				--env.getreg = getreg
+				env.getreg = getreg
 				env.getgc = getgc or get_gc_objects
-				--env.base64encode = crypt and crypt.base64 and crypt.base64.encode
 				env.getscriptbytecode = getscriptbytecode
 
 				-- other
-				--env.setfflag = setfflag
-				--env.request = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request
-				--[[env.decompile = decompile or (env.getscriptbytecode and env.request and env.base64encode and function(scr)
-						local s, bytecode = pcall(env.getscriptbytecode, scr)
-						if not s then
-								return "failed to get bytecode " .. tostring(bytecode)
-						end
-
-						local response = env.request({
-								Url = "https://unluau.lonegladiator.dev/unluau/decompile",
-								Method = "POST",
-								Headers = {
-										["Content-Type"] = "application/json"
-								},
-								Body = service.HttpService:JSONEncode({
-										version = 5,
-										bytecode = env.base64encode(bytecode)
-								})
-						})
-
-						local decoded = service.HttpService:JSONDecode(response.Body)
-						if decoded.status ~= "ok" then
-								return "decompilation failed: " .. tostring(decoded.status)
-						end
-
-						return decoded.output
-				end)]]
+				env.setfflag = setfflag
+				env.request = (syn and syn.request) or (http and http.request) or (http_request) or (request)
 				env.protectgui = protect_gui or (syn and syn.protect_gui)
 				env.gethui = gethui or get_hidden_gui
 				env.setclipboard = setclipboard or toclipboard or set_clipboard or (Clipboard and Clipboard.set)
