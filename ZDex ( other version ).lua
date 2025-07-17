@@ -12248,8 +12248,8 @@ Main = (function()
 
 				-- other
 				--env.setfflag = setfflag
-				--[[env.request = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request
-				env.decompile = decompile or (env.getscriptbytecode and env.request and env.base64encode and function(scr)
+				--env.request = (syn and syn.request) or (http and http.request) or http_request or (fluxus and fluxus.request) or request
+				--[[env.decompile = decompile or (env.getscriptbytecode and env.request and env.base64encode and function(scr)
 						local s, bytecode = pcall(env.getscriptbytecode, scr)
 						if not s then
 								return "failed to get bytecode " .. tostring(bytecode)
