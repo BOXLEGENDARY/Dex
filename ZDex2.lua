@@ -5911,7 +5911,9 @@ local function main()
 					loadstring(Console.CommandLine.ScrollingFrame.TextBox.Text)()
 				end
 			end)
-		end
+		end;
+		task.spawn(C_1c);
+	end
 
 	return Console
 end
