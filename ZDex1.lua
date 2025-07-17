@@ -121,6 +121,7 @@ end
 
 local GENV = getGlobalEnv()
 
+-- Configuration
 local CONFIG = {
     ENABLE_ACCESS_MONITOR = true,
 }
