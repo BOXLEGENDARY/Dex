@@ -13012,7 +13012,7 @@ Main = (function()
 		intro.SetProgress("Fetching API",0.35)
 		API = Main.FetchAPI(
 			function()
-				intro.SetProgress("still Fetching API Please Wait",0.4)
+				intro.SetProgress("Please Wait",0.4)
 			end,
 			function()
 				intro.SetProgress("Almost Done",0.45)
