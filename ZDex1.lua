@@ -12647,17 +12647,28 @@ Main = (function()
 		recur(DefaultSettings,Settings)
 	end
 	
-	Main.FetchAPI = function()
-		local api,rawAPI
+	Main.FetchAPI = function(callbackiflong, callbackiftoolong)
+		local downloaded = false
+		local api, rawAPI
+	
 		if Main.Elevated then
 			if Main.LocalDepsUpToDate() then
 				local localAPI = Lib.ReadFile("dex/rbx_api.dat")
-				if localAPI then 
+				if localAPI then
 					rawAPI = localAPI
 				else
 					Main.DepsVersionData[1] = ""
 				end
 			end
+	
+			task.spawn(function()
+				task.wait(10)
+				if not downloaded and callbackiflong then callbackiflong() end
+	
+				task.wait(20)
+				if not downloaded and callbackiftoolong then callbackiftoolong() end
+			end)
+	
 			rawAPI = rawAPI or game:HttpGet("http://setup.roblox.com/"..Main.RobloxVersion.."-API-Dump.json")
 		else
 			if script:FindFirstChild("API") then
@@ -12666,6 +12677,8 @@ Main = (function()
 				error("NO API EXISTS")
 			end
 		end
+		downloaded = true
+		
 		Main.RawAPI = rawAPI
 		api = service.HttpService:JSONDecode(rawAPI)
 		
