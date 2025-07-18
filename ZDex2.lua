@@ -12997,7 +12997,14 @@ Main = (function()
 		
 		-- Fetch external deps
 		intro.SetProgress("Fetching API",0.35)
-		API = Main.FetchAPI()
+		API = Main.FetchAPI(
+			function()
+				intro.SetProgress("Fetching API Please Wait",0.4)
+			end,
+			function()
+				intro.SetProgress("Almost Done",0.45)
+			end
+		)
 		Lib.FastWait()
 		intro.SetProgress("Fetching RMD",0.5)
 		RMD = Main.FetchRMD()
