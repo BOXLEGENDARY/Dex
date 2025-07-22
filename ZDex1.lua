@@ -17,7 +17,6 @@ local cloneref = cloneref or function(...) return ... end
 local getnilinstances = getnilinstances or function() return {} end
 local safe_pcall = xpcall
 local function ERRhandler(err) return nil end
-local debug = debug or {}
 
 -- Safe environment
 local original_env = (getgenv and getgenv()) or (getfenv and getfenv(1)) or _ENV
