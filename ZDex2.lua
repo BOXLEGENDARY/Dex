@@ -4510,89 +4510,122 @@ local function main()
 		dumpbtn.MouseButton1Click:Connect(function()
 			if PreviousScr ~= nil then
 				pcall(function()
-					local getgc = getgc or get_gc_objects
-					local getupvalues = (debug and debug.getupvalues) or getupvalues or getupvals
-					local getconstants = (debug and debug.getconstants) or getconstants or getconsts
-					local getinfo = (debug and (debug.getinfo or debug.info)) or getinfo
+					local getgc = env.getgc
+					local getupvalues = env.getupvalues
+					local getconstants = env.getconstants
+					local getinfo = env.getinfo
+					local getlocal = env.getlocal
 					local original = ("\n-- // Function Dumper \n-- // Script Path: %s\n\n--[["):format(PreviousScr:GetFullName())
 					local dump = original
 					local functions, function_count, data_base = {}, 0, {}
+		
 					function functions:add_to_dump(str, indentation, new_line)
-						local new_line = new_line or true
-						dump = dump .. ("%s%s%s"):format(string.rep("		", indentation), tostring(str), new_line and "\n" or "")
+						local new_line = (new_line == nil) and true or new_line
+						dump = dump .. (string.rep("    ", indentation or 0) .. tostring(str) .. (new_line and "\n" or ""))
 					end
+		
 					function functions:get_function_name(func)
-						local n = getinfo(func).name
-						return n ~= "" and n or "Unknown Name"
+						local name = getinfo(func).name or ""
+						return name ~= "" and name or "UnknownName"
 					end
-					function functions:dump_table(input, indent, index)
-						local indent = indent < 0 and 0 or indent
-						functions:add_to_dump(("%s [%s] %s"):format(tostring(index), tostring(typeof(input)), tostring(input)), indent - 1)
+		
+					function functions:dump_table(input, indent, index, depth)
+						depth = depth or 0
+						indent = (indent or 0) < 0 and 0 or (indent or 0)
+		
+						functions:add_to_dump(("%s [%s] %s"):format(tostring(index or ""), tostring(typeof(input)), tostring(input)), indent - 1)
 						local count = 0
-						for index, value in pairs(input) do
+						for k, v in pairs(input) do
 							count = count + 1
-							if type(value) == "function" then
-								functions:add_to_dump(("%d [function] = %s"):format(count, functions:get_function_name(value)), indent)
-							elseif type(value) == "table" then
-								if not data_base[value] then
-									data_base[value] = true
+							if type(v) == "function" then
+								functions:add_to_dump(("%d [function] = %s"):format(count, functions:get_function_name(v)), indent)
+							elseif type(v) == "table" then
+								if not data_base[v] then
+									data_base[v] = true
 									functions:add_to_dump(("%d [table]:"):format(count), indent)
-									functions:dump_table(value, indent + 1, index)
+									functions:dump_table(v, indent + 1, k, depth + 1)
 								else
 									functions:add_to_dump(("%d [table] (Recursive table detected)"):format(count), indent)
 								end
+							else
+								functions:add_to_dump(("%d [%s] = %s"):format(count, tostring(typeof(v)), tostring(v)), indent)
+							end
+						end
+						-- dump metatable
+						local mt = getmetatable(input)
+						if mt and not data_base[mt] then
+							data_base[mt] = true
+							functions:add_to_dump(string.rep("  ", indent) .. "[Metatable]:", indent)
+							functions:dump_table(mt, indent + 1, "metatable", depth + 1)
+						end
+					end
+		
+					function functions:dump_function(input, indent)
+						indent = indent or 0
+						functions:add_to_dump(("\nFunction Dump: %s"):format(functions:get_function_name(input)), indent)
+		
+						-- Dump locals
+						functions:add_to_dump("Local Variables:", indent)
+						local i = 1
+						while true do
+							local name, value = getlocal(input, i)
+							if not name then break end
+							functions:add_to_dump(("%d [%s] = %s"):format(i, tostring(name), tostring(value)), indent + 1)
+							i = i + 1
+						end
+		
+						-- Dump upvalues
+						functions:add_to_dump("\nFunction Upvalues:", indent)
+						for index, upvalue in pairs(getupvalues(input)) do
+							if type(upvalue) == "function" then
+								functions:add_to_dump(("%d [function] = %s"):format(index, functions:get_function_name(upvalue)), indent + 1)
+							elseif type(upvalue) == "table" then
+								if not data_base[upvalue] then
+									data_base[upvalue] = true
+									functions:add_to_dump(("%d [table]:"):format(index), indent + 1)
+									functions:dump_table(upvalue, indent + 2, index)
 								else
-												functions:add_to_dump(("%d [%s] = %s"):format(count, tostring(typeof(value)), tostring(value)), indent)
-										 end
-									end
-							 end
-							 function functions:dump_function(input, indent)
-									functions:add_to_dump(("\nFunction Dump: %s"):format(functions:get_function_name(input)), indent)
-									functions:add_to_dump(("\nFunction Upvalues: %s"):format(functions:get_function_name(input)), indent)
-									for index, upvalue in pairs(getupvalues(input)) do
-										 if type(upvalue) == "function" then
-												functions:add_to_dump(("%d [function] = %s"):format(index, functions:get_function_name(upvalue)), indent + 1)
-										 elseif type(upvalue) == "table" then
-												if not data_base[upvalue] then
-													 data_base[upvalue] = true
-													 functions:add_to_dump(("%d [table]:"):format(index), indent + 1)
-													 functions:dump_table(upvalue, indent + 2, index)
-												else
-													 functions:add_to_dump(("%d [table] (Recursive table detected)"):format(index), indent + 1)
-												end
-										 else
-												functions:add_to_dump(("%d [%s] = %s"):format(index, tostring(typeof(upvalue)), tostring(upvalue)), indent + 1)
-										 end
-									end
-									functions:add_to_dump(("\nFunction Constants: %s"):format(functions:get_function_name(input)), indent)
-									for index, constant in pairs(getconstants(input)) do
-										 if type(constant) == "function" then
-												functions:add_to_dump(("%d [function] = %s"):format(index, functions:get_function_name(constant)), indent + 1)
-										 elseif type(constant) == "table" then
-												if not data_base[constant] then
-													 data_base[constant] = true
-													 functions:add_to_dump(("%d [table]:"):format(index), indent + 1)
-													 functions:dump_table(constant, indent + 2, index)
-												else
-													 functions:add_to_dump(("%d [table] (Recursive table detected)"):format(index), indent + 1)
-												end
-										 else
-												functions:add_to_dump(("%d [%s] = %s"):format(index, tostring(typeof(constant)), tostring(constant)), indent + 1)
-										 end
-									end
-							 end
-							 for _, _function in pairs(getgc()) do
-									if typeof(_function) == "function" and getfenv(_function).script and getfenv(_function).script == PreviousScr then
-										 functions:dump_function(_function, 0)
-										 functions:add_to_dump("\n" .. ("="):rep(100), 0, false)
-									end
-							 end
-							 local source = codeFrame:GetText()
-							 
-							 if dump ~= original then source = source .. dump .. "]]" end
-							 codeFrame:SetText(source)
-						end)
-				 end
+									functions:add_to_dump(("%d [table] (Recursive table detected)"):format(index), indent + 1)
+								end
+							else
+								functions:add_to_dump(("%d [%s] = %s"):format(index, tostring(typeof(upvalue)), tostring(upvalue)), indent + 1)
+							end
+						end
+		
+						-- Dump constants
+						functions:add_to_dump("\nFunction Constants:", indent)
+						for index, constant in pairs(getconstants(input)) do
+							if type(constant) == "function" then
+								functions:add_to_dump(("%d [function] = %s"):format(index, functions:get_function_name(constant)), indent + 1)
+							elseif type(constant) == "table" then
+								if not data_base[constant] then
+									data_base[constant] = true
+									functions:add_to_dump(("%d [table]:"):format(index), indent + 1)
+									functions:dump_table(constant, indent + 2, index)
+								else
+									functions:add_to_dump(("%d [table] (Recursive table detected)"):format(index), indent + 1)
+								end
+							else
+								functions:add_to_dump(("%d [%s] = %s"):format(index, tostring(typeof(constant)), tostring(constant)), indent + 1)
+							end
+						end
+					end
+		
+					-- Iterate all functions in getgc
+					for _, _function in pairs(getgc()) do
+						if typeof(_function) == "function" and getfenv(_function).script == PreviousScr then
+							functions:dump_function(_function, 0)
+							functions:add_to_dump("\n" .. ("="):rep(100), 0, false)
+						end
+					end
+		
+					local source = codeFrame:GetText()
+					if dump ~= original then
+						source = source .. dump .. "]]"
+					end
+					codeFrame:SetText(source)
+				end)
+			end
 		end)
 	 end
 
@@ -12131,6 +12164,7 @@ Main = (function()
 				env.getupvalues = (debug and debug.getupvalues) or getupvalues or getupvals
 				env.getconstants = (debug and debug.getconstants) or getconstants or getconsts
 				env.getinfo = (debug and (debug.getinfo or debug.info)) or getinfo
+                env.getlocal = (debug and debug.getlocal) or function() return nil end
 				env.islclosure = islclosure or is_l_closure or is_lclosure
 				env.checkcaller = checkcaller
 				env.getreg = getreg
