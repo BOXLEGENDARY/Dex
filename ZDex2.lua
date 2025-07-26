@@ -4538,17 +4538,17 @@ local function main()
 						for k, v in pairs(input) do
 							count = count + 1
 							if type(v) == "function" then
-								functions:add_to_dump(("%d [function] = %s"):format(count, functions:get_function_name(v)), indent)
+								functions:add_to_dump(("[%d] (function) = %s"):format(count, functions:get_function_name(v)), indent)
 							elseif type(v) == "table" then
 								if not data_base[v] then
 									data_base[v] = true
-									functions:add_to_dump(("%d [table]:"):format(count), indent)
+									functions:add_to_dump(("[%d] (table):"):format(count), indent)
 									functions:dump_table(v, indent + 1, k, depth + 1)
 								else
-									functions:add_to_dump(("%d [table] (Recursive table detected)"):format(count), indent)
+									functions:add_to_dump(("[%d] (table) (Recursive table detected)"):format(count), indent)
 								end
 							else
-								functions:add_to_dump(("%d [%s] = %s"):format(count, tostring(typeof(v)), tostring(v)), indent)
+								functions:add_to_dump(("[%d] (%s) = %s"):format(count, tostring(typeof(v)), tostring(v)), indent)
 							end
 						end
 						-- dump metatable
