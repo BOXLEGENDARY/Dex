@@ -4533,22 +4533,22 @@ local function main()
 						depth = depth or 0
 						indent = (indent or 0) < 0 and 0 or (indent or 0)
 		
-						functions:add_to_dump(("%s [%s]: %s"):format(tostring(index or "?"), typeof(input), tostring(input)), math.max((indent or 0) - 1, 0))
+						functions:add_to_dump(("[%s] [%s]: %s"):format(tostring(index or "?"), typeof(input), tostring(input)), math.max((indent or 0) - 1, 0))
 						local count = 0
 						for k, v in pairs(input) do
 							count = count + 1
 							if type(v) == "function" then
-								functions:add_to_dump(("%d [function] = %s"):format(count, functions:get_function_name(v)), indent)
+								functions:add_to_dump(("[%d] [function] = %s"):format(count, functions:get_function_name(v)), indent)
 							elseif type(v) == "table" then
 								if not data_base[v] then
 									data_base[v] = true
-									functions:add_to_dump(("%d [table]:"):format(count), indent)
+									functions:add_to_dump(("[%d] [table]:"):format(count), indent)
 									functions:dump_table(v, indent + 1, k, depth + 1)
 								else
-									functions:add_to_dump(("%d [table] (Recursive table detected)"):format(count), indent)
+									functions:add_to_dump(("[%d] [table] (Recursive table detected)"):format(count), indent)
 								end
 							else
-								functions:add_to_dump(("%d [%s] = %s"):format(count, tostring(typeof(v)), tostring(v)), indent)
+								functions:add_to_dump(("[%d] [%s] = %s"):format(count, tostring(typeof(v)), tostring(v)), indent)
 							end
 						end
 						-- dump metatable
@@ -4570,7 +4570,7 @@ local function main()
 						while true do
 							local name, value = getlocal(input, i)
 							if not name then break end
-							functions:add_to_dump(("%d [%s] = %s"):format(i, tostring(name), tostring(value)), indent + 1)
+							functions:add_to_dump(("[%d] [%s] = %s"):format(i, tostring(name), tostring(value)), indent + 1)
 							i = i + 1
 						end
 		
@@ -4578,17 +4578,17 @@ local function main()
 						functions:add_to_dump("\nFunction Upvalues:", indent)
 						for index, upvalue in pairs(getupvalues(input)) do
 							if type(upvalue) == "function" then
-								functions:add_to_dump(("%d [function] = %s"):format(index, functions:get_function_name(upvalue)), indent + 1)
+								functions:add_to_dump(("[%d] [function] = %s"):format(index, functions:get_function_name(upvalue)), indent + 1)
 							elseif type(upvalue) == "table" then
 								if not data_base[upvalue] then
 									data_base[upvalue] = true
-									functions:add_to_dump(("%d [table]:"):format(index), indent + 1)
+									functions:add_to_dump(("[%d] [table]:"):format(index), indent + 1)
 									functions:dump_table(upvalue, indent + 2, index)
 								else
-									functions:add_to_dump(("%d [table] (Recursive table detected)"):format(index), indent + 1)
+									functions:add_to_dump(("[%d] [table] (Recursive table detected)"):format(index), indent + 1)
 								end
 							else
-								functions:add_to_dump(("%d [%s] = %s"):format(index, tostring(typeof(upvalue)), tostring(upvalue)), indent + 1)
+								functions:add_to_dump(("[%d] [%s] = %s"):format(index, tostring(typeof(upvalue)), tostring(upvalue)), indent + 1)
 							end
 						end
 		
@@ -4596,17 +4596,17 @@ local function main()
 						functions:add_to_dump("\nFunction Constants:", indent)
 						for index, constant in pairs(getconstants(input)) do
 							if type(constant) == "function" then
-								functions:add_to_dump(("%d [function] = %s"):format(index, functions:get_function_name(constant)), indent + 1)
+								functions:add_to_dump(("[%d] [function] = %s"):format(index, functions:get_function_name(constant)), indent + 1)
 							elseif type(constant) == "table" then
 								if not data_base[constant] then
 									data_base[constant] = true
-									functions:add_to_dump(("%d [table]:"):format(index), indent + 1)
+									functions:add_to_dump(("[%d] [table]:"):format(index), indent + 1)
 									functions:dump_table(constant, indent + 2, index)
 								else
-									functions:add_to_dump(("%d [table] (Recursive table detected)"):format(index), indent + 1)
+									functions:add_to_dump(("[%d] [table] (Recursive table detected)"):format(index), indent + 1)
 								end
 							else
-								functions:add_to_dump(("%d [%s] = %s"):format(index, tostring(typeof(constant)), tostring(constant)), indent + 1)
+								functions:add_to_dump(("[%d] [%s] = %s"):format(index, tostring(typeof(constant)), tostring(constant)), indent + 1)
 							end
 						end
 					end
