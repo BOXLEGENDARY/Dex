@@ -4536,7 +4536,7 @@ local function main()
 						depth = depth or 0
 						indent = (indent or 0) < 0 and 0 or (indent or 0)
 		
-						functions:add_to_dump(("%s [%s] %s"):format(tostring(index or ""), tostring(typeof(input)), tostring(input)), indent - 1)
+						functions:add_to_dump(("[%s] (%s): %s"):format(tostring(index or "?"), typeof(input), tostring(input)), math.max((indent or 0) - 1, 0))
 						local count = 0
 						for k, v in pairs(input) do
 							count = count + 1
