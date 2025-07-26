@@ -12973,10 +12973,6 @@ Main = (function()
 			env.writefile("dex/deps_version.dat", Main.ClientVersion .. "\n" .. Main.RobloxVersion)
 			env.writefile("dex/rbx_api.dat", Main.RawAPI)
 			env.writefile("dex/rbx_rmd.dat", Main.RawRMD)
-		    -- i dont use normal print for some reason
-			task.defer(function()
-				print("[System] ZDex has updated Dependencies")
-			end)
 		end
 		
 		-- Load other modules
