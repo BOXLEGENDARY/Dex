@@ -25,8 +25,6 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 [Moon](https://github.com/LorekeeperZinnia/Dex) (Creator)
 
-[Cazan](https://github.com/Cazzanos) (Model Viewer)
-
 [chillz](https://github.com/AZYsGithub/DexPlusPlus) ( Open Source i use )
 # Luau Decompile
 ## Credits
