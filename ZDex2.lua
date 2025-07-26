@@ -12970,15 +12970,9 @@ Main = (function()
 		
 		-- Save external deps locally if needed
 		if Main.Elevated and env.writefile and not Main.LocalDepsUpToDate() then
-            print("[ZDex] Update Check")
 			env.writefile("dex/deps_version.dat",Main.ClientVersion.."\n"..Main.RobloxVersion)
-            print("[ZDex] Updated: deps_version.dat")
 			env.writefile("dex/rbx_api.dat",Main.RawAPI)
-            print("[ZDex] Updated: rbx_api.dat")
 			env.writefile("dex/rbx_rmd.dat",Main.RawRMD)
-            print("[ZDex] Update: rbx_rmd.dat")
-        else
-            print("[ZDex] Nothing to update")
 		end
 		
 		-- Load other modules
