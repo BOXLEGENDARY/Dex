@@ -12950,7 +12950,7 @@ Main = (function()
 					Main.RobloxVersion = Main.DepsVersionData[2]
 				end
 			end
-			Main.RobloxVersion = Main.RobloxVersion or game:HttpGet("http://setup.roblox.com/versionQTStudio")
+			Main.RobloxVersion = Main.RobloxVersion or game:HttpGet("https://clientsettings.roblox.com/v2/client-version/WindowsStudio64/channel/LIVE"):match("(version%-[%w]+)")
 		end
 		
 		-- Fetch external deps
