@@ -1,6 +1,6 @@
 # ZDex
 * not close to release
-## IN-DEV ( version 9 )
+## IN-DEV ( version 10 )
 * Script
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/main/ZDex1.lua"))()
@@ -20,6 +20,11 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 * ModelView
 * Console
 * RemoteSpy
+## Update Log
+# in dev 1-9
+* i forgot
+# in dev 10
+* change renderSide old to new
 ## Credits
 [ZxL](https://youtu.be/dQw4w9WgXcQ?si=IkAXjfO3Uf2UOJ9V) (Owner)
 
