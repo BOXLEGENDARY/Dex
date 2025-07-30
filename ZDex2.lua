@@ -1501,11 +1501,11 @@ local function main()
 		        local sList = selection.List
 		        if #sList == 1 then
 		            local obj = sList[1].Obj
-		            env.saveinstance(obj, "dex/assets/Place_" .. game.PlaceId .. "_" .. obj.ClassName .. "_" .. obj.Name .. "_" .. os.time())
+		            env.saveinstance(obj, "dex/saved/Place_" .. game.PlaceId .. "_" .. obj.ClassName .. "_" .. obj.Name .. "_" .. os.time())
 		        elseif #sList > 1 then
 		            for i = 1, #sList do
 		                local obj = sList[i].Obj
-		                env.saveinstance(obj, "dex/assets/Place_" .. game.PlaceId .. "_" .. obj.ClassName .. "_" .. obj.Name .. "_" .. os.time())
+		                env.saveinstance(obj, "dex/saved/Place_" .. game.PlaceId .. "_" .. obj.ClassName .. "_" .. obj.Name .. "_" .. os.time())
 		                task.wait(0.1)
 		            end
 		        end
@@ -5032,7 +5032,7 @@ local function main()
 			if model then
 				window:SetTitle(originalModel.Name.." - Model Viewer - Saving")
 				local success, result = pcall(env.saveinstance,
-					originalModel, "dex/assets/Place_"..game.PlaceId.."_"..originalModel.Name.."_"..os.time(),
+					originalModel, "dex/saved/Place_"..game.PlaceId.."_"..originalModel.Name.."_"..os.time(),
 					{
 						-- hello
 					}
