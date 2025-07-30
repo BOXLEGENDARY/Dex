@@ -180,7 +180,7 @@ local Decompile do
 end
 
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Notepad, ModelViewer, Console, RemoteSpy, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, Script, ModelViewer, Console, RemoteSpy, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -202,7 +202,7 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
-	Notepad = Apps.Notepad
+	Script = Apps.Script
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
     RemoteSpy = Apps.RemoteSpy
@@ -2476,7 +2476,7 @@ end,
 
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Notepad, ModelViewer, Console, RemoteSpy, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, Script, ModelViewer, Console, RemoteSpy, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -2498,7 +2498,7 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
-	Notepad = Apps.Notepad
+	Script = Apps.Script
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
     RemoteSpy = Apps.RemoteSpy
@@ -4433,7 +4433,7 @@ end,
 
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Notepad, ModelViewer, Console, RemoteSpy, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, Script, ModelViewer, Console, RemoteSpy, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -4455,7 +4455,7 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
-	Notepad = Apps.Notepad
+	Script = Apps.Script
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
     RemoteSpy = Apps.RemoteSpy
@@ -4656,7 +4656,7 @@ end,
 ]]
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Script, ModelViewer, Console, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, Script, ModelViewer, Console, RemoteSpy, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -4681,6 +4681,7 @@ local function initAfterMain()
 	Script = Apps.Script
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
+    RemoteSpy = Apps.RemoteSpy
 	Notebook = Apps.Notebook
 end
 
@@ -5017,7 +5018,7 @@ end,
 
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Notepad, ModelViewer, Console, RemoteSpy, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, Script, ModelViewer, Console, RemoteSpy, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -5039,7 +5040,7 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
-	Notepad = Apps.Notepad
+	Script = Apps.Script
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
     RemoteSpy = Apps.RemoteSpy
@@ -5416,7 +5417,7 @@ end,
 ]]
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Notepad, ModelViewer, Console, RemoteSpy, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, Script, ModelViewer, Console, RemoteSpy, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -5438,7 +5439,7 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
-	Notepad = Apps.Notepad
+	Script = Apps.Script
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
     RemoteSpy = Apps.RemoteSpy
@@ -6207,9 +6208,9 @@ end
 end,
 ["RemoteSpy"] = function()
 -- Common Locals
-local Main, Lib, Apps, Settings
-local Explorer, Properties, ScriptViewer, Notepad, ModelViewer, Console, RemoteSpy, Notebook -- Major Apps
-local API, RMD, env, service, plr, create, createSimple
+local Main,Lib,Apps,Settings -- Main Containers
+local Explorer, Properties, ScriptViewer, Script, ModelViewer, Console, RemoteSpy, Notebook -- Major Apps
+local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
 	Main = data.Main
@@ -6230,10 +6231,10 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
-	Notepad = Apps.Notepad
+	Script = Apps.Script
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
-	RemoteSpy = Apps.RemoteSpy
+    RemoteSpy = Apps.RemoteSpy
 	Notebook = Apps.Notebook
 end
 
@@ -6571,7 +6572,7 @@ end,
 
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Notepad, ModelViewer, Console, RemoteSpy, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, Script, ModelViewer, Console, RemoteSpy, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -6593,7 +6594,7 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
-	Notepad = Apps.Notepad
+	Script = Apps.Script
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
     RemoteSpy = Apps.RemoteSpy
