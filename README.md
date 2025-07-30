@@ -22,6 +22,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 * RemoteSpy
 ## Update Log ( in-dev 10 )
 * change renderSide old to new
+* supprot special case BasePart.BrickColor to BasePart.Color
 ## Credits
 [ZxL](https://youtu.be/dQw4w9WgXcQ?si=IkAXjfO3Uf2UOJ9V) (Owner)
 
