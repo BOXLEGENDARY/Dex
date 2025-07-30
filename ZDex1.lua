@@ -4648,10 +4648,15 @@ end
 
 return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
 end,
-["Notepad"] = function()
+["Script"] = function()
+--[[
+	Script 
+	
+	u can script any u want
+]]
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Notepad, ModelViewer, Console, RemoteSpy, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, Script, ModelViewer, Console, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -4673,85 +4678,335 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
-	Notepad = Apps.Notepad
+	Script = Apps.Script
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
-    RemoteSpy = Apps.RemoteSpy
 	Notebook = Apps.Notebook
 end
 
 local function main()
-	local Notepad = {}
+	local Script = {}
 
-	local window, codeFrame
+	local window,codeFrame
 
-	Notepad.Init = function()
+	local output = {}
+	local outputMax = 1000
+	local outputOn = true
+
+	Script.Init = function()
+		local colorOutput = {
+			[0] = Color3.new(1,1,1),
+			[1] = Color3.new(0.4, 0.5, 1),
+			[2] = Color3.new(1, 0.6, 0.4),
+			[3] = Color3.new(1, 0, 0)	
+		}
+		
 		window = Lib.Window.new()
-		window:SetTitle("Notepad")
-		window:Resize(500, 400)
-		Notepad.Window = window
+		window:SetTitle("Script")
+		window:Resize(500,350)
+		window.PosX = 20
+		window.PosY = workspace.CurrentCamera.ViewportSize.Y - 400
+		Script.Window = window
 
+		local exeFrame = Instance.new("Frame")
+		exeFrame.BackgroundTransparency = 1
+		exeFrame.Position = UDim2.new(0,0,0,20)
+		exeFrame.Size = UDim2.new(1,0,1,-20)
+		exeFrame.Parent = window.GuiElems.Content
+
+		local consoleFrame = Instance.new("Frame")
+		consoleFrame.BackgroundTransparency = 1
+		consoleFrame.Position = UDim2.new(0,0,0,20)
+		consoleFrame.Size = UDim2.new(1,0,1,-20)
+		consoleFrame.Visible = false
+		consoleFrame.Parent = window.GuiElems.Content
+
+		local function switchTab(tab)
+			if tab == "Executor" then
+				exeFrame.Visible = true
+				consoleFrame.Visible = false
+			else
+				exeFrame.Visible = false
+				consoleFrame.Visible = true
+			end
+		end
+
+		-- Exec
 		codeFrame = Lib.CodeFrame.new()
-		codeFrame.Frame.Position = UDim2.new(0, 0, 0, 20)
-		codeFrame.Frame.Size = UDim2.new(1, 0, 1, -20)
-		codeFrame.Frame.Parent = window.GuiElems.Content
+		codeFrame.Frame.Position = UDim2.new(0,0,0,0)
+		codeFrame.Frame.Size = UDim2.new(1,0,1,-25)
+		codeFrame.Frame.Parent = exeFrame
 
-		local execute = Instance.new("TextButton", window.GuiElems.Content)
-		execute.BackgroundTransparency = 1
-		execute.Position = UDim2.new(0, 0, 0, 0)
-		execute.Size = UDim2.new(0.25, 0, 0, 20)
-		execute.Text = "Execute"
-		execute.TextColor3 = Color3.new(1, 1, 1)
+		local btnExecutor = Instance.new("TextButton",window.GuiElems.Content)
+		btnExecutor.BackgroundTransparency = 1
+		btnExecutor.Size = UDim2.new(0.5,0,0,20)
+		btnExecutor.Text = "Executor"
+		btnExecutor.TextColor3 = Color3.new(1,1,1)
 
-		execute.MouseButton1Click:Connect(function()
-			local source = codeFrame:GetText()
-			loadstring(source)()
+		btnExecutor.MouseButton1Click:Connect(function()
+			switchTab("Executor")
 		end)
 
-		local clear = Instance.new("TextButton", window.GuiElems.Content)
-		clear.BackgroundTransparency = 1
-		clear.Position = UDim2.new(0.25, 0, 0, 0)
-		clear.Size = UDim2.new(0.25, 0, 0, 20)
-		clear.Text = "Clear"
-		clear.TextColor3 = Color3.new(1, 1, 1)
+		local btnConsole = Instance.new("TextButton",window.GuiElems.Content)
+		btnConsole.BackgroundTransparency = 1
+		btnConsole.Position = UDim2.new(0.5,0,0,0)
+		btnConsole.Size = UDim2.new(0.5,0,0,20)
+		btnConsole.Text = "Console"
+		btnConsole.TextColor3 = Color3.new(1,1,1)
 
-		clear.MouseButton1Click:Connect(function()
+		btnConsole.MouseButton1Click:Connect(function()
+			switchTab("Console")
+		end)
+
+		local exeBtn = Instance.new("TextButton",exeFrame)
+		exeBtn.BackgroundTransparency = 1
+		exeBtn.Position = UDim2.new(0,0,1,-25)
+		exeBtn.Size = UDim2.new(1/3,0,0,25)
+		exeBtn.Text = "Execute"
+		exeBtn.TextColor3 = Color3.new(1,1,1)
+
+		exeBtn.MouseButton1Click:Connect(function()
+			local source = codeFrame:GetText()
+			local success, err = pcall(function()
+				loadstring(source)()
+			end)
+			if not success then
+				print("Error executing code:", err)
+			end
+		end)
+
+		local exeConsoleBtn = Instance.new("TextButton",exeFrame)
+		exeConsoleBtn.BackgroundTransparency = 1
+		exeConsoleBtn.Position = UDim2.new(1/3,0,1,-25)
+		exeConsoleBtn.Size = UDim2.new(1/3,0,0,25)
+		exeConsoleBtn.Text = "Execute & Console"
+		exeConsoleBtn.TextColor3 = Color3.new(1,1,1)
+
+		exeConsoleBtn.MouseButton1Click:Connect(function()
+			local source = codeFrame:GetText()
+			local success, err = pcall(function()
+				loadstring(source)()
+			end)
+			if not success then
+				print("Error executing code:", err)
+			end
+			switchTab("Console")
+		end)
+
+		local clearBtn = Instance.new("TextButton",exeFrame)
+		clearBtn.BackgroundTransparency = 1
+		clearBtn.Position = UDim2.new(2/3,0,1,-25)
+		clearBtn.Size = UDim2.new(1/3,0,0,25)
+		clearBtn.Text = "Clear"
+		clearBtn.TextColor3 = Color3.new(1,1,1)
+
+		clearBtn.MouseButton1Click:Connect(function()
 			codeFrame:SetText("")
 		end)
 
-		local copy = Instance.new("TextButton", window.GuiElems.Content)
-		copy.BackgroundTransparency = 1
-		copy.Position = UDim2.new(0.5, 0, 0, 0)
-		copy.Size = UDim2.new(0.25, 0, 0, 20)
-		copy.Text = "Copy to Clipboard"
-		copy.TextColor3 = Color3.new(1, 1, 1)
+		-- Console
 
-		copy.MouseButton1Click:Connect(function()
-			local source = codeFrame:GetText()
-			setclipboard(source)
-		end)
+		local console = Instance.new("Frame")
+		console.BackgroundColor3 = Color3.fromRGB(35,35,35)
+		console.BorderSizePixel = 0
+		console.Size = UDim2.new(1,-16,1,-25-16)
+		console.ClipsDescendants = true
+		console.Parent = consoleFrame
 
-		local save = Instance.new("TextButton", window.GuiElems.Content)
-		save.BackgroundTransparency = 1
-		save.Position = UDim2.new(0.75, 0, 0, 0)
-		save.Size = UDim2.new(0.25, 0, 0, 20)
-		save.Text = "Save to File"
-		save.TextColor3 = Color3.new(1, 1, 1)
+		local toggleBtn = Instance.new("TextButton",consoleFrame)
+		toggleBtn.BackgroundTransparency = 1
+		toggleBtn.Position = UDim2.new(0,0,1,-25)
+		toggleBtn.Size = UDim2.new(1/2,0,0,25)
+		toggleBtn.Text = "Toggle"
+		toggleBtn.TextColor3 = Color3.new(1,1,1)
 
-		save.MouseButton1Click:Connect(function()
-			local source = codeFrame:GetText()
-			local filename = "dex/saved/Place_" .. game.PlaceId .. "_Script_" .. os.time() .. ".txt"
-			writefile(filename, source)
-			if movefileas then
-				movefileas(filename, ".txt")
+		local updateBtn = Instance.new("TextButton",consoleFrame)
+		updateBtn.BackgroundTransparency = 1
+		updateBtn.Position = UDim2.new(1/2,0,1,-25)
+		updateBtn.Size = UDim2.new(1/2,0,0,25)
+		updateBtn.Text = "Update"
+		updateBtn.TextColor3 = Color3.new(1,1,1)
+
+		local scrollV = Lib.ScrollBar.new()
+		scrollV.Gui.Parent = consoleFrame
+		scrollV.Gui.Size = UDim2.new(0,16,1,-25-16)
+		scrollV:Update()
+
+		local scrollH = Lib.ScrollBar.new(true)
+		scrollH.Gui.Parent = consoleFrame
+		scrollH.Gui.Position = UDim2.new(0,0,1,-25-16)
+		scrollH.Gui.Size = UDim2.new(1,-16,0,16)
+		scrollH:Update()
+
+		local labels = {}
+
+		local function refreshConsole()
+			local ySize = console.AbsoluteSize.Y
+			local xSize = console.AbsoluteSize.X
+
+			local rows = math.ceil(ySize / 18)
+
+			local maxCols = 0
+			for i = 1, #output do
+				local len = #output[i].Text
+				if len > maxCols then
+					maxCols = len
+				end
 			end
+
+			local atBottom = scrollV.Index + scrollV.VisibleSpace >= scrollV.TotalSpace
+
+			scrollH.VisibleSpace = xSize
+			scrollH.TotalSpace = maxCols * 8
+			scrollV.VisibleSpace = math.ceil(ySize / 18)
+			scrollV.TotalSpace = #output + 1
+
+			if atBottom then
+				scrollV.Index = scrollV.TotalSpace - scrollV.VisibleSpace
+			end
+
+			scrollH:Update()
+			scrollV:Update()
+
+			for i = 1, rows do
+				local label = labels[i]
+				if not label then
+					label = Instance.new("TextLabel")
+					label.BackgroundTransparency = 1
+					label.Font = Enum.Font.SourceSans
+					label.TextXAlignment = Enum.TextXAlignment.Left
+					label.TextColor3 = Color3.new(1, 1, 1)
+					label.TextSize = 14
+					label.Parent = console
+					labels[i] = label
+				end
+				label.Position = UDim2.new(0, -scrollH.Index, 0, (i - 1) * 18)
+				label.Size = UDim2.new(1, scrollH.Index, 0, 18)
+
+				local msgData = output[i + scrollV.Index]
+				if not msgData then
+					label.Visible = false
+				else
+					label.Text = msgData.Time .. " -- " .. msgData.Text
+					label.TextColor3 = msgData.Color
+					label.Visible = true
+				end
+			end
+
+			if rows >= 0 then
+				for i = rows + 1, #labels do
+					labels[i]:Destroy()
+					labels[i] = nil
+				end
+			end
+		end
+
+		console:GetPropertyChangedSignal("AbsoluteSize"):Connect(refreshConsole)
+
+		scrollH.Increment = 8
+		scrollH.WheelIncrement = 8
+
+		scrollV.WheelIncrement = 3
+		scrollV:SetScrollFrame(console)
+
+		scrollV.Scrolled:Connect(refreshConsole)
+		scrollH.Scrolled:Connect(refreshConsole)
+
+		local function numberWithZero(num)
+			return (num < 10 and "0" or "") .. num
+		end
+
+		local function ConvertTimeStamp(timeStamp)
+			local localTime = timeStamp - os.time() + math.floor(tick())
+			local dayTime = localTime % 86400
+
+			local hour = math.floor(dayTime / 3600)
+
+			dayTime = dayTime - (hour * 3600)
+			local minute = math.floor(dayTime / 60)
+
+			dayTime = dayTime - (minute * 60)
+			local second = dayTime
+
+			local h = numberWithZero(hour)
+			local m = numberWithZero(minute)
+			local s = string.format("%.2f", second)
+
+			return string.format("%s:%s:%s", h, m, s)
+		end
+
+		local function addOutput(data, norefresh)
+			data.Time = ConvertTimeStamp(data.Time)
+			local lines = string.split(data.Text, "\n")
+
+			for i = 1, #lines do
+				output[#output + 1] = {
+					Text = lines[i],
+					Color = data.Color,
+					Time = data.Time
+				}
+				if #output > outputMax then
+					table.remove(output, 1)
+				end
+			end
+
+			if not norefresh then
+				refreshConsole()
+			end
+		end
+		
+		toggleBtn.MouseButton1Click:Connect(function()
+			outputOn = not outputOn
+			addOutput({
+				Text = "Console is "..(outputOn and "Enabled" or "Disabled"),
+				Color = Color3.new(1,1,1),
+				Time = tick()
+			}, true)
+			refreshConsole()
 		end)
+		
+		game:GetService("LogService").MessageOut:Connect(function(msg, msgtype)
+			if not outputOn then return end
+			local data = {
+				Text = msg,
+				Time = tick(),
+				Color = colorOutput[msgtype.Value]
+			}
+			addOutput(data,true)
+			refreshConsole()
+		end)
+
+		local function getOutput()
+			table.clear(output)
+			local allOutput = game:GetService("LogService"):GetLogHistory()
+			
+			for i = 1, outputMax do
+				local data = allOutput[i]
+				if not data then break end
+				
+				local parsedData = {
+					Text = data.message,
+					Time = data.timestamp,
+					Color = colorOutput[data.messageType.Value]
+				}
+				
+				addOutput(parsedData,true)
+			end
+			refreshConsole()
+		end
+		getOutput()
+
+		updateBtn.MouseButton1Click:Connect(function()
+			getOutput()
+		end)
+		
+		codeFrame:SetText("-- hello")
 	end
 
-	return Notepad
+	return Script
 end
 
-return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
+	return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
 end,
 ["ModelViewer"] = function()
 --[[
@@ -12396,7 +12651,7 @@ end
 }
 
 -- Main vars
-local Main, Explorer, Properties, ScriptViewer, Notepad, ModelViewer, Console, RemoteSpy, DefaultSettings, Notebook, Serializer, Lib
+local Main, Explorer, Properties, ScriptViewer, Script, ModelViewer, Console, RemoteSpy, DefaultSettings, Notebook, Serializer, Lib
 local API, RM
 
 -- Default Settings
@@ -12509,7 +12764,7 @@ end
 Main = (function()
 	local Main = {}
 	
-	Main.ModuleList = {"Explorer","Properties","ScriptViewer","Notepad","ModelViewer","Console","RemoteSpy"}
+	Main.ModuleList = {"Explorer","Properties","ScriptViewer","Script","ModelViewer","Console","RemoteSpy"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
 	Main.Version = "in-dev 10"
@@ -12593,7 +12848,7 @@ Main = (function()
 		Explorer = Apps.Explorer
 		Properties = Apps.Properties
 		ScriptViewer = Apps.ScriptViewer
-        Notepad = Apps.Notepad
+        Script = Apps.Script
 		ModelViewer = Apps.ModelViewer
 		Console = Apps.Console
         RemoteSpy = Apps.RemoteSpy
@@ -12602,7 +12857,7 @@ Main = (function()
 			Explorer = Explorer,
 			Properties = Properties,
 			ScriptViewer = ScriptViewer,
-            Notepad = Notepad,
+            Script = Script,
 			ModelViewer = ModelViewer,
 			Console = Console,
             RemoteSpy = RemoteSpy,
@@ -13313,7 +13568,7 @@ Main = (function()
 		
 		Main.CreateApp({Name = "Script Viewer", IconMap = Main.LargeIcons, Icon = "Script_Viewer", Window = ScriptViewer.Window})
 		
-		Main.CreateApp({Name = "Notepad", IconMap = Main.LargeIcons, Icon = "Notepad", Window = Notepad.Window})
+		Main.CreateApp({Name = "Script", IconMap = Main.LargeIcons, Icon = "Script", Window = Script.Window})
 
 		Main.CreateApp({Name = "Model Viewer", IconMap = Main.LargeIcons, Icon = 6, Window = ModelViewer.Window})
 
@@ -13414,7 +13669,7 @@ Main = (function()
 		})
 		Main.LargeIcons = Lib.IconMap.new("rbxassetid://6579106223",256,256,32,32)
 		Main.LargeIcons:SetDict({
-			Explorer = 0, Properties = 1, Script_Viewer = 2, Watcher = 3, Console = 4, Notepad = 5
+			Explorer = 0, Properties = 1, Script_Viewer = 2, Watcher = 3, Console = 4, Script = 5
 		})
 		
 		-- Fetch version if needed
@@ -13464,7 +13719,7 @@ Main = (function()
 		Explorer.Init()
 		Properties.Init()
 		ScriptViewer.Init()
-        Notepad.Init()
+        Script.Init()
 		ModelViewer.Init()
 		Console.Init()
         RemoteSpy.Init()
