@@ -6289,7 +6289,7 @@ local function main()
 		    RemoteEvent = 3
 		}
 		
-		local vers = 'beta.1'
+		local vers = ''
 		
 		function keyF(a)
 		    return typeof(a) == 'number' and ('[%d] = '):format(a) or ('[\'%s\'] = '):format(tostring(a))
