@@ -4772,7 +4772,7 @@ local function main()
 				loadstring(source)()
 			end)
 			if not success then
-				print("Error executing code:", err)
+				print("Code execution failed:", err)
 			end
 		end)
 
