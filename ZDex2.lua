@@ -1598,7 +1598,7 @@ local function main()
 				end
 			end})
 			
-		--[[context:Register("SAVE_BYTECODE", {
+		context:Register("SAVE_BYTECODE", {
 		    Name = "Save ScriptBytecode in Files",
 		    IconMap = Explorer.MiscIcons,
 		    Icon = "Save",
@@ -1614,7 +1614,7 @@ local function main()
 		                end
 		            end
 		        end
-		    end})]]
+		    end})
 		
 		context:Register("SELECT_CHARACTER",{Name = "Select Character", IconMap = Explorer.ClassIcons, Icon = 9, OnClick = function()
 			local newSelection = {}
