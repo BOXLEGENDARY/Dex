@@ -13320,14 +13320,14 @@ DefaultSettings = (function()
 		Properties = {
 			_Recurse = true,
 			MaxConflictCheck = 50,
-			ShowDeprecated = false,
+			ShowDeprecated = true,
 			ShowHidden = false,
 			ClearOnFocus = false,
 			LoadstringInput = true,
 			NumberRounding = 3,
-			ShowAttributes = false,
+			ShowAttributes = true,
 			MaxAttributes = 50,
-			ScaleType = 1 -- 0 Full Name Shown, 1 Equal Halves
+			ScaleType = 0 -- 0 Full Name Shown, 1 Equal Halves
 		},
 		Theme = {
 			_Recurse = true,
