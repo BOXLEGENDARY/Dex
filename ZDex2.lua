@@ -13374,7 +13374,7 @@ DefaultSettings = (function()
 				Bracket = rgb(204,204,204)
 			},
 		},
-		ClassIcon = "NewDark",
+		ClassIcon = "Vanilla3",
 		-- What available icons:
 		-- > Vanilla3
 		-- > Old
