@@ -24,6 +24,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 * change renderSide old to new
 * supprot special case BasePart.BrickColor to BasePart.Color
 * Change notepad to script
+* New icon
 ## Credits
 [ZxL](https://youtu.be/dQw4w9WgXcQ?si=IkAXjfO3Uf2UOJ9V) (Owner)
 
