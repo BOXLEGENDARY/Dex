@@ -32,6 +32,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 [Moon](https://github.com/LorekeeperZinnia/Dex) (Creator)
 
 [chillz](https://github.com/AZYsGithub/DexPlusPlus) ( Open Source i use )
+[zeroxx987] () ( RemoteSpy )
 # Luau Decompile
 ## Credits
 [ZxL](https://github.com/BOXLEGENDARY/LuauDecompile)
