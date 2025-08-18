@@ -1120,7 +1120,7 @@ local function main()
 		if presentClasses["LuaSourceContainer"] then
 			context:AddRegistered("VIEW_SCRIPT")
             context:AddRegistered("SAVE_SCRIPT")
-			context:AddRegistered("SAVE_BYTECODE")
+			-- context:AddRegistered("SAVE_BYTECODE")
 		end
 		
 		if sMap[nilNode] then
@@ -1661,7 +1661,7 @@ local function main()
 				end
 			end})
 			
-		context:Register("SAVE_BYTECODE",{Name = "Save Script Bytecode", IconMap = Explorer.MiscIcons, Icon = "Save", OnClick = function()
+		--[[context:Register("SAVE_BYTECODE",{Name = "Save Script Bytecode", IconMap = Explorer.MiscIcons, Icon = "Save", OnClick = function()
 			for _, v in next, selection.List do
 				if v.Obj:IsA("LuaSourceContainer") and env.isViableDecompileScript(v.Obj) then
 					local success, bytecode = pcall(getscriptbytecode, v.Obj)
@@ -1672,7 +1672,7 @@ local function main()
 					end
 				end
 			end
-		end})
+		end})]]
 		
 		context:Register("SELECT_CHARACTER",{Name = "Select Character", IconMap = Explorer.ClassIcons, Icon = 9, OnClick = function()
 			local newSelection = {}
