@@ -11400,7 +11400,7 @@ local function main()
 						local template = (inSelection and selectionTemplate) or richTemplates[typeMap[posType]] or textTemplate
 						
 						if template ~= curTemplate then
-							local nextText = gsub(sub(lineText,colStart,relaX-1),"['\"<>&amp;]",richReplace)
+							local nextText = gsub(sub(lineText,colStart,relaX-1),"['\"<>&]",richReplace)
 							resText = resText .. (curTemplate ~= textTemplate and (curTemplate .. nextText .. "</font>") or nextText)
 							colStart = relaX
 							curTemplate = template
@@ -11409,14 +11409,17 @@ local function main()
 					end
 				end
 
-				local lastText = gsub(sub(lineText,colStart,viewX+maxCols),"['\"<>&amp;]",richReplace)
+				local lastText = gsub(sub(lineText,colStart,viewX+maxCols),"['\"<>&]",richReplace)
 				--warn("SUB",colStart,viewX+maxCols-1)
 				if #lastText > 0 then
 					resText = resText .. (curTemplate ~= textTemplate and (curTemplate .. lastText .. "</font>") or lastText)
 				end
 
 				if self.Lines[relaY] then
+
+					-- REMOVED LINE HIGHLIGHT DUE TO BUG OFFSET
 					lineNumberStr = lineNumberStr .. (relaY == self.CursorY and ("<b>"..relaY.."</b>\n") or relaY .. "\n")
+					--lineNumberStr = lineNumberStr .. (relaY == self.CursorY and ("<b>"..relaY.."</b>\n") or relaY .. "\n")
 				end
 
 				lineFrame.Label.Text = resText
