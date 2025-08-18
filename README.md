@@ -8,8 +8,14 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/main/ZDex2.lua"))()
 ```
+
+---
+
 ## Support
 * Mobile/Pc
+
+---
+
 ## Features
 * Performance Engine
 * Explorer
@@ -19,6 +25,9 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 * ModelView
 * Console
 * RemoteSpy
+
+---
+
 ## Update Log ( in-dev 11 )
 * change renderSide old to new
 * support special case BasePart.BrickColor to BasePart.Color
@@ -26,8 +35,14 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 * New icon
 * add Block/unblock Remote
 * Fix CodeFrame cursor offset (where cursor on textbox were not aligned properly)
+
+---
+
 ## Other
 * I'm not updating ZDex anymore, but I still fix some issues, improve functions, and optimize certain parts. and Hey, don’t forget to remake the save function, because Im not gonna do it
+
+---
+
 ## Credits
 [ZxL](https://youtu.be/dQw4w9WgXcQ?si=IkAXjfO3Uf2UOJ9V) (Owner)
 
@@ -36,16 +51,21 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 [chillz](https://github.com/AZYsGithub/DexPlusPlus) ( Open Source i use )
 
 [zeroxx987](https://scriptblox.com/script/Universal-Script-BootSpy-12998) ( RemoteSpy )
-# Luau Decompile
+
+---
+
+## Luau Decompile
 [Luau Decompile](https://github.com/BOXLEGENDARY/LuauDecompile)
 
-## Credits
+# Credits
 
 [ZxL](https://youtu.be/dQw4w9WgXcQ?si=IkAXjfO3Uf2UOJ9V)
 
 [w.a.e](https://github.com/w-a-e)
 
 [break-core](https://github.com/break-core)
+
+---
 
 # Client Tracker
 
