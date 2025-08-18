@@ -45,9 +45,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 [w.a.e](https://github.com/w-a-e)
 
 [break-core](https://github.com/break-core)
-# XML
 
-[ReflectionMetadata XML](https://raw.githubusercontent.com/BOXLEGENDARY/ReflectionMetadata/refs/heads/main/ReflectionMetadata.xml)
 # Client Tracker
 
 [Roblox-Client-Tracker](https://github.com/MaximumADHD/Roblox-Client-Tracker)
