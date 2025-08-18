@@ -1665,7 +1665,7 @@ local function main()
 				if v.Obj:IsA("LuaSourceContainer") and env.isViableDecompileScript(v.Obj) then
 					local success, bytecode = pcall(getscriptbytecode, v.Obj)
 					if success and type(bytecode) == "string" then
-						local fileName = ("%i.%s.%s.Bytecode.txt"):format(game.PlaceId, v.Obj.ClassName, env.parsefile(v.Obj.Name))
+						local fileName = ("dex/saved/%i.%s.%s.Bytecode.txt"):format(game.PlaceId, v.Obj.ClassName, env.parsefile(v.Obj.Name))
 						env.writefile(fileName, bytecode)
 						task.wait(0.2)
 					end
