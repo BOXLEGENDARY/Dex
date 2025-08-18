@@ -19,12 +19,13 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 * ModelView
 * Console
 * RemoteSpy
-## Update Log ( in-dev 10 )
+## Update Log ( in-dev 11 )
 * change renderSide old to new
 * support special case BasePart.BrickColor to BasePart.Color
 * Change notepad to script
 * New icon
 * add Block/unblock Remote
+* CodeFrame cursor offset (where cursor on textbox were not aligned properly)
 ## Other
 * im not update ZDex anymore but i still fix some issues or fix some function and optimized something
 ## Credits
