@@ -44,9 +44,9 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 ---
 
 ## Credits ( ZDex )
-[ZxL](https://youtu.be/dQw4w9WgXcQ?si=IkAXjfO3Uf2UOJ9V) (Owner)
+[ZxL](https://youtu.be/dQw4w9WgXcQ?si=IkAXjfO3Uf2UOJ9V) ( Owner )
 
-[Moon](https://github.com/LorekeeperZinnia/Dex) (Creator)
+[Moon](https://github.com/LorekeeperZinnia/Dex) ( Creator )
 
 [chillz](https://github.com/AZYsGithub/DexPlusPlus) ( Open Source i use )
 
@@ -56,11 +56,11 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 # Credits ( Luau Decompile )
 
-[ZxL](https://youtu.be/dQw4w9WgXcQ?si=IkAXjfO3Uf2UOJ9V)(Upgrade)
+[ZxL](https://youtu.be/dQw4w9WgXcQ?si=IkAXjfO3Uf2UOJ9V)( Upgrade )
 
-[w.a.e](https://github.com/w-a-e)(Creator)
+[w.a.e](https://github.com/w-a-e)( Creator )
 
-[break-core](https://github.com/break-core)(Base64)
+[break-core](https://github.com/break-core)( Base64 )
 
 ---
 
