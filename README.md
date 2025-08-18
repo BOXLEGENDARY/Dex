@@ -36,6 +36,8 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 [zeroxx987](https://scriptblox.com/script/Universal-Script-BootSpy-12998) ( RemoteSpy )
 # Luau Decompile
+[here](https://github.com/BOXLEGENDARY/LuauDecompile/blob/main/README.md)
+
 ## Credits
 
 [ZxL](https://github.com/BOXLEGENDARY/LuauDecompile)
