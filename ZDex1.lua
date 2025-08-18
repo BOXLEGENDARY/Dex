@@ -6901,11 +6901,11 @@ local function main()
 			end
 
 			function defaultEntityTable()
-				return { quot='"', apos='\'', lt='<', gt='>', amp='&amp;', tab='\t', nbsp=' ', }
+				return { quot='"', apos='\'', lt='<', gt='>', amp='&', tab='\t', nbsp=' ', }
 			end
 
 			function replaceEntities(s, entities)
-				return s:gsub('&amp;([^;]+);', entities)
+				return s:gsub('&([^;]+);', entities)
 			end
 
 			function createEntityTable(docEntities, resultEntities)
