@@ -43,7 +43,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ---
 
-## Credits
+## Credits ( ZDex )
 [ZxL](https://youtu.be/dQw4w9WgXcQ?si=IkAXjfO3Uf2UOJ9V) (Owner)
 
 [Moon](https://github.com/LorekeeperZinnia/Dex) (Creator)
@@ -54,7 +54,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ---
 
-# Credits
+# Credits ( Luau Decompile )
 
 [ZxL](https://youtu.be/dQw4w9WgXcQ?si=IkAXjfO3Uf2UOJ9V)
 
