@@ -6807,7 +6807,6 @@ local function main()
 		local func = function()
 			-- Only exists to parse RMD
 			-- from https://github.com/jonathanpoelen/xmlparser
-            -- from https://github.com/MaximumADHD/Roblox-Client-Tracker
 
 			local string, print, pairs = string, print, pairs
 
