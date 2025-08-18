@@ -1,5 +1,6 @@
 # ZDex
 * this version has not been optimized
+* im not update ZDex anymore but i still fix some issues or fix some function and optimized something 
 ## IN-DEV ( version 10 )
 * Script
 ```lua
