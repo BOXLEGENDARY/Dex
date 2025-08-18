@@ -1513,23 +1513,24 @@ local function main()
 			
 		end})]]
 		
-		context:Register("SAVE_INST", {
-		    Name = "Save to File",
-		    IconMap = Explorer.MiscIcons,
-		    Icon = "Save",
-		    OnClick = function()
-		        local sList = selection.List
-		        if #sList == 1 then
-		            local obj = sList[1].Obj
-		            env.saveinstance(obj, "dex/saved/Place_" .. game.PlaceId .. "_" .. obj.ClassName .. "_" .. obj.Name .. "_" .. os.time())
-		        elseif #sList > 1 then
-		            for i = 1, #sList do
-		                local obj = sList[i].Obj
-		                env.saveinstance(obj, "dex/saved/Place_" .. game.PlaceId .. "_" .. obj.ClassName .. "_" .. obj.Name .. "_" .. os.time())
-		                task.wait(0.1)
-		            end
-		        end
-		    end})
+		context:Register("SAVE_INST",{Name = "Save to File", IconMap = Explorer.MiscIcons, Icon = "Save", OnClick = function()
+			local sList = selection.List
+			if #sList == 1 then
+				env.saveinstance(sList[1].Obj, "dex/saved/Place_"..game.PlaceId.."_"..sList[1].Obj.ClassName.."_"..sList[1].Obj.Name.."_"..os.time(), {
+					Decompile = true
+				})
+			elseif #sList > 1 then
+				for i = 1,#sList do
+					-- sList[i].Obj.Name.." ("..sList[1].Obj.ClassName..")"
+					-- "Place_"..game.PlaceId.."_"..sList[1].Obj.ClassName.."_"..sList[i].Obj.Name.."_"..os.time()
+
+					env.saveinstance(sList[i].Obj, "dex/saved/Place_"..game.PlaceId.."_"..sList[i].Obj.ClassName.."_"..sList[i].Obj.Name.."_"..os.time(), {
+						Decompile = true
+					})
+					task.wait(0.1)
+				end
+			end
+		end})
 		
 		--[[context:Register("VIEW_CONNECTIONS",{Name = "View Connections", OnClick = function()
 			
