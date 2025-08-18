@@ -13,8 +13,46 @@ pcall(function() LOAD.ZDex_load = true end)
 
 wait(0.1)
 
-local cloneref = cloneref or function(...) return ... end
-local getnilinstances = getnilinstances or function() return {} end
+local cloneref
+local getnilinstances
+
+do
+    cloneref = function(ref)
+        if not getreg then return ref end
+        
+        local InstanceList
+        local a = Instance.new("Part")
+
+        for _, c in pairs(getreg()) do
+            if type(c) == "table" and #c then
+                if rawget(c, "__mode") == "kvs" then
+                    for _, e in pairs(c) do
+                        if e == a then
+                            InstanceList = c
+                            break
+                        end
+                    end
+                end
+            end
+        end
+
+        local f = {}
+        function f.invalidate(g)
+            if not InstanceList then return end
+            for b, c in pairs(InstanceList) do
+                if c == g then
+                    InstanceList[b] = nil
+                    return
+                end
+            end
+        end
+
+        return f.invalidate(ref) or ref
+    end
+
+    cloneref = cloneref or function(r) return r end
+    getnilinstances = getnilinstances or function() return {} end
+end
 
 -- Safe environment
 local original_env = (getgenv and getgenv()) or (getfenv and getfenv(1)) or _ENV
