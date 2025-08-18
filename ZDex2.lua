@@ -11051,7 +11051,7 @@ local function main()
 
 					-- REMOVED LINE HIGHLIGHT DUE TO BUG OFFSET
 					lineNumberStr = lineNumberStr .. (relaY == self.CursorY and ("<b>"..relaY.."</b>\n") or relaY .. "\n")
-					--lineNumberStr = lineNumberStr .. (relaY == self.CursorY and ("<b>"..relaY.."</b>\n") or relaY .. "\n")
+					--lineNumberStr = lineNumberStr .. (relaY == self.CursorY and (relaY.."\n") or relaY .. "\n")
 				end
 
 				lineFrame.Label.Text = resText
