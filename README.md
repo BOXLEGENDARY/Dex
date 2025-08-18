@@ -1,6 +1,5 @@
 # ZDex
-* ~~not close to release~~
-* need optimize before release 
+* this version has not been optimized
 ## IN-DEV ( version 10 )
 * Script
 ```lua
