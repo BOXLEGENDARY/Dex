@@ -11507,7 +11507,8 @@ local function main()
 		
 		funcs.ConvertText = function(self,text,toEditor)
 			if toEditor then
-				return text:gsub("\t",(" %s%s "):format(tabSub,tabSub))
+				--return text:gsub("\t",(" %s%s "):format(tabSub,tabSub))
+				return text:gsub("\t","    ") -- Fixed unknown unicode showing when pressing TAB
 			else
 				return text:gsub((" %s%s "):format(tabSub,tabSub),"\t")
 			end
