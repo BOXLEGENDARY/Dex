@@ -5377,7 +5377,7 @@ local function main()
 				local success, result = pcall(env.saveinstance,
 					originalModel, "dex/saved/Place_"..game.PlaceId.."_"..originalModel.Name.."_"..os.time(),
 					{
-						-- hello
+						Decompile = true
 					}
 				)
 				if success then
