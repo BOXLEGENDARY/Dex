@@ -57,6 +57,8 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 ## Luau Decompile
 [Luau Decompile](https://github.com/BOXLEGENDARY/LuauDecompile)
 
+---
+
 # Credits
 
 [ZxL](https://youtu.be/dQw4w9WgXcQ?si=IkAXjfO3Uf2UOJ9V)
@@ -70,3 +72,5 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 # Client Tracker
 
 [Roblox-Client-Tracker](https://github.com/MaximumADHD/Roblox-Client-Tracker)
+
+---
