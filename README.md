@@ -27,7 +27,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 * add Block/unblock Remote
 * CodeFrame cursor offset (where cursor on textbox were not aligned properly)
 ## Other
-* im not update ZDex anymore but i still fix some issues or fix some function and optimized something
+
 ## Credits
 [ZxL](https://youtu.be/dQw4w9WgXcQ?si=IkAXjfO3Uf2UOJ9V) (Owner)
 
