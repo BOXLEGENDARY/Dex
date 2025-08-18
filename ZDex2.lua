@@ -13627,6 +13627,17 @@ Main = (function()
 				env.getnilinstances = getnilinstances or get_nil_instances
 				env.getloadedmodules = getloadedmodules
 
+				env.isViableDecompileScript = function(obj)
+					if obj:IsA("ModuleScript") then
+						return true
+					elseif obj:IsA("LocalScript") and (obj.RunContext == Enum.RunContext.Client or obj.RunContext == Enum.RunContext.Legacy) then
+						return true
+					elseif obj:IsA("Script") and obj.RunContext == Enum.RunContext.Client then
+						return true
+					end
+					return false
+				end
+
 				if identifyexecutor and type(identifyexecutor) == "function" then
 					Main.Executor = identifyexecutor()
 					print("[System] Executor Detected:", Main.Executor)
