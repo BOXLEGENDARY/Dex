@@ -228,6 +228,8 @@ local function main()
 	local connectSignal = game.DescendantAdded.Connect
 	local addObject,removeObject,moveObject = nil,nil,nil
 	
+	local remote_blocklist = {} -- list of remotes beng blocked, k = the remote instance, v = their old function
+
 	addObject = function(root)
 		if nodes[root] then return end
 		
@@ -1093,6 +1095,23 @@ local function main()
 		if presentClasses["TouchTransmitter"] then context:AddRegistered("FIRE_TOUCHTRANSMITTER", firetouchinterest == nil) end
 		if presentClasses["ClickDetector"] then context:AddRegistered("FIRE_CLICKDETECTOR", fireclickdetector == nil) end
 		if presentClasses["ProximityPrompt"] then context:AddRegistered("FIRE_PROXIMITYPROMPT", fireproximityprompt == nil) end
+
+		if presentClasses["RemoteEvent"] then context:AddRegistered("BLOCK_REMOTE", env.hookfunction == nil) end
+		if presentClasses["RemoteEvent"] then context:AddRegistered("UNBLOCK_REMOTE", env.hookfunction == nil) end
+		
+		if presentClasses["RemoteFunction"] then context:AddRegistered("BLOCK_REMOTE", env.hookfunction == nil) end
+		if presentClasses["RemoteFunction"] then context:AddRegistered("UNBLOCK_REMOTE", env.hookfunction == nil) end
+
+		if presentClasses["UnreliableRemoteEvent"] then context:AddRegistered("BLOCK_REMOTE", env.hookfunction == nil) end
+		if presentClasses["UnreliableRemoteEvent"] then context:AddRegistered("UNBLOCK_REMOTE", env.hookfunction == nil) end
+		
+		
+		if presentClasses["BindableEvent"] then context:AddRegistered("BLOCK_REMOTE", env.hookfunction == nil) end
+		if presentClasses["BindableEvent"] then context:AddRegistered("UNBLOCK_REMOTE", env.hookfunction == nil) end
+		
+		if presentClasses["BindableFunction"] then context:AddRegistered("BLOCK_REMOTE", env.hookfunction == nil) end
+		if presentClasses["BindableFunction"] then context:AddRegistered("UNBLOCK_REMOTE", env.hookfunction == nil) end
+
 		if presentClasses["Player"] then context:AddRegistered("SELECT_CHARACTER")context:AddRegistered("VIEW_PLAYER") end
 		if presentClasses["Players"] then
 			context:AddRegistered("SELECT_LOCAL_PLAYER")
@@ -1516,6 +1535,49 @@ local function main()
 			
 		end})]]
 		
+		local ClassFire = {
+			RemoteEvent = "FireServer",
+			RemoteFunction = "InvokeServer",
+			UnreliableRemoteEvent = "FireServer",
+
+			BindableRemote = "Fire",
+			BindableFunction = "Invoke",
+		}
+		context:Register("BLOCK_REMOTE",{Name = "Block From Firing", IconMap = Explorer.MiscIcons, Icon = "Delete", OnClick = function()
+			local sList = selection.List
+			for i, list in sList do
+				local obj = list.Obj
+				if not remote_blocklist[obj] then
+					local functionToHook = ClassFire[obj.ClassName]
+					remote_blocklist[obj] = true
+					local old; old = env.hookmetamethod((oldgame or game), "__namecall", function(self, ...)
+						if remote_blocklist[obj] and self == obj and getnamecallmethod() == functionToHook then
+							return nil
+						end
+						return old(self,...)
+					end)
+					if Settings.RemoteBlockWriteAttribute then
+						obj:SetAttribute("IsBlocked", true)
+					end
+					--print("blocking ",functionToHook)
+				end
+			end
+		end})
+		
+		context:Register("UNBLOCK_REMOTE",{Name = "Unblock", IconMap = Explorer.MiscIcons, Icon = "Play", OnClick = function()
+			local sList = selection.List
+			for i, list in sList do
+				local obj = list.Obj
+				if remote_blocklist[obj] then
+					remote_blocklist[obj] = nil
+					if Settings.RemoteBlockWriteAttribute then
+						list.Obj:SetAttribute("IsBlocked", false)
+					end
+					--print("unblocking ",functionToHook)
+				end
+			end
+		end})
+
 		context:Register("COPY_API_PAGE",{Name = "Copy Roblox API Page URL", IconMap = Explorer.MiscIcons, Icon = "Reference", OnClick = function()
 			local sList = selection.List
 			if #sList == 1 then
@@ -13738,6 +13800,7 @@ DefaultSettings = (function()
 				Bracket = rgb(204,204,204)
 			},
 		},
+		RemoteBlockWriteAttribute = false, -- writes attribute to remote instance if remote is blocked/unblocked
 		ClassIcon = "Vanilla3",
 		-- What available icons:
 		-- > Vanilla3
@@ -13918,6 +13981,10 @@ Main = (function()
 				env.getreg = getreg
 				env.getgc = getgc or get_gc_objects
 				env.getscriptbytecode = getscriptbytecode
+
+				-- hooks
+				env.hookfunction = hookfunction
+				env.hookmetamethod = hookmetamethod
 
 				-- other
 				env.setfflag = setfflag
