@@ -26,6 +26,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 * support special case BasePart.BrickColor to BasePart.Color
 * Change notepad to script
 * New icon
+* add Block/unblock Remote
 ## Credits
 [ZxL](https://youtu.be/dQw4w9WgXcQ?si=IkAXjfO3Uf2UOJ9V) (Owner)
 
