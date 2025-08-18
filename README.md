@@ -54,11 +54,6 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ---
 
-## Luau Decompile
-[Luau Decompile](https://github.com/BOXLEGENDARY/LuauDecompile)
-
----
-
 # Credits
 
 [ZxL](https://youtu.be/dQw4w9WgXcQ?si=IkAXjfO3Uf2UOJ9V)
@@ -66,6 +61,11 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 [w.a.e](https://github.com/w-a-e)
 
 [break-core](https://github.com/break-core)
+
+---
+
+## Luau Decompile
+[Luau Decompile](https://github.com/BOXLEGENDARY/LuauDecompile)
 
 ---
 
