@@ -13969,7 +13969,7 @@ Main = (function()
 		    {3,"Frame",{BackgroundColor3=Color3.new(0.12, 0.12, 0.12),BorderSizePixel=0,ClipsDescendants=true,Name="Holder",Parent={2},Size=UDim2.new(1,0,1,0),}},
 		    {4,"UIGradient",{Parent={3},Rotation=30,Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1),NumberSequenceKeypoint.new(1,1)}),}},
 		    {5,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=4,Name="Title",Parent={3},Position=UDim2.new(0,-190,0,15),Size=UDim2.new(0,100,0,50),Text="ZDex",TextColor3=Color3.new(0.6, 0.85, 1.0),TextSize=50,TextTransparency=1,}},
-		    {6,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=3,Name="Desc",Parent={3},Position=UDim2.new(0,-230,0,60),Size=UDim2.new(0,180,0,25),Text="Debug Suite",TextColor3=Color3.new(0.7, 0.8, 0.9),TextSize=18,TextTransparency=1,}},
+		    {6,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=3,Name="Desc",Parent={3},Position=UDim2.new(0,-230,0,60),Size=UDim2.new(0,180,0,25),Text="Debugging Suite",TextColor3=Color3.new(0.7, 0.8, 0.9),TextSize=18,TextTransparency=1,}},
 		    {7,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=3,Name="StatusText",Parent={3},Position=UDim2.new(0,20,0,110),Size=UDim2.new(0,180,0,25),Text="Fetching API",TextColor3=Color3.new(0.4, 0.9, 1.0),TextSize=14,TextTransparency=1,}},
 		    {8,"Frame",{BackgroundColor3=Color3.new(0.08, 0.08, 0.08),BorderSizePixel=0,Name="ProgressBar",Parent={3},Position=UDim2.new(0,110,0,145),Size=UDim2.new(0,0,0,4),}},
 		    {9,"Frame",{BackgroundColor3=Color3.new(0.3, 0.85, 1.0),BorderSizePixel=0,Name="Bar",Parent={8},Size=UDim2.new(0,0,1,0),}},
