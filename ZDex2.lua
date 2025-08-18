@@ -10092,11 +10092,11 @@ local function main()
 		local builtInInited = false
 
 		local richReplace = {
-			["'"] = "&amp;apos;",
-			["\""] = "&amp;quot;",
-			["&lt;"] = "&amp;lt;",
-			["&gt;"] = "&amp;gt;",
-			["&amp;"] = "&amp;amp;"
+			["'"] = "&apos;",
+			["\""] = "&quot;",
+			["<"] = "&lt;",
+			[">"] = "&gt;",
+			["&"] = "&amp;"
 		}
 		
 		local tabSub = "\205"
