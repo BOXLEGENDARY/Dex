@@ -11320,7 +11320,25 @@ local function main()
 				Middle = filler.middle
 			}
 			
-			checkbox.Activated:Connect(function()
+			-- Best input compatibility:
+			checkbox.MouseButton1Up:Connect(function()
+				if Lib.CheckMouseInGui(checkbox) then
+					if self.Style == 0 then
+						ripple(ripples_container, self.Disabled and self.Colors.Disabled or self.Colors.Primary)
+					end
+
+					if not self.Disabled then
+						self:SetState(not self.Toggled,true)
+					else
+						self:Paint()
+					end
+
+					self.OnInput:Fire()
+				end
+			end)
+			
+			-- New:
+			--[[checkbox.Activated:Connect(function()
 				if Lib.CheckMouseInGui(checkbox) then
 					if self.Style == 0 then
 						ripple(ripples_container, self.Disabled and self.Colors.Disabled or self.Colors.Primary)
@@ -11334,7 +11352,7 @@ local function main()
 					
 					self.OnInput:Fire()
 				end
-			end)
+			end)]]
 			
 			-- Old:
 			--[[checkbox.InputBegan:Connect(function(i)
