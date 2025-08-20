@@ -29,11 +29,6 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 ---
 
 ## Update Log ( in-dev 11 )
-* change renderSide old to new
-* support special case BasePart.BrickColor to BasePart.Color
-* Change notepad to script
-* New icon
-* add Block/unblock Remote
 * Fix CodeFrame cursor offset (where cursor on textbox were not aligned properly)
 
 ---
