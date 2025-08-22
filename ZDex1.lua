@@ -46,108 +46,6 @@ cloneref = cloneref or function(ref)
 	return f.invalidate
 end
 
--- Safe environment
-local original_env = (getgenv and getgenv()) or (getfenv and getfenv(1)) or _ENV
-local fake_env_table = {}
-local fake_env = setmetatable({}, {
-    __index = function(_, k)
-        if k == "_G" then return fake_env end
-        if fake_env_table[k] ~= nil then return fake_env_table[k] end
-        return original_env[k]
-    end,
-    __newindex = function(_, k, v) fake_env_table[k] = v end,
-    __metatable = "Locked"
-})
-
-local function try_setfenv(level, env)
-    if setfenv then
-        return pcall(setfenv, level + 1, env)
-    elseif _ENV then
-        local f = debug.getinfo(level + 1, "f").func
-        local newf = load(string.dump(f), nil, "b", env)
-        return pcall(newf)
-    else
-        return false
-    end
-end
-
-local ok = try_setfenv(1, fake_env)
-
--- PerformanceEngine
-local PerformanceEngine = {}
-
-PerformanceEngine.Settings = {
-    MIN_THROTTLE = 0.02,
-    MAX_THROTTLE = 0.07,
-}
-
-function PerformanceEngine.SetSettings(newSettings)
-    if type(newSettings) ~= "table" then return false end
-    for k, v in pairs(newSettings) do
-        if PerformanceEngine.Settings[k] ~= nil then
-            PerformanceEngine.Settings[k] = v
-        end
-    end
-    MIN_THROTTLE = PerformanceEngine.Settings.MIN_THROTTLE
-    MAX_THROTTLE = PerformanceEngine.Settings.MAX_THROTTLE
-    return true
-end
-
-local MIN_THROTTLE = PerformanceEngine.Settings.MIN_THROTTLE
-local MAX_THROTTLE = PerformanceEngine.Settings.MAX_THROTTLE
-local throttleLevel = MIN_THROTTLE
-local lastUpdate = os.clock()
-
-function PerformanceEngine.AdaptiveThrottle()
-    local now = os.clock()
-    local delta = now - lastUpdate
-    if delta < MIN_THROTTLE then
-        throttleLevel = math.min(throttleLevel + 0.01, MAX_THROTTLE)
-    else
-        throttleLevel = math.max(throttleLevel - 0.05, MIN_THROTTLE)
-    end
-    lastUpdate = now
-    task.wait(throttleLevel)
-end
-
-function PerformanceEngine.FastCall(func, ...)
-    local args = table.pack(...)
-    local ok = pcall(function()
-        task.defer(function()
-            func(table.unpack(args))
-        end)
-    end)
-    if not ok then
-        pcall(func, table.unpack(args))
-    end
-end
-
-function PerformanceEngine.SmartUpdate(updateFunc)
-    PerformanceEngine.AdaptiveThrottle()
-    PerformanceEngine.FastCall(updateFunc)
-end
-
-local taskQueue = {}
-function PerformanceEngine.QueueTask(fn, ...)
-    table.insert(taskQueue, {fn = fn, args = {...}})
-end
-
-function PerformanceEngine.RunTaskQueue()
-    for i = #taskQueue, 1, -1 do
-        local item = taskQueue[i]
-        pcall(item.fn, table.unpack(item.args))
-        table.remove(taskQueue, i)
-    end
-end
-
-local function getGlobalEnv()
-    local g = (getgenv and getgenv()) or (getfenv and getfenv(1)) or _ENV
-    rawset(g, "Perf", PerformanceEngine)
-    return g
-end
-
-local GENV = getGlobalEnv()
-
 local success, err = pcall(function()
     local logCons = getconnections(game:GetService("LogService").MessageOut)
     for _, c in ipairs(logCons) do
@@ -929,17 +827,15 @@ local function main()
 		end
 	end
 
-    Explorer.PerformUpdate = function(instant)
-	    updateDebounce = true
-        
-        GENV.Perf.SmartUpdate(function()
-    		if not updateDebounce then return end
-	    	updateDebounce = false
-    		if not Explorer.Window:IsVisible() then return end
-    		Explorer.Update()
-    		Explorer.Refresh()
-    	end)
-    end    
+	Explorer.PerformUpdate = function(instant)
+		updateDebounce = true
+		Lib.FastWait(not instant and 0.1)
+		if not updateDebounce then return end
+		updateDebounce = false
+		if not Explorer.Window:IsVisible() then return end
+		Explorer.Update()
+		Explorer.Refresh()
+	end
 
 	Explorer.ForceUpdate = function(norefresh)
 		updateDebounce = false
@@ -6381,7 +6277,7 @@ local function main()
 			end
 		end)
 
-		getgenv = (getgenv and getgenv()) or (getfenv and getfenv(1)) or _ENV		
+		getgenv = getgenv or function() return getfenv(2) end
 		
 		local Logger = {} -- Type = {LastCall=os.time(), CallsPerSec=number}
 		local Limits = { -- How many times an instance can fire per second
@@ -6652,13 +6548,11 @@ local function main()
 		
 		local a, b, c, d = GetEvents(), GetFunctions(), GetBEvents(), GetBFunctions()
 		
-		GENV.Perf.SmartUpdate(function()
 		    for _, v in pairs(a) do EventMain(v) end
 		    for _, v in pairs(b) do FunctionMain(v) end
 		    for _, v in pairs(c) do BEventMain(v) end
 		    for _, v in pairs(d) do BFunctionMain(v) end
-		end)
-	end
+	    end
 
 	return RemoteSpy
 end
