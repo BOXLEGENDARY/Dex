@@ -36,6 +36,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ## Other
 * I'm not updating ZDex anymore, but I still fix some issues, improve functions, and optimize certain parts. and Hey, don’t forget to remake the save function, because Im not gonna do it
+* safe env and performance engine remove because useless
 
 ---
 
