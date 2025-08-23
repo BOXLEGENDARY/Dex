@@ -13742,7 +13742,7 @@ DefaultSettings = (function()
 			},
 		},
 		RemoteBlockWriteAttribute = false, -- writes attribute to remote instance if remote is blocked/unblocked
-		ClassIcon = "Vanilla3",
+		ClassIcon = "NewDark",
 		-- What available icons:
 		-- > Vanilla3
 		-- > Old
