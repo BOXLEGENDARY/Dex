@@ -33,14 +33,9 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ---
 
-## Announcement
-* i want remake intro theme ngl
-
----
-
 ## Other
 * I'm not updating ZDex anymore, but I still fix some issues, improve functions, and optimize certain parts. and Hey, don’t forget to remake the save function, because Im not gonna do it
-
+* i want remake intro theme ngl
 
 ---
 
