@@ -4647,7 +4647,7 @@ end,
 --[[
 	Script 
 	
-	u can script any u want
+	u can script any u want ( mini )
 ]]
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
