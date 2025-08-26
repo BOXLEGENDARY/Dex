@@ -13919,8 +13919,8 @@ Main = (function()
 	Main.CreateIntro = function(initStatus) -- TODO: Must theme and show errors
 		local gui = create({
 			{1,"ScreenGui",{Name="Intro",}},
-			{2,"Frame",{Active=true,BackgroundColor3=Color3.new(0.09,0.09,0.09),BorderSizePixel=0,Name="Main",Parent={1},Position=UDim2.new(0.5,-175,0.5,-100),Size=UDim2.new(0,350,0,200),}},
-			{3,"Frame",{BackgroundColor3=Color3.new(0.13,0.13,0.13),BorderSizePixel=0,ClipsDescendants=true,Name="Holder",Parent={2},Size=UDim2.new(1,0,1,0),}},
+			{2,"Frame",{Active=true,BackgroundColor3=Color3.new(0.95,0.95,0.95),BorderSizePixel=0,Name="Main",Parent={1},Position=UDim2.new(0.5,-175,0.5,-100),Size=UDim2.new(0,350,0,200),}},
+			{3,"Frame",{BackgroundColor3=Color3.new(0.09,0.09,0.09),BorderSizePixel=0,ClipsDescendants=true,Name="Holder",Parent={2},Size=UDim2.new(1,0,1,0),}},
 			{4,"UIGradient",{Parent={3},Rotation=30,Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(1,1,0),}),}},
 			{5,"TextLabel",{BackgroundTransparency=1,Font=4,Name="Title",Parent={3},Position=UDim2.new(0,-190,0,15),Size=UDim2.new(0,100,0,50),Text="ZDex",TextColor3=Color3.new(1,1,1),TextSize=50,TextTransparency=1,}},
 			{6,"TextLabel",{BackgroundTransparency=1,Font=3,Name="Desc",Parent={3},Position=UDim2.new(0,-230,0,60),Size=UDim2.new(0,180,0,25),Text="Debugging Suite",TextColor3=Color3.new(1,1,1),TextSize=18,TextTransparency=1,}},
@@ -13928,9 +13928,9 @@ Main = (function()
 			{8,"Frame",{BackgroundColor3=Color3.new(0.13,0.13,0.13),BorderSizePixel=0,Name="ProgressBar",Parent={3},Position=UDim2.new(0,110,0,145),Size=UDim2.new(0,0,0,4),}},
 			{9,"Frame",{BackgroundColor3=Color3.new(0.2392156869173,0.56078433990479,0.86274510622025),BorderSizePixel=0,Name="Bar",Parent={8},Size=UDim2.new(0,0,1,0),}},
 			{10,"ImageLabel",{BackgroundTransparency=1,Image="rbxassetid://2764171053",ImageColor3=Color3.new(0.13,0.13,0.13),Parent={8},ScaleType=1,Size=UDim2.new(1,0,1,0),SliceCenter=Rect.new(2,2,254,254),}},
-			{11,"TextLabel",{BackgroundTransparency=1,Font=3,Name="Creator",Parent={2},Position=UDim2.new(1,-110,1,-20),Size=UDim2.new(0,105,0,20),Text="Developed by ZxL",TextColor3=Color3.new(1,1,1),TextSize=14,TextXAlignment=1,}},
+			{11,"TextLabel",{BackgroundTransparency=1,Font=3,Name="Creator",Parent={2},Position=UDim2.new(1,-110,1,-20),Size=UDim2.new(0,105,0,20),Text="Developed by ZxL",TextColor3=Color3.new(0.35,0.35,0.35),TextSize=14,TextXAlignment=1,}},
 			{12,"UIGradient",{Parent={11},Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(1,1,0),}),}},
-			{13,"TextLabel",{BackgroundTransparency=1,Font=3,Name="Version",Parent={2},Position=UDim2.new(1,-110,1,-35),Size=UDim2.new(0,105,0,20),Text=Main.Version,TextColor3=Color3.new(1,1,1),TextSize=14,TextXAlignment=1,}},
+			{13,"TextLabel",{BackgroundTransparency=1,Font=3,Name="Version",Parent={2},Position=UDim2.new(1,-110,1,-35),Size=UDim2.new(0,105,0,20),Text=Main.Version,TextColor3=Color3.new(0.35,0.35,0.35),TextSize=14,TextXAlignment=1,}},
 			{14,"UIGradient",{Parent={13},Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(1,1,0),}),}},
 			{15,"ImageLabel",{BackgroundTransparency=1,BorderSizePixel=0,Image="rbxassetid://1427967925",Name="Outlines",Parent={2},Position=UDim2.new(0,-5,0,-5),ScaleType=1,Size=UDim2.new(1,10,1,10),SliceCenter=Rect.new(6,6,25,25),TileSize=UDim2.new(0,20,0,20),}},
 			{16,"UIGradient",{Parent={15},Rotation=-30,Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(1,1,0),}),}},
