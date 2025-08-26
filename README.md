@@ -30,7 +30,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 ## Update Log ( in-dev 11 )
 * Fix CodeFrame cursor offset (where cursor on textbox were not aligned properly)
 * safe env and performance engine remove because useless
-* theme better
+* better theme
 
 ---
 
