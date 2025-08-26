@@ -52,7 +52,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 # Credits ( Luau Decompile )
 
-[ZxL](http://youtu.be/dQw4w9WgXcQ?si=IkAXjfO3Uf2UOJ9V) ( Upgrade )
+[ZxL](http://youtu.be/dQw4w9WgXcQ?si=IkAXjfO3Uf2UOJ9V) ( remake )
 
 [w.a.e](https://github.com/w-a-e) ( Creator )
 
