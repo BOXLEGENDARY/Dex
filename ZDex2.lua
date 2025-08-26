@@ -13926,7 +13926,7 @@ Main = (function()
 			{6,"TextLabel",{BackgroundTransparency=1,Font=3,Name="Desc",Parent={3},Position=UDim2.new(0,-230,0,60),Size=UDim2.new(0,180,0,25),Text="Debugging Suite",TextColor3=Color3.new(1,1,1),TextSize=18,TextTransparency=1,}},
 			{7,"TextLabel",{BackgroundTransparency=1,Font=3,Name="StatusText",Parent={3},Position=UDim2.new(0,20,0,110),Size=UDim2.new(0,180,0,25),Text="Fetching API",TextColor3=Color3.new(1,1,1),TextSize=14,TextTransparency=1,}},
 			{8,"Frame",{BackgroundColor3=Color3.new(0.13,0.13,0.13),BorderSizePixel=0,Name="ProgressBar",Parent={3},Position=UDim2.new(0,110,0,145),Size=UDim2.new(0,0,0,4),}},
-			{9,"Frame",{BackgroundColor3=Color3.new(0.2,0.6,0.95),BorderSizePixel=0,Name="Bar",Parent={8},Size=UDim2.new(0,0,1,0),}},
+			{9,"Frame",{BackgroundColor3=Color3.fromRGB(0, 170, 255),BorderSizePixel=0,Name="Bar",Parent={8},Size=UDim2.new(0,0,1,0),}},
 			{10,"ImageLabel",{BackgroundTransparency=1,Image="rbxassetid://2764171053",ImageColor3=Color3.new(0.13,0.13,0.13),Parent={8},ScaleType=1,Size=UDim2.new(1,0,1,0),SliceCenter=Rect.new(2,2,254,254),}},
 			{11,"TextLabel",{BackgroundTransparency=1,Font=3,Name="Creator",Parent={2},Position=UDim2.new(1,-110,1,-20),Size=UDim2.new(0,105,0,20),Text="Developed by ZxL",TextColor3=Color3.new(1,1,1),TextSize=14,TextXAlignment=1,}},
 			{12,"UIGradient",{Parent={11},Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(1,1,0),}),}},
