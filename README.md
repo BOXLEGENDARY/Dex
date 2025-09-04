@@ -37,7 +37,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ## Other
 * 1: I'm not updating ZDex anymore but I still fix some issues if i can
-* 2: ZDex Should be Optimize
+* 2: ZDex Should be Optimize ( many )
 
 ---
 
