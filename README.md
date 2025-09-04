@@ -37,7 +37,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ## Other
 * 1: I'm not updating ZDex anymore but I still fix some issues if i can
-* 2: i just text some function in ZDex not all if u found some issues fix by u self
+* 2: i just test some function in ZDex not all if u found some issues fix by u self
 
 ---
 
