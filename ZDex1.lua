@@ -1047,7 +1047,7 @@ local function main()
 		if presentClasses["LuaSourceContainer"] then
 			context:AddRegistered("VIEW_SCRIPT")
             context:AddRegistered("SAVE_SCRIPT")
-			-- context:AddRegistered("SAVE_BYTECODE")
+			context:AddRegistered("SAVE_BYTECODE")
 		end
 		
 		if sMap[nilNode] then
@@ -1589,18 +1589,18 @@ local function main()
 				end
 			end})
 			
-		--[[context:Register("SAVE_BYTECODE",{Name = "Save Script Bytecode", IconMap = Explorer.MiscIcons, Icon = "Save", OnClick = function()
+		context:Register("SAVE_BYTECODE",{Name = "Save Script Bytecode", IconMap = Explorer.MiscIcons, Icon = "Save", OnClick = function()
 			for _, v in next, selection.List do
 				if v.Obj:IsA("LuaSourceContainer") and env.isViableDecompileScript(v.Obj) then
 					local success, bytecode = pcall(getscriptbytecode, v.Obj)
 					if success and type(bytecode) == "string" then
-						local fileName = ("dex/saved/%i.%s.%s.Bytecode.txt"):format(game.PlaceId, v.Obj.ClassName, env.parsefile(v.Obj.Name))
+						local fileName = ("%i.%s.%s.Bytecode.txt"):format(game.PlaceId, v.Obj.ClassName, env.parsefile(v.Obj.Name))
 						env.writefile(fileName, bytecode)
 						task.wait(0.2)
 					end
 				end
 			end
-		end})]]
+		end})
 		
 		context:Register("SELECT_CHARACTER",{Name = "Select Character", IconMap = Explorer.ClassIcons, Icon = 9, OnClick = function()
 			local newSelection = {}
@@ -14250,7 +14250,6 @@ Main = (function()
 				env.checkcaller = checkcaller
 				env.getreg = getreg
 				env.getgc = getgc or get_gc_objects
-				env.getscriptbytecode = getscriptbytecode
 
 				-- hooks
 				env.hookfunction = hookfunction
