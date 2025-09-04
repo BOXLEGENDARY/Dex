@@ -38,6 +38,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 ## Other
 * 1: I'm not updating ZDex anymore, but I still fix some issues, improve functions, and optimize certain parts.
 * 2: i want remake ZDex if i can
+* 3: This Dex need to be Fix
 
 ---
 
