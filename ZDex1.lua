@@ -14276,6 +14276,59 @@ Main = (function()
 					return false
 				end
 
+				env.decompile = decompile or (function()
+					-- by lovrewe
+					--warn("No built-in decompiler exists, using Konstant decompiler...")
+					--assert(getscriptbytecode, "Exploit not supported.")
+		
+					if not env.getscriptbytecode then --[[warn('Konstant decompiler is not supported. "getscriptbytecode" is missing.')]] return end
+		
+					local API = "http://api.plusgiant5.com"
+		
+					local last_call = 0
+		
+					local request = env.request
+		
+					local function call(konstantType, scriptPath)
+						local success, bytecode = pcall(getscriptbytecode, scriptPath)
+		
+						if (not success) then
+							return `-- Failed to get script bytecode, error:\n\n--[[\n{bytecode}\n--]]`
+						end
+		
+						local time_elapsed = os.clock() - last_call
+						if time_elapsed <= .5 then
+							task.wait(.5 - time_elapsed)
+						end
+		
+						local httpResult = request({
+							Url = API .. konstantType,
+							Body = bytecode,
+							Method = "POST",
+							Headers = {
+								["Content-Type"] = "text/plain"
+							}
+						})
+		
+						last_call = os.clock()
+		
+						if (httpResult.StatusCode ~= 200) then
+							return `-- Error occurred while requesting Konstant API, error:\n\n--[[\n{httpResult.Body}\n--]]`
+						else
+							return httpResult.Body
+						end
+					end
+		
+					local function decompile(scriptPath)
+						return call("/konstant/decompile", scriptPath)
+					end
+		
+					getgenv().decompile = decompile
+					
+					env.decompile = decompile
+					return decompile
+				end)()
+
 				if identifyexecutor and type(identifyexecutor) == "function" then
 					Main.Executor = identifyexecutor()
 					print("[System] Executor Detected:", Main.Executor)
