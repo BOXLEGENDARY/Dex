@@ -14991,7 +14991,7 @@ Main = (function()
 
 		Main.CreateApp({Name = "Console", IconMap = Main.LargeIcons, Icon = "Console", Window = Console.Window})
 		
-		Main.CreateApp({Name = "RSpy", IconMap = Main.LargeIcons, Icon = "Watcher", Window = RemoteSpy.Window})
+		Main.CreateApp({Name = "RemoteSpy", IconMap = Main.LargeIcons, Icon = "Watcher", Window = RemoteSpy.Window})
 
 		Main.CreateApp({Name = "Save Instance", IconMap = Main.LargeIcons, Icon = "Watcher", Window = SaveInstance.Window})
 
