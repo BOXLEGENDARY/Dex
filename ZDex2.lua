@@ -1046,7 +1046,7 @@ local function main()
 		if presentClasses["LuaSourceContainer"] then
 			context:AddRegistered("VIEW_SCRIPT")
             context:AddRegistered("SAVE_SCRIPT")
-			-- context:AddRegistered("SAVE_BYTECODE")
+			context:AddRegistered("SAVE_BYTECODE")
 		end
 		
 		if sMap[nilNode] then
@@ -1573,7 +1573,7 @@ local function main()
 				for _, v in next, selection.List do
 					if v.Obj:IsA("LuaSourceContainer") then
 						local success, source = pcall(function()
-							return (decompile or function() return "" end)(v.Obj)
+							return (decompile or env.decompile or function() return "" end)(v.Obj)
 						end)
 						if success and source and source ~= "" then
 							local fileName = ("dex/saved/%i.%s.%s.Source.txt"):format(
@@ -1588,7 +1588,7 @@ local function main()
 				end
 			end})
 			
-		--[[context:Register("SAVE_BYTECODE",{Name = "Save Script Bytecode", IconMap = Explorer.MiscIcons, Icon = "Save", OnClick = function()
+		context:Register("SAVE_BYTECODE",{Name = "Save Script Bytecode", IconMap = Explorer.MiscIcons, Icon = "Save", OnClick = function()
 			for _, v in next, selection.List do
 				if v.Obj:IsA("LuaSourceContainer") and env.isViableDecompileScript(v.Obj) then
 					local success, bytecode = pcall(getscriptbytecode, v.Obj)
@@ -1599,7 +1599,7 @@ local function main()
 					end
 				end
 			end
-		end})]]
+		end})
 		
 		context:Register("SELECT_CHARACTER",{Name = "Select Character", IconMap = Explorer.ClassIcons, Icon = 9, OnClick = function()
 			local newSelection = {}
@@ -4466,7 +4466,7 @@ local function main()
 	local PreviousScr = nil
 	
 	ScriptViewer.ViewScript = function(scr)
-		local success, source = pcall(decompile or function() end, scr)
+		local success, source = pcall(decompile or env.decompile or function() end, scr)
 		if not success or not source then source, PreviousScr = "-- DEX - Source failed to decompile", nil else PreviousScr = scr end
 		codeFrame:SetText(source:gsub("\0", "\\0"))
 		window:Show()
