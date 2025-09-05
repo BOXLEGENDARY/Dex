@@ -1896,103 +1896,317 @@ local function main()
 		Explorer.InsertObjectContext = context
 	end
 	
-	Explorer._SearchFilters = {} do
-		local Filters = Explorer._SearchFilters
+	--[[
+		Headers, Setups, Predicate, ObjectDefs
+	]]
+	Explorer.SearchFilters = { -- TODO: Use data table (so we can disable some if funcs don't exist)
+		Comparison = {
+			["isa"] = function(argString)
+				local lower = string.lower
+				local find = string.find
+				local classQuery = string.split(argString)[1]
+				if not classQuery then return end
+				classQuery = lower(classQuery)
+
+				local className
+				for class,_ in pairs(API.Classes) do
+					local cName = lower(class)
+					if cName == classQuery then
+						className = class
+						break
+					elseif find(cName,classQuery,1,true) then
+						className = class
+					end
+				end
+				if not className then return end
+
+				return {
+					Headers = {"local isa = game.IsA"},
+					Predicate = "isa(obj,'"..className.."')"
+				}
+			end,
+			["remotes"] = function(argString)
+				return {
+					Headers = {"local isa = game.IsA"},
+					Predicate = "isa(obj,'RemoteEvent') or isa(obj,'RemoteFunction') or isa(obj,'UnreliableRemoteFunction')"
+				}
+			end,
+			["bindables"] = function(argString)
+				return {
+					Headers = {"local isa = game.IsA"},
+					Predicate = "isa(obj,'BindableEvent') or isa(obj,'BindableFunction')"
+				}
+			end,
+			["rad"] = function(argString)
+				local num = tonumber(argString)
+				if not num then return end
+
+				if not service.Players.LocalPlayer.Character or not service.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") or not service.Players.LocalPlayer.Character.HumanoidRootPart:IsA("BasePart") then return end
+
+				return {
+					Headers = {"local isa = game.IsA", "local hrp = service.Players.LocalPlayer.Character.HumanoidRootPart"},
+					Setups = {"local hrpPos = hrp.Position"},
+					ObjectDefs = {"local isBasePart = isa(obj,'BasePart')"},
+					Predicate = "(isBasePart and (obj.Position-hrpPos).Magnitude <= "..num..")"
+				}
+			end,
+		},
+		Specific = {
+			["players"] = function()
+				return function() return service.Players:GetPlayers() end
+			end,
+			["loadedmodules"] = function()
+				return env.getloadedmodules
+			end,
+		},
+		Default = function(argString,caseSensitive)
+			local cleanString = argString:gsub("\"","\\\""):gsub("\n","\\n")
+			if caseSensitive then
+				return {
+					Headers = {"local find = string.find"},
+					ObjectDefs = {"local objName = tostring(obj)"},
+					Predicate = "find(objName,\"" .. cleanString .. "\",1,true)"
+				}
+			else
+				return {
+					Headers = {"local lower = string.lower","local find = string.find","local tostring = tostring"},
+					ObjectDefs = {"local lowerName = lower(tostring(obj))"},
+					Predicate = "find(lowerName,\"" .. cleanString:lower() .. "\",1,true)"
+				}
+			end
+		end,
+		SpecificDefault = function(n)
+			return {
+				Headers = {},
+				ObjectDefs = {"local isSpec"..n.." = specResults["..n.."][node]"},
+				Predicate = "isSpec"..n
+			}
+		end,
+	}
+
+	Explorer.BuildSearchFunc = function(query)
+		local specFilterList,specMap = {},{}
+		local finalPredicate = ""
+		local rep = string.rep
+		local formatQuery = query:gsub("\\.","  "):gsub('".-"',function(str) return rep(" ",#str) end)
+		local headers = {}
+		local objectDefs = {}
+		local setups = {}
+		local find = string.find
+		local sub = string.sub
+		local lower = string.lower
+		local match = string.match
+		local ops = {
+			["("] = "(",
+			[")"] = ")",
+			["||"] = " or ",
+			["&&"] = " and "
+		}
+		local filterCount = 0
+		local compFilters = Explorer.SearchFilters.Comparison
+		local specFilters = Explorer.SearchFilters.Specific
+		local init = 1
+		local lastOp = nil
+
+		local function processFilter(dat)
+			if dat.Headers then
+				local t = dat.Headers
+				for i = 1,#t do
+					headers[t[i]] = true
+				end
+			end
+
+			if dat.ObjectDefs then
+				local t = dat.ObjectDefs
+				for i = 1,#t do
+					objectDefs[t[i]] = true
+				end
+			end
+
+			if dat.Setups then
+				local t = dat.Setups
+				for i = 1,#t do
+					setups[t[i]] = true
+				end
+			end
+
+			finalPredicate = finalPredicate..dat.Predicate
+		end
+
+		local found = {}
+		local foundData = {}
+		local find = string.find
+		local sub = string.sub
+
+		local function findAll(str,pattern)
+			local count = #found+1
+			local init = 1
+			local sz = #pattern
+			local x,y,extra = find(str,pattern,init,true)
+			while x do
+				found[count] = x
+				foundData[x] = {sz,pattern}
+
+				count = count+1
+				init = y+1
+				x,y,extra = find(str,pattern,init,true)
+			end
+		end
+		local start = tick()
+		findAll(formatQuery,'&&')
+		findAll(formatQuery,"||")
+		findAll(formatQuery,"(")
+		findAll(formatQuery,")")
+		table.sort(found)
+		table.insert(found,#formatQuery+1)
+
+		local function inQuotes(str)
+			local len = #str
+			if sub(str,1,1) == '"' and sub(str,len,len) == '"' then
+				return sub(str,2,len-1)
+			end
+		end
+
+		for i = 1,#found do
+			local nextInd = found[i]
+			local nextData = foundData[nextInd] or {1}
+			local op = ops[nextData[2]]
+			local term = sub(query,init,nextInd-1)
+			term = match(term,"^%s*(.-)%s*$") or "" -- Trim
+
+			if #term > 0 then
+				if sub(term,1,1) == "!" then
+					term = sub(term,2)
+					finalPredicate = finalPredicate.."not "
+				end
+
+				local qTerm = inQuotes(term)
+				if qTerm then
+					processFilter(Explorer.SearchFilters.Default(qTerm,true))
+				else
+					local x,y = find(term,"%S+")
+					if x then
+						local first = sub(term,x,y)
+						local specifier = sub(first,1,1) == "/" and lower(sub(first,2))
+						local compFunc = specifier and compFilters[specifier]
+						local specFunc = specifier and specFilters[specifier]
+
+						if compFunc then
+							local argStr = sub(term,y+2)
+							local ret = compFunc(inQuotes(argStr) or argStr)
+							if ret then
+								processFilter(ret)
+							else
+								finalPredicate = finalPredicate.."false"
+							end
+						elseif specFunc then
+							local argStr = sub(term,y+2)
+							local ret = specFunc(inQuotes(argStr) or argStr)
+							if ret then
+								if not specMap[term] then
+									specFilterList[#specFilterList + 1] = ret
+									specMap[term] = #specFilterList
+								end
+								processFilter(Explorer.SearchFilters.SpecificDefault(specMap[term]))
+							else
+								finalPredicate = finalPredicate.."false"
+							end
+						else
+							processFilter(Explorer.SearchFilters.Default(term))
+						end
+					end
+				end				
+			end
+
+			if op then
+				finalPredicate = finalPredicate..op
+				if op == "(" and (#term > 0 or lastOp == ")") then -- Handle bracket glitch
+					return
+				else
+					lastOp = op
+				end
+			end
+			init = nextInd+nextData[1]
+		end
+
+		local finalSetups = ""
+		local finalHeaders = ""
+		local finalObjectDefs = ""
+
+		for setup,_ in next,setups do finalSetups = finalSetups..setup.."\n" end
+		for header,_ in next,headers do finalHeaders = finalHeaders..header.."\n" end
+		for oDef,_ in next,objectDefs do finalObjectDefs = finalObjectDefs..oDef.."\n" end
+
+		local template = [==[
+local searchResults = searchResults
+local nodes = nodes
+local expandTable = Explorer.SearchExpanded
+local specResults = specResults
+local service = service
+
+%s
+local function search(root)	
+%s
+	
+	local expandedpar = false
+	for i = 1,#root do
+		local node = root[i]
+		local obj = node.Obj
 		
-		local function NewFilter(list, func)
-			for _,v in next, list do
-				Filters[v:lower() .. ":"] = func
+%s
+		
+		if %s then
+			expandTable[node] = 0
+			searchResults[node] = true
+			if not expandedpar then
+				local parnode = node.Parent
+				while parnode and (not searchResults[parnode] or expandTable[parnode] == 0) do
+					expandTable[parnode] = true
+					searchResults[parnode] = true
+					parnode = parnode.Parent
+				end
+				expandedpar = true
 			end
 		end
 		
-		local Only = {
-			remotes = {"RemoteEvent", "RemoteFunction", "BindableEvent", "BindableFunction"},
-			scripts = {"Script", "LocalScript", "ModuleScript"},
-			players = {"Player"}
-		}
-		
-		NewFilter({"parent", "p"}, function(Obj, str) return Obj.Parent and (Obj.Parent.Name:lower()):find(str) end)
-		NewFilter({"class", "c"}, function(Obj, str) return (Obj.ClassName:lower()):find(str) end)
-		NewFilter({"isa", "i"}, function(Obj, str) return Obj:IsA(str) end)
-		
-		NewFilter({"only", "o"}, function(Obj, str)
-												local Special = Only[str]
-												return Special and table.find(Special, Obj.ClassName)
-								end)
-				end
-	
+		if #node > 0 then search(node) end
+	end
+end
+return search]==]
+
+		local funcStr = template:format(finalHeaders,finalSetups,finalObjectDefs,finalPredicate)
+		local s,func = pcall(loadstring,funcStr)
+		if not s or not func then return nil,specFilterList end
+
+		local env = setmetatable({["searchResults"] = searchResults, ["nodes"] = nodes, ["Explorer"] = Explorer, ["specResults"] = specResults,
+			["service"] = service},{__index = getfenv()})
+		setfenv(func,env)
+
+		return func(),specFilterList
+	end
+
 	Explorer.DoSearch = function(query)
 		table.clear(Explorer.SearchExpanded)
 		table.clear(searchResults)
-		expanded = (#query == 0 and Explorer.Expanded) or Explorer.SearchExpanded
-		
-		local tostr = tostring;
-		local tfind = table.find;
-		
-		local Filters = Explorer._SearchFilters
-		local expandTable = Explorer.SearchExpanded
-		
-		local allnodes = nodes[game]
-		
-		local defaultSearch = (function(Obj, str) return (Obj.Name:lower()):find(str, 1, true) end)
-		
-		local function searchTable(root, str, func)
-			local expandedpar = false
-			for _,node in ipairs(root) do
-				if func(node.Obj, str) then
-					expandTable[node] = 0
-					searchResults[node] = true
-					if not expandedpar then
-						local parnode = node.Parent
-						while parnode and (not searchResults[parnode] or expandTable[parnode] == 0) do
-							expanded[parnode] = true
-							searchResults[parnode] = true
-							parnode = parnode.Parent
-						end
-						expandedpar = true
-					end
-				end
-				
-				if #node > 0 then searchTable(node, str, func) end
-			end
-		end
-		
-		local function Search(query)
-			if query:len() == 0 then return end
-			
-			local lower = query:lower()
-			local split = lower:split(":")
-			local Filter = (Filters[split[1] .. ":"]) or nil
-			
-			if Filter then
-				searchTable(allnodes, (split[2] or ""), Filter)
-			else
-				searchTable(allnodes, (lower or ""), defaultSearch)
-			end
-		end
-		
-		for _,v in ipairs(query:split(",")) do
-			if v:len() > 0 then
-				Search(v)
-			end
-		end
-		
-		--[=[if #query > 0 then
+		expanded = (#query == 0 and Explorer.Expanded or Explorer.SearchExpanded)
+		searchFunc = nil
+
+		if #query > 0 then	
 			local expandTable = Explorer.SearchExpanded
 			local specFilters
-			
+
 			local lower = string.lower
 			local find = string.find
 			local tostring = tostring
-			
+
 			local lowerQuery = lower(query)
-			
+
 			local function defaultSearch(root)
 				local expandedpar = false
 				for i = 1,#root do
 					local node = root[i]
 					local obj = node.Obj
-					
+
 					if find(lower(tostring(obj)),lowerQuery,1,true) then
 						expandTable[node] = 0
 						searchResults[node] = true
@@ -2005,10 +2219,8 @@ local function main()
 							end
 							expandedpar = true
 						end
-					elseif ExplorerSearch[lower(tostring(obj))] then
-						
 					end
-					
+
 					if #node > 0 then defaultSearch(node) end
 				end
 			end
@@ -2035,15 +2247,15 @@ local function main()
 					end
 				end
 			end
-			
+
 			if searchFunc then
 				local start = tick()
 				searchFunc(nodes[game])
 				searchFunc(nilNode)
 				--warn(tick()-start)
 			end
-		end]=]
-		
+		end
+
 		Explorer.ForceUpdate()
 	end
 
