@@ -108,7 +108,7 @@ local Decompile do
 end
 
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Script, ModelViewer, Console, RemoteSpy, SaveInstance, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, SecretServicePanel, ModelViewer, Console, RemoteSpy, SaveInstance, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -130,7 +130,7 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
-	Script = Apps.Script
+	SecretServicePanel = Apps.SecretServicePanel
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
     RemoteSpy = Apps.RemoteSpy
@@ -2687,7 +2687,7 @@ end,
 
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Script, ModelViewer, Console, RemoteSpy, SaveInstance, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, SecretServicePanel, ModelViewer, Console, RemoteSpy, SaveInstance, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -2709,7 +2709,7 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
-	Script = Apps.Script
+	SecretServicePanel = Apps.SecretServicePanel
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
     RemoteSpy = Apps.RemoteSpy
@@ -4645,7 +4645,7 @@ end,
 
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Script, ModelViewer, Console, RemoteSpy, SaveInstance, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, SecretServicePanel, ModelViewer, Console, RemoteSpy, SaveInstance, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -4667,7 +4667,7 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
-	Script = Apps.Script
+	SecretServicePanel = Apps.SecretServicePanel
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
     RemoteSpy = Apps.RemoteSpy
@@ -4869,7 +4869,7 @@ end,
 ]]
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Script, ModelViewer, Console, RemoteSpy, SaveInstance, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, SecretServicePanel, ModelViewer, Console, RemoteSpy, SaveInstance, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -4891,7 +4891,7 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
-	Script = Apps.Script
+	SecretServicePanel = Apps.SecretServicePanel
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
     RemoteSpy = Apps.RemoteSpy
@@ -5232,7 +5232,7 @@ end,
 
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Script, ModelViewer, Console, RemoteSpy, SaveInstance, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, SecretServicePanel, ModelViewer, Console, RemoteSpy, SaveInstance, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -5254,7 +5254,7 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
-	Script = Apps.Script
+	SecretServicePanel = Apps.SecretServicePanel
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
     RemoteSpy = Apps.RemoteSpy
@@ -5632,7 +5632,7 @@ end,
 ]]
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Script, ModelViewer, Console, RemoteSpy, SaveInstance, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, SecretServicePanel, ModelViewer, Console, RemoteSpy, SaveInstance, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -5654,7 +5654,7 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
-	Script = Apps.Script
+	SecretServicePanel = Apps.SecretServicePanel
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
     RemoteSpy = Apps.RemoteSpy
@@ -6425,7 +6425,7 @@ end,
 ["RemoteSpy"] = function()
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Script, ModelViewer, Console, RemoteSpy, SaveInstance, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, SecretServicePanel, ModelViewer, Console, RemoteSpy, SaveInstance, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -6447,7 +6447,7 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
-	Script = Apps.Script
+	SecretServicePanel = Apps.SecretServicePanel
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
     RemoteSpy = Apps.RemoteSpy
@@ -6787,7 +6787,7 @@ end,
 
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Script, ModelViewer, Console, RemoteSpy, SaveInstance, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, SecretServicePanel, ModelViewer, Console, RemoteSpy, SaveInstance, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -6809,7 +6809,7 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
-	Script = Apps.Script
+	SecretServicePanel = Apps.SecretServicePanel
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
     RemoteSpy = Apps.RemoteSpy
@@ -7088,7 +7088,7 @@ end,
 
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Script, ModelViewer, Console, RemoteSpy, SaveInstance, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, SecretServicePanel, ModelViewer, Console, RemoteSpy, SaveInstance, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -7110,7 +7110,7 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
-	Script = Apps.Script
+	SecretServicePanel = Apps.SecretServicePanel
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
     RemoteSpy = Apps.RemoteSpy
@@ -14187,7 +14187,7 @@ end
 }
 
 -- Main vars
-local Main, Explorer, Properties, ScriptViewer, Script, ModelViewer, Console, RemoteSpy, SaveInstance, DefaultSettings, Notebook, Serializer, Lib
+local Main, Explorer, Properties, ScriptViewer, SecretServicePanel, ModelViewer, Console, RemoteSpy, SaveInstance, DefaultSettings, Notebook, Serializer, Lib
 local API, RM
 
 -- Default Settings
@@ -14306,7 +14306,7 @@ end
 Main = (function()
 	local Main = {}
 	
-	Main.ModuleList = {"Explorer","Properties","ScriptViewer","Script","ModelViewer","Console","RemoteSpy","SaveInstance"}
+	Main.ModuleList = {"Explorer","Properties","ScriptViewer","SecretServicePanel","ModelViewer","Console","RemoteSpy","SaveInstance"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
 	Main.Version = "in-dev 11"
@@ -14390,7 +14390,7 @@ Main = (function()
 		Explorer = Apps.Explorer
 		Properties = Apps.Properties
 		ScriptViewer = Apps.ScriptViewer
-        Script = Apps.Script
+        SecretServicePanel = Apps.SecretServicePanel
 		ModelViewer = Apps.ModelViewer
 		Console = Apps.Console
         RemoteSpy = Apps.RemoteSpy
@@ -14400,7 +14400,7 @@ Main = (function()
 			Explorer = Explorer,
 			Properties = Properties,
 			ScriptViewer = ScriptViewer,
-            Script = Script,
+            SecretServicePanel = SecretServicePanel,
 			ModelViewer = ModelViewer,
 			Console = Console,
             RemoteSpy = RemoteSpy,
@@ -15197,7 +15197,7 @@ Main = (function()
 		
 		Main.CreateApp({Name = "Script Viewer", IconMap = Main.LargeIcons, Icon = "Script_Viewer", Window = ScriptViewer.Window})
 		
-		Main.CreateApp({Name = "Script", IconMap = Main.LargeIcons, Icon = "Script", Window = Script.Window})
+		Main.CreateApp({Name = "Secret Service Panel", IconMap = Main.LargeIcons, Icon = "Script", Window = SecretServicePanel.Window})
 
 		Main.CreateApp({Name = "Model Viewer", IconMap = Main.LargeIcons, Icon = 6, Window = ModelViewer.Window})
 
@@ -15350,7 +15350,7 @@ Main = (function()
 		Explorer.Init()
 		Properties.Init()
 		ScriptViewer.Init()
-        Script.Init()
+        SecretServicePanel.Init()
 		ModelViewer.Init()
 		Console.Init()
         RemoteSpy.Init()

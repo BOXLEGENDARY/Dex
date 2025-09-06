@@ -108,7 +108,7 @@ local Decompile do
 end
 
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Script, ModelViewer, Console, SaveInstance, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, SecretServicePanel, ModelViewer, Console, SaveInstance, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -130,7 +130,7 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
-	Script = Apps.Script
+	SecretServicePanel = Apps.SecretServicePanel
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
 	SaveInstance = Apps.SaveInstance
@@ -2686,7 +2686,7 @@ end,
 
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Script, ModelViewer, Console, SaveInstance, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, SecretServicePanel, ModelViewer, Console, SaveInstance, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -2708,7 +2708,7 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
-	Script = Apps.Script
+	SecretServicePanel = Apps.SecretServicePanel
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
 	SaveInstance = Apps.SaveInstance
@@ -4643,7 +4643,7 @@ end,
 
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Script, ModelViewer, Console, SaveInstance, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, SecretServicePanel, ModelViewer, Console, SaveInstance, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -4665,7 +4665,7 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
-	Script = Apps.Script
+	SecretServicePanel = Apps.SecretServicePanel
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
 	SaveInstance = Apps.SaveInstance
@@ -4858,15 +4858,15 @@ end
 
 return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
 end,
-["Script"] = function()
+["SecretServicePanel"] = function()
 --[[
-	Script 
+	Secret Service Panel Module
 	
-	u can script any u want ( mini )
+	Ported from Serversided to Clientsided.
 ]]
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Script, ModelViewer, Console, SaveInstance, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, SecretServicePanel, ModelViewer, Console, SaveInstance, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -4888,7 +4888,7 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
-	Script = Apps.Script
+	SecretServicePanel = Apps.SecretServicePanel
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
 	SaveInstance = Apps.SaveInstance
@@ -4896,7 +4896,7 @@ local function initAfterMain()
 end
 
 local function main()
-	local Script = {}
+	local SecretServicePanel = {}
 
 	local window,codeFrame
 
@@ -4904,7 +4904,7 @@ local function main()
 	local outputMax = 1000
 	local outputOn = true
 
-	Script.Init = function()
+	SecretServicePanel.Init = function()
 		local colorOutput = {
 			[0] = Color3.new(1,1,1),
 			[1] = Color3.new(0.4, 0.5, 1),
@@ -4917,7 +4917,7 @@ local function main()
 		window:Resize(500,350)
 		window.PosX = 20
 		window.PosY = workspace.CurrentCamera.ViewportSize.Y - 400
-		Script.Window = window
+		SecretServicePanel.Window = window
 
 		local exeFrame = Instance.new("Frame")
 		exeFrame.BackgroundTransparency = 1
@@ -5211,10 +5211,10 @@ local function main()
 			getOutput()
 		end)
 		
-		codeFrame:SetText("-- hello")
+		codeFrame:SetText("-- This is CLIENT SIDED")
 	end
 
-	return Script
+	return SecretServicePanel
 end
 
 	return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
@@ -5228,7 +5228,7 @@ end,
 
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Script, ModelViewer, Console, SaveInstance, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, SecretServicePanel, ModelViewer, Console, SaveInstance, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -5250,7 +5250,7 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
-	Script = Apps.Script
+	SecretServicePanel = Apps.SecretServicePanel
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
 	SaveInstance = Apps.SaveInstance
@@ -5627,7 +5627,7 @@ end,
 ]]
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Script, ModelViewer, Console, SaveInstance, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, SecretServicePanel, ModelViewer, Console, SaveInstance, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -5649,7 +5649,7 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
-	Script = Apps.Script
+	SecretServicePanel = Apps.SecretServicePanel
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
 	SaveInstance = Apps.SaveInstance
@@ -6425,7 +6425,7 @@ end,
 
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Script, ModelViewer, Console, SaveInstance, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, SecretServicePanel, ModelViewer, Console, SaveInstance, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -6447,7 +6447,7 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
-	Script = Apps.Script
+	SecretServicePanel = Apps.SecretServicePanel
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
 	SaveInstance = Apps.SaveInstance
@@ -6725,7 +6725,7 @@ end,
 
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, Script, ModelViewer, Console, SaveInstance, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, SecretServicePanel, ModelViewer, Console, SaveInstance, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -6747,7 +6747,7 @@ local function initAfterMain()
 	Explorer = Apps.Explorer
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
-	Script = Apps.Script
+	SecretServicePanel = Apps.SecretServicePanel
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
 	SaveInstance = Apps.SaveInstance
@@ -13823,7 +13823,7 @@ end
 }
 
 -- Main vars
-local Main, Explorer, Properties, ScriptViewer, Script, ModelViewer, Console, SaveInstance, DefaultSettings, Notebook, Serializer, Lib
+local Main, Explorer, Properties, ScriptViewer, SecretServicePanel, ModelViewer, Console, SaveInstance, DefaultSettings, Notebook, Serializer, Lib
 local API, RM
 
 -- Default Settings
@@ -13942,7 +13942,7 @@ end
 Main = (function()
 	local Main = {}
 	
-	Main.ModuleList = {"Explorer","Properties","ScriptViewer","Script","ModelViewer","Console","SaveInstance"}
+	Main.ModuleList = {"Explorer","Properties","ScriptViewer","SecretServicePanel","ModelViewer","Console","SaveInstance"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
 	Main.Version = "in-dev 11"
@@ -14026,7 +14026,7 @@ Main = (function()
 		Explorer = Apps.Explorer
 		Properties = Apps.Properties
 		ScriptViewer = Apps.ScriptViewer
-        Script = Apps.Script
+        SecretServicePanel = Apps.SecretServicePanel
 		ModelViewer = Apps.ModelViewer
 		Console = Apps.Console
         SaveInstance = Apps.SaveInstance
@@ -14035,7 +14035,7 @@ Main = (function()
 			Explorer = Explorer,
 			Properties = Properties,
 			ScriptViewer = ScriptViewer,
-            Script = Script,
+            SecretServicePanel = SecretServicePanel,
 			ModelViewer = ModelViewer,
 			Console = Console,
             SaveInstance = SaveInstance,
@@ -14831,7 +14831,7 @@ Main = (function()
 		
 		Main.CreateApp({Name = "Script Viewer", IconMap = Main.LargeIcons, Icon = "Script_Viewer", Window = ScriptViewer.Window})
 		
-		Main.CreateApp({Name = "Script", IconMap = Main.LargeIcons, Icon = "Script", Window = Script.Window})
+		Main.CreateApp({Name = "Secret Service Panel", IconMap = Main.LargeIcons, Icon = "Script", Window = SecretServicePanel.Window})
 
 		Main.CreateApp({Name = "Model Viewer", IconMap = Main.LargeIcons, Icon = 6, Window = ModelViewer.Window})
 
@@ -14982,7 +14982,7 @@ Main = (function()
 		Explorer.Init()
 		Properties.Init()
 		ScriptViewer.Init()
-        Script.Init()
+        SecretServicePanel.Init()
 		ModelViewer.Init()
 		Console.Init()
         SaveInstance.Init()
