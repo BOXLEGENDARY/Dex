@@ -47,7 +47,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 [Moon](https://github.com/LorekeeperZinnia/Dex) ( Creator )
 
-[chillz](https://github.com/AZYsGithub/DexPlusPlus) ( Open Source i use )
+[chillz](https://github.com/AZYsGithub) ( Dex++ Creator )
 
 [zeroxx987](https://scriptblox.com/script/Universal-Script-BootSpy-12998) ( RemoteSpy )
 
@@ -60,6 +60,11 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 [w.a.e](https://github.com/w-a-e) ( Creator )
 
 [break-core](https://github.com/break-core) ( Base64 )
+
+---
+
+## DexPlusPlus
+[Dex++](https://github.com/AZYsGithub/DexPlusPlus)
 
 ---
 
