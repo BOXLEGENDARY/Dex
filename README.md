@@ -63,6 +63,11 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ---
 
+## Dex
+[Dex](https://github.com/LorekeeperZinnia/Dex)
+
+---
+
 ## DexPlusPlus
 [Dex++](https://github.com/AZYsGithub/DexPlusPlus)
 
