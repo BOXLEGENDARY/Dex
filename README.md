@@ -44,7 +44,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ## TODO
 
-* -
+* nothing now
 
 ---
 
