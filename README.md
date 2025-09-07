@@ -44,8 +44,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ## TODO
 
-* Client <-> Server Bridge
-* Datastore Editor
+* -
 
 ---
 
