@@ -45,7 +45,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 ## Credits ( ZDex )
 [ZxL](https://youtu.be/dQw4w9WgXcQ?si=IkAXjfO3Uf2UOJ9V) ( Owner )
 
-[Moon](https://github.com/LorekeeperZinnia/Dex) ( Creator )
+[Moon](https://github.com/LorekeeperZinnia/Dex) ( Orginal )
 
 [chillz](https://github.com/AZYsGithub) ( Dex++ Creator )
 
