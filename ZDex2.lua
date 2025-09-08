@@ -1571,7 +1571,7 @@ local function main()
 			Icon = "Save",
 			OnClick = function()
 				for _, v in next, selection.List do
-					if v.Obj:IsA("LuaSourceContainer") then
+					if v.Obj:IsA("LuaSourceContainer") and env.isViableDecompileScript(v.Obj) then
 						local success, source = pcall(function()
 							return (decompile or env.decompile or function() return "" end)(v.Obj)
 						end)
