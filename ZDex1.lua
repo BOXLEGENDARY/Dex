@@ -4861,11 +4861,11 @@ end
 
 return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
 end,
-["Script"] = function()
+["SecretServicePanel"] = function()
 --[[
-	Script 
+	Secret Service Panel Module
 	
-	u can script any u want ( mini )
+	Ported from Serversided to Clientsided.
 ]]
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
