@@ -4917,7 +4917,7 @@ local function main()
 		}
 		
 		window = Lib.Window.new()
-		window:SetTitle("Script")
+		window:SetTitle("SecretServicePanel")
 		window:Resize(500,350)
 		window.PosX = 20
 		window.PosY = workspace.CurrentCamera.ViewportSize.Y - 400
