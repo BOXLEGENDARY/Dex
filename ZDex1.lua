@@ -4900,7 +4900,7 @@ local function initAfterMain()
 end
 
 local function main()
-	local Script = {}
+	local SecretServicePanel = {}
 
 	local window,codeFrame
 
@@ -4908,7 +4908,7 @@ local function main()
 	local outputMax = 1000
 	local outputOn = true
 
-	Script.Init = function()
+	SecretServicePanel.Init = function()
 		local colorOutput = {
 			[0] = Color3.new(1,1,1),
 			[1] = Color3.new(0.4, 0.5, 1),
@@ -4921,7 +4921,7 @@ local function main()
 		window:Resize(500,350)
 		window.PosX = 20
 		window.PosY = workspace.CurrentCamera.ViewportSize.Y - 400
-		Script.Window = window
+		SecretServicePanel.Window = window
 
 		local exeFrame = Instance.new("Frame")
 		exeFrame.BackgroundTransparency = 1
@@ -5215,10 +5215,10 @@ local function main()
 			getOutput()
 		end)
 		
-		codeFrame:SetText("-- hello")
+		codeFrame:SetText("-- This is CLIENT SIDED")
 	end
 
-	return Script
+	return SecretServicePanel
 end
 
 	return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
