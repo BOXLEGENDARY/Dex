@@ -51,10 +51,10 @@ local success, err = pcall(function()
     for _, c in ipairs(logCons) do
         c:Disconnect()
     end
-    print("[ClientLogger] Disconnected", #logCons, "LogService.MessageOut connections")
+    print("[ClientLogger] Disconnected", #logCons, "LogService connections")
 end)
 if not success then
-    warn("[ ⚠ ] LogService.MessageOut disconnect failed:", err)
+    warn("[ClientLogger] LogService disconnect failed:", err)
 end
 
 local success2, err2 = pcall(function()
@@ -62,10 +62,10 @@ local success2, err2 = pcall(function()
     for _, c in ipairs(errCons) do
         c:Disconnect()
     end
-    print("[ClientLogger] Disconnected", #errCons, "ScriptContext.Error connections")
+    print("[ClientLogger] Disconnected", #errCons, "ScriptContext connections")
 end)
 if not success2 then
-    warn("[ ⚠ ] ScriptContext.Error disconnect failed:", err2)
+    warn("[ClientLogger] ScriptContext disconnect failed:", err2)
 end
 
 -- Auto service fetch
