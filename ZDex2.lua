@@ -1046,7 +1046,7 @@ local function main()
 		if presentClasses["LuaSourceContainer"] then
 			context:AddRegistered("VIEW_SCRIPT")
             context:AddRegistered("SAVE_SCRIPT")
-			context:AddRegistered("SAVE_BYTECODE")
+			context:AddRegistered("SAVE_BYTECODE", not presentClasses.isViableDecompileScript or env.getscriptbytecode == nil or env.writefile == nil)
 		end
 		
 		if sMap[nilNode] then
@@ -14122,11 +14122,8 @@ Main = (function()
 				end
 
 				env.decompile = decompile or (function()
-					-- by lovrewe
-					--warn("No built-in decompiler exists, using Konstant decompiler...")
-					--assert(getscriptbytecode, "Exploit not supported.")
 		
-					if not env.getscriptbytecode then --[[warn('Konstant decompiler is not supported. "getscriptbytecode" is missing.')]] return end
+					if not env.getscriptbytecode then return end
 		
 					local API = "http://api.plusgiant5.com"
 		
