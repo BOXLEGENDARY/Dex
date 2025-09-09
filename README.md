@@ -73,7 +73,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ---
 
-## Luau Decompile
+## Luau Decompile ( disassembler )
 [Luau Decompile](https://github.com/BOXLEGENDARY/LuauDecompile)
 
 ---
