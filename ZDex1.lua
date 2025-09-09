@@ -13,6 +13,9 @@ pcall(function() LOAD.ZDex_load = true end)
 
 wait(0.1)
 
+local oldgame = game
+local game = workspace.Parent
+
 cloneref = cloneref or function(ref)
 	if not getreg then return ref end
 	
@@ -14193,6 +14196,8 @@ end
 return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
 end
 }
+
+local oldgame = oldgame or game
 
 -- Main vars
 local Main, Explorer, Properties, ScriptViewer, SecretServicePanel, ModelViewer, Console, RemoteSpy, SaveInstance, DefaultSettings, Notebook, Serializer, Lib
