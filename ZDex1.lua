@@ -1589,18 +1589,26 @@ local function main()
 				end
 			end})
 			
-		context:Register("SAVE_BYTECODE",{Name = "Save Script Bytecode", IconMap = Explorer.MiscIcons, Icon = "Save", OnClick = function()
-			for _, v in next, selection.List do
-				if v.Obj:IsA("LuaSourceContainer") and env.isViableDecompileScript(v.Obj) then
-					local success, bytecode = pcall(getscriptbytecode, v.Obj)
-					if success and type(bytecode) == "string" then
-						local fileName = ("%i.%s.%s.Bytecode.txt"):format(game.PlaceId, v.Obj.ClassName, env.parsefile(v.Obj.Name))
-						env.writefile(fileName, bytecode)
-						task.wait(0.2)
-					end
-				end
-			end
-		end})
+		context:Register("SAVE_BYTECODE", {
+		    Name = "Save Script Bytecode",
+		    IconMap = Explorer.MiscIcons,
+		    Icon = "Save",
+		    OnClick = function()
+		        for _, v in next, selection.List do
+		            if v.Obj:IsA("LuaSourceContainer") and env.isViableDecompileScript(v.Obj) then
+		                local success, bytecode = pcall(getscriptbytecode, v.Obj)
+		                if success and type(bytecode) == "string" then
+		                    local fileName = ("dex/saved/%i.%s.%s.Bytecode.txt"):format(
+		                        game.PlaceId,
+		                        v.Obj.ClassName,
+		                        v.Obj.Name
+		                    )
+		                    env.writefile(fileName, bytecode)
+		                    task.wait(0.2)
+		                end
+		            end
+		        end
+		    end})
 		
 		context:Register("SELECT_CHARACTER",{Name = "Select Character", IconMap = Explorer.ClassIcons, Icon = 9, OnClick = function()
 			local newSelection = {}
@@ -14434,7 +14442,6 @@ Main = (function()
 				env.loadfile = loadfile
 				env.movefileas = movefileas
 				env.saveinstance = saveinstance or (function()
-					--warn("No built-in saveinstance exists, using SynSaveInstance and wrapper...")
 					if game:GetService("RunService"):IsStudio() then return end
 					local Params = {
 						RepoURL = "https://raw.githubusercontent.com/luau/SynSaveInstance/main/",
