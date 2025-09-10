@@ -4749,7 +4749,6 @@ local function main()
 					local getupvalues = env.getupvalues
 					local getconstants = env.getconstants
 					local getinfo = env.getinfo
-					local getlocal = env.getlocal
 					local original = ("\n-- // Function Dumper \n-- // Script Path: %s\n\n--[["):format(PreviousScr:GetFullName())
 					local dump = original
 					local functions, function_count, data_base = {}, 0, {}
@@ -4798,16 +4797,6 @@ local function main()
 					function functions:dump_function(input, indent)
 						indent = indent or 0
 						functions:add_to_dump(("\nFunction Dump: %s"):format(functions:get_function_name(input)), indent)
-		
-						-- Dump locals
-						functions:add_to_dump("Local Variables:", indent)
-						local i = 1
-						while true do
-							local name, value = getlocal(input, i)
-							if not name then break end
-							functions:add_to_dump(("[%d] [%s] = %s"):format(i, tostring(name), tostring(value)), indent + 1)
-							i = i + 1
-						end
 		
 						-- Dump upvalues
 						functions:add_to_dump("\nFunction Upvalues:", indent)
@@ -13958,7 +13947,7 @@ Main = (function()
 	Main.ModuleList = {"Explorer","Properties","ScriptViewer","SecretServicePanel","ModelViewer","Console","SaveInstance"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
-	Main.Version = "in-dev 11"
+	Main.Version = "in-dev 12"
 	Main.Mouse = plr:GetMouse()
 	Main.AppControls = {}
 	Main.Apps = Apps
@@ -14103,7 +14092,6 @@ Main = (function()
 				env.getupvalues = (debug and debug.getupvalues) or getupvalues or getupvals
 				env.getconstants = (debug and debug.getconstants) or getconstants or getconsts
 				env.getinfo = (debug and (debug.getinfo or debug.info)) or getinfo
-                env.getlocal = (debug and debug.getlocal) or function() return nil end
 				env.islclosure = islclosure or is_l_closure or is_lclosure
 				env.checkcaller = checkcaller
 				env.getreg = getreg
