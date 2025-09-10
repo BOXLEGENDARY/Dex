@@ -14476,6 +14476,7 @@ Main = (function()
 				env.getnilinstances = getnilinstances or get_nil_instances
 				env.getloadedmodules = getloadedmodules
 
+                -- check decompile
 				env.isViableDecompileScript = function(obj)
 					if obj:IsA("ModuleScript") then
 						return true
@@ -14487,6 +14488,7 @@ Main = (function()
 					return false
 				end
 
+                -- other decompile
 				env.decompile = decompile or (function()
 		
 					if not env.getscriptbytecode then return end
