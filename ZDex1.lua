@@ -14554,7 +14554,7 @@ Main = (function()
 					print("[System] Executor Detected:", Main.Executor)
 				else
 				    Main.Executor = "???"
-				    warn("[System] Executor Detected: certified trashware")
+				    warn(("[System] Executor Detected: %s (unsupported / skidware)"):format(Main.Executor))
 				end
 
 				Main.GuiHolder = Main.Elevated and service.CoreGui or plr:FindFirstChildWhichIsA("PlayerGui")
