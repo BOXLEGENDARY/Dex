@@ -1,5 +1,5 @@
 ## ZDex 
-* IN-DEV ( version 11 )
+* IN-DEV ( version 12 )
 * Script
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/main/ZDex1.lua"))()
@@ -28,10 +28,8 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ---
 
-## Update Log ( in-dev 11 )
-* Fix CodeFrame cursor offset (where cursor on textbox were not aligned properly)
-* safe env and performance engine remove because useless
-* better theme
+## Update Log ( in-dev 12 )
+* remove getlocal
 
 ---
 
