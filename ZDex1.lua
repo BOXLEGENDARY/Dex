@@ -14775,7 +14775,7 @@ Main = (function()
 	end
 	
 	Main.LoadAntiClientLogger = function()
-	    loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/RobloxRobloxRobloxAgain/refs/heads/main/AntiClientLogger.lua", true))()
+	    loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/Roblox/refs/heads/main/AntiClientLogger.lua", true))()
 	end
 
 	Main.ShowGui = function(gui)
