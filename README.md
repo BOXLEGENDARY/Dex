@@ -1,7 +1,6 @@
 ## ZDex 
 IN-DEV ( version 12 )
 * All ZDex versions on GitHub are different from the internal staff version.
-* This is the latest version. Thanks for using ZDex!
 ## Script
 * RemoteSpy Version
 ```lua
