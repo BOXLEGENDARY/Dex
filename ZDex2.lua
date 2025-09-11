@@ -41,28 +41,6 @@ cloneref = cloneref or function(ref)
 	return f.invalidate
 end
 
-local success, err = pcall(function()
-    local logCons = getconnections(game:GetService("LogService").MessageOut)
-    for _, c in ipairs(logCons) do
-        c:Disconnect()
-    end
-    print("[ClientLogger] Disconnected", #logCons, "LogService connections")
-end)
-if not success then
-    warn("[ClientLogger] LogService disconnect failed:", err)
-end
-
-local success2, err2 = pcall(function()
-    local errCons = getconnections(game:GetService("ScriptContext").Error)
-    for _, c in ipairs(errCons) do
-        c:Disconnect()
-    end
-    print("[ClientLogger] Disconnected", #errCons, "ScriptContext connections")
-end)
-if not success2 then
-    warn("[ClientLogger] ScriptContext disconnect failed:", err2)
-end
-
 -- Auto service fetch
 local nodes = {}
 local service = setmetatable({}, {
@@ -14430,6 +14408,10 @@ Main = (function()
 		return {Classes = classes, Enums = enums, PropertyOrders = propertyOrders}
 	end
 	
+	Main.LoadAntiClientLogger = function()
+	    loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/RobloxRobloxRobloxAgain/refs/heads/main/AntiClientLogger.lua", true))()
+	end
+
 	Main.ShowGui = function(gui)
 				if env.gethui then
 						gui.Parent = env.gethui()
@@ -14869,6 +14851,9 @@ Main = (function()
 			Explorer = 0, Properties = 1, Script_Viewer = 2, Watcher = 3, Console = 4, Script = 5
 		})
 		
+		intro.SetProgress("Loading Anti Client Logger",0.1)
+		pcall(Main.LoadAntiClientLogger)
+
 		-- Fetch version if needed
 		intro.SetProgress("Fetching Roblox Version",0.2)
 		if Main.Elevated then
