@@ -34,7 +34,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 ---
 
 ## Other
-I'm not updating ZDex anymore but I still fix some issues if i can
+I’m not updating ZDex anymore, but I still fix some issues if I can.
 * All ZDex versions on GitHub are different from the internal staff version.
 * Don’t worry, if you wanna work on it, I’ve already cleaned up the script.
 
