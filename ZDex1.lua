@@ -3805,7 +3805,7 @@ local function main()
 		context:Show(valueFrame.AbsolutePosition.X, valueFrame.AbsolutePosition.Y + 22)
 	end
 
-	Properties.DisplayBrickColorEditor = function(prop,entryIndex,col) -- supprot special case BasePart.BrickColor to BasePart.Color ( i hope it work )
+	Properties.DisplayBrickColorEditor = function(prop,entryIndex,col)
 		local editor = Properties.BrickColorEditor
 		if not editor then
 			editor = Lib.BrickColorPicker.new()
@@ -3814,34 +3814,23 @@ local function main()
 
 			editor.OnSelect:Connect(function(col)
 				if not editor.CurrentProp or editor.CurrentProp.ValueType.Name ~= "BrickColor" then return end
-				
+
 				if editor.CurrentProp == inputProp then inputProp = nil end
 				Properties.SetProp(editor.CurrentProp,BrickColor.new(col))
 			end)
 
-			editor.OnMoreColors:Connect(function()
+			editor.OnMoreColors:Connect(function() -- TODO: Special Case BasePart.BrickColor to BasePart.Color
 				editor:Close()
-			
 				local colProp
 				for i,v in pairs(API.Classes.BasePart.Properties) do
-					if v.Name == "Color" or v.Name == "BrickColor" then
+					if v.Name == "Color" then
 						colProp = v
 						break
 					end
 				end
-				
-				if colProp and colProp.Name == "BrickColor" then
-					for i,v in pairs(API.Classes.BasePart.Properties) do
-						if v.Name == "Color" then
-							colProp = v
-							break
-						end
-					end
-				end
-			
-				Properties.DisplayColorEditor(colProp, editor.SavedColor.Color)
+				Properties.DisplayColorEditor(colProp,editor.SavedColor.Color)
 			end)
-			
+
 			Properties.BrickColorEditor = editor
 		end
 
