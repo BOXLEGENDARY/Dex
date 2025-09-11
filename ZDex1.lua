@@ -15258,7 +15258,7 @@ Main = (function()
 				intro.SetProgress("Please Wait",0.4)
 			end,
 			function()
-				intro.SetProgress("Almost Done",0.45)
+				intro.SetProgress("Keep on waiting",0.45)
 			end
 		)
 		Lib.FastWait()
