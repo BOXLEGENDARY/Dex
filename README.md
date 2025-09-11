@@ -32,6 +32,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ## Update Log ( in-dev 12 )
 * remove getlocal
+* Change the way to load the Anti Client Logger
 
 ---
 
