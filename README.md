@@ -76,3 +76,7 @@ This is the latest version. Thanks for using ZDex!
 [Roblox Client Tracker](https://github.com/MaximumADHD/Roblox-Client-Tracker)
 
 ---
+
+## Discord
+
+`@xsxs_xsxs_z`
