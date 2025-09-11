@@ -3229,83 +3229,64 @@ local function main()
 		return subProp
 	end
 
-	Properties.GetExpandedProps = function(prop)
-		local typeName = prop.ValueType.Name
-		local makeSubProp = Properties.MakeSubProp
+	Properties.GetExpandedProps = function(prop) -- TODO: Optimize using table
 		local result = {}
-	
-		local expandTable = {
-			Vector2 = {
-				{".X", "float"},
-				{".Y", "float"},
-			},
-			Vector3 = {
-				{".X", "float"},
-				{".Y", "float"},
-				{".Z", "float"},
-			},
-			CFrame = {
-				{".Position", "Vector3"},
-				{".RightVector", "Vector3"},
-				{".UpVector", "Vector3"},
-				{".LookVector", "Vector3"},
-			},
-			UDim = {
-				{".Scale", "float"},
-				{".Offset", "int"},
-			},
-			UDim2 = {
-				{".X", "UDim"},
-				{".Y", "UDim"},
-			},
-			Rect = {
-				{".Min.X", "float", "X0"},
-				{".Min.Y", "float", "Y0"},
-				{".Max.X", "float", "X1"},
-				{".Max.Y", "float", "Y1"},
-			},
-			PhysicalProperties = {
-				{".Density", "float"},
-				{".Elasticity", "float"},
-				{".ElasticityWeight", "float"},
-				{".Friction", "float"},
-				{".FrictionWeight", "float"},
-			},
-			Ray = {
-				{".Origin", "Vector3"},
-				{".Direction", "Vector3"},
-			},
-			NumberRange = {
-				{".Min", "float"},
-				{".Max", "float"},
-			},
-			Faces = {
-				{".Back", "bool"},
-				{".Bottom", "bool"},
-				{".Front", "bool"},
-				{".Left", "bool"},
-				{".Right", "bool"},
-				{".Top", "bool"},
-			},
-			Axes = {
-				{".X", "bool"},
-				{".Y", "bool"},
-				{".Z", "bool"},
-			},
-		}
-	
-		local format = expandTable[typeName]
-		if format then
-			for i = 1, #format do
-				local entry = format[i]
-				result[i] = makeSubProp(prop, entry[1], {Name = entry[2]}, entry[3])
-			end
+		local typeData = prop.ValueType
+		local typeName = typeData.Name
+		local makeSubProp = Properties.MakeSubProp
+
+		if typeName == "Vector2" then
+			result[1] = makeSubProp(prop,".X",{Name = "float"})
+			result[2] = makeSubProp(prop,".Y",{Name = "float"})
+		elseif typeName == "Vector3" then
+			result[1] = makeSubProp(prop,".X",{Name = "float"})
+			result[2] = makeSubProp(prop,".Y",{Name = "float"})
+			result[3] = makeSubProp(prop,".Z",{Name = "float"})
+		elseif typeName == "CFrame" then
+			result[1] = makeSubProp(prop,".Position",{Name = "Vector3"})
+			result[2] = makeSubProp(prop,".RightVector",{Name = "Vector3"})
+			result[3] = makeSubProp(prop,".UpVector",{Name = "Vector3"})
+			result[4] = makeSubProp(prop,".LookVector",{Name = "Vector3"})
+		elseif typeName == "UDim" then
+			result[1] = makeSubProp(prop,".Scale",{Name = "float"})
+			result[2] = makeSubProp(prop,".Offset",{Name = "int"})
+		elseif typeName == "UDim2" then
+			result[1] = makeSubProp(prop,".X",{Name = "UDim"})
+			result[2] = makeSubProp(prop,".Y",{Name = "UDim"})
+		elseif typeName == "Rect" then
+			result[1] = makeSubProp(prop,".Min.X",{Name = "float"},"X0")
+			result[2] = makeSubProp(prop,".Min.Y",{Name = "float"},"Y0")
+			result[3] = makeSubProp(prop,".Max.X",{Name = "float"},"X1")
+			result[4] = makeSubProp(prop,".Max.Y",{Name = "float"},"Y1")
+		elseif typeName == "PhysicalProperties" then
+			result[1] = makeSubProp(prop,".Density",{Name = "float"})
+			result[2] = makeSubProp(prop,".Elasticity",{Name = "float"})
+			result[3] = makeSubProp(prop,".ElasticityWeight",{Name = "float"})
+			result[4] = makeSubProp(prop,".Friction",{Name = "float"})
+			result[5] = makeSubProp(prop,".FrictionWeight",{Name = "float"})
+		elseif typeName == "Ray" then
+			result[1] = makeSubProp(prop,".Origin",{Name = "Vector3"})
+			result[2] = makeSubProp(prop,".Direction",{Name = "Vector3"})
+		elseif typeName == "NumberRange" then
+			result[1] = makeSubProp(prop,".Min",{Name = "float"})
+			result[2] = makeSubProp(prop,".Max",{Name = "float"})
+		elseif typeName == "Faces" then
+			result[1] = makeSubProp(prop,".Back",{Name = "bool"})
+			result[2] = makeSubProp(prop,".Bottom",{Name = "bool"})
+			result[3] = makeSubProp(prop,".Front",{Name = "bool"})
+			result[4] = makeSubProp(prop,".Left",{Name = "bool"})
+			result[5] = makeSubProp(prop,".Right",{Name = "bool"})
+			result[6] = makeSubProp(prop,".Top",{Name = "bool"})
+		elseif typeName == "Axes" then
+			result[1] = makeSubProp(prop,".X",{Name = "bool"})
+			result[2] = makeSubProp(prop,".Y",{Name = "bool"})
+			result[3] = makeSubProp(prop,".Z",{Name = "bool"})
 		end
-	
+
 		if prop.Name == "SoundId" and prop.Class == "Sound" then
 			result[1] = Properties.SoundPreviewProp
 		end
-	
+
 		return result
 	end
 
