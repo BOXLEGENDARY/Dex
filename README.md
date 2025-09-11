@@ -42,6 +42,9 @@ I’m not updating ZDex anymore, but I still fix some issues if I can.
 
 ---
 
+## Thx
+This is the latest version. Thanks for using ZDex!
+
 ## Credits
 [ZxL](https://youtu.be/dQw4w9WgXcQ?si=IkAXjfO3Uf2UOJ9V) ( ZDex Owner )
 
