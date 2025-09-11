@@ -34,9 +34,8 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 ---
 
 ## Other
-* 1: I'm not updating ZDex anymore but I still fix some issues if i can
-* 2: ZDex Should be Optimize ( many )
-* 3: All ZDex versions on GitHub are different from the internal staff version.
+I'm not updating ZDex anymore but I still fix some issues if i can
+* All ZDex versions on GitHub are different from the internal staff version.
 
 ---
 
