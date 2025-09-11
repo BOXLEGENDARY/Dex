@@ -9523,7 +9523,7 @@ local function main()
 			
 		end
 
-		local function renderSide(side, noTween) -- change old to new ( i hope it work )
+		local function renderSide(side, noTween) -- Use existing resizers ( i hope it work )
 		    local currentPos = 0
 		    local sideFramePos = getSideFramePos(side)
 		    local baseTemplate = side.WindowResizer
