@@ -62,13 +62,13 @@ I’m not updating ZDex anymore, but I still fix some issues if I can.
 
 ---
 
-## LuauDecompile
-[LuauDecompile](https://github.com/BOXLEGENDARY/LuauDecompile)
+## Luau Decompile
+[Luau Decompile](https://github.com/BOXLEGENDARY/LuauDecompile)
 
 ---
 
-## Client Tracker
+## Roblox Client Tracker
 
-[Roblox-Client-Tracker](https://github.com/MaximumADHD/Roblox-Client-Tracker)
+[Roblox Client Tracker](https://github.com/MaximumADHD/Roblox-Client-Tracker)
 
 ---
