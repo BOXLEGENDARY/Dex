@@ -78,5 +78,4 @@ This is the latest version. Thanks for using ZDex!
 ---
 
 ## Discord
-
-`@xsxs_xsxs_z`
+if u want contact add: `@xsxs_xsxs_z`
