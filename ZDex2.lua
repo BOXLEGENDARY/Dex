@@ -8,9 +8,6 @@ pcall(function() LOAD.ZDex_load = true end)
 
 wait(0.1)
 
-local oldgame = game
-local game = workspace.Parent
-
 cloneref = cloneref or function(ref)
 	if not getreg then return ref end
 	
@@ -77,6 +74,9 @@ local service = setmetatable({}, {
 })
 
 local selection = nil;
+
+local oldgame = game
+local game = workspace.Parent
 
 local EmbeddedModules = {
 ["Explorer"] = function()
