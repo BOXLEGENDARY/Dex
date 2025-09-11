@@ -9512,78 +9512,48 @@ local function main()
 			
 		end
 
-		local function renderSide(side, noTween) -- Use existing resizers ( i hope it work )
-		    local currentPos = 0
-		    local sideFramePos = getSideFramePos(side)
-		    local baseTemplate = side.WindowResizer
-		
-		    for _, conn in pairs(side.ResizeCons) do
-		        conn:Disconnect()
-		    end
-		    side.ResizeCons = {}
-		
-		    local existingResizers = {}
-		    for _, child in pairs(side.Frame:GetChildren()) do
-		        if child.Name == "WindowResizer" then
-		            table.insert(existingResizers, child)
-		        end
-		    end
-		
-		    local neededResizers = math.max(0, #side.Windows - 1)
-		
-		    if neededResizers < #existingResizers then
-		        for i = neededResizers + 1, #existingResizers do
-		            if existingResizers[i] then
-		                existingResizers[i]:Destroy()
-		                existingResizers[i] = nil
-		            end
-		        end
-		    end
-		
-		    for i = #existingResizers + 1, neededResizers do
-		        local newResizer = baseTemplate:Clone()
-		        newResizer.Name = "WindowResizer"
-		        newResizer.Parent = side.Frame
-		        existingResizers[i] = newResizer
-		    end
-		
-		    side.ResizeCons = {}
-		
-		    for i, v in pairs(side.Windows) do
-		        v.SidePos = i
-		        local isEnd = i == #side.Windows
-		        local size = UDim2.new(0, side.Width, 0, v.SizeY)
-		        local pos = UDim2.new(sideFramePos.X.Scale, sideFramePos.X.Offset, 0, currentPos)
-		        Lib.ShowGui(v.Gui)
-		
-		        if noTween then
-		            v.GuiElems.Main.Size = size
-		            v.GuiElems.Main.Position = pos
-		        else
-		            local tween = service.TweenService:Create(v.GuiElems.Main, sideTweenInfo, { Size = size, Position = pos })
-		            tweens[#tweens + 1] = tween
-		            tween:Play()
-		        end
-		        currentPos = currentPos + v.SizeY + 4
-		
-		        if not isEnd then
-		            local resizer = existingResizers[i]
-		            if resizer then
-		                resizer.Position = UDim2.new(1, -side.Width, 0, currentPos - 4)
-		                side.ResizeCons[#side.ResizeCons + 1] = v.Gui.Main:GetPropertyChangedSignal("Size"):Connect(function()
-		                    resizer.Position = UDim2.new(1, -side.Width, 0, v.GuiElems.Main.Position.Y.Offset + v.GuiElems.Main.Size.Y.Offset)
-		                end)
-		                side.ResizeCons[#side.ResizeCons + 1] = v.Gui.Main:GetPropertyChangedSignal("Position"):Connect(function()
-		                    resizer.Position = UDim2.new(1, -side.Width, 0, v.GuiElems.Main.Position.Y.Offset + v.GuiElems.Main.Size.Y.Offset)
-		                end)
-		
-		                sideResizerHook(resizer, "V", side, i)
-		            end
-		        end
-		    end
-		
-		    -- side.Frame.Back.Position = UDim2.new(0,0,0,0)
-		    -- side.Frame.Back.Size = UDim2.new(0,side.Width,1,0)
+		local function renderSide(side,noTween) -- TODO: Use existing resizers
+			local currentPos = 0
+			local sideFramePos = getSideFramePos(side)
+			local template = side.WindowResizer:Clone()
+			for i,v in pairs(side.ResizeCons) do v:Disconnect() end
+			for i,v in pairs(side.Frame:GetChildren()) do if v.Name == "WindowResizer" then v:Destroy() end end
+			side.ResizeCons = {}
+			side.Resizing = nil
+
+			for i,v in pairs(side.Windows) do
+				v.SidePos = i
+				local isEnd = i == #side.Windows
+				local size = UDim2.new(0,side.Width,0,v.SizeY)
+				local pos = UDim2.new(sideFramePos.X.Scale,sideFramePos.X.Offset,0,currentPos)
+				Lib.ShowGui(v.Gui)
+				--v.GuiElems.Main:TweenSizeAndPosition(size,pos,Enum.EasingDirection.Out,Enum.EasingStyle.Quad,0.3,true)
+				if noTween then
+					v.GuiElems.Main.Size = size
+					v.GuiElems.Main.Position = pos
+				else
+					local tween = service.TweenService:Create(v.GuiElems.Main,sideTweenInfo,{Size = size, Position = pos})
+					tweens[#tweens+1] = tween
+					tween:Play()
+				end
+				currentPos = currentPos + v.SizeY+4
+
+				if not isEnd then
+					local newTemplate = template:Clone()
+					newTemplate.Position = UDim2.new(1,-side.Width,0,currentPos-4)
+					side.ResizeCons[#side.ResizeCons+1] = v.Gui.Main:GetPropertyChangedSignal("Size"):Connect(function()
+						newTemplate.Position = UDim2.new(1,-side.Width,0, v.GuiElems.Main.Position.Y.Offset + v.GuiElems.Main.Size.Y.Offset)
+					end)
+					side.ResizeCons[#side.ResizeCons+1] = v.Gui.Main:GetPropertyChangedSignal("Position"):Connect(function()
+						newTemplate.Position = UDim2.new(1,-side.Width,0, v.GuiElems.Main.Position.Y.Offset + v.GuiElems.Main.Size.Y.Offset)
+					end)
+					sideResizerHook(newTemplate,"V",side,i)
+					newTemplate.Parent = side.Frame
+				end
+			end
+
+			--side.Frame.Back.Position = UDim2.new(0,0,0,0)
+			--side.Frame.Back.Size = UDim2.new(0,side.Width,1,0)
 		end
 
 		local function updateSide(side,noTween)
