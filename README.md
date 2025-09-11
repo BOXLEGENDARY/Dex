@@ -2,6 +2,7 @@
 IN-DEV ( version 12 )
 * All ZDex versions on GitHub are different from the internal staff version.
 # Script
+* RemoteSpy Version
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/main/ZDex1.lua"))()
 ```
