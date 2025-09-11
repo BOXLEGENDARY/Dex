@@ -1,7 +1,7 @@
-# ZDex 
+## ZDex 
 IN-DEV ( version 12 )
 * All ZDex versions on GitHub are different from the internal staff version.
-# Script
+## Script
 * RemoteSpy Version
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/main/ZDex1.lua"))()
@@ -13,12 +13,12 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ---
 
-# Support
+## Support
 * Mobile/Pc
 
 ---
 
-# Features
+## Features
 * Explorer
 * Properties
 * ScriptView
@@ -30,18 +30,18 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ---
 
-# Update Log ( in-dev 12 )
+## Update Log ( in-dev 12 )
 * remove getlocal
 
 ---
 
-# Other
+## Other
 I’m not updating ZDex anymore, but I still fix some issues if I can.
 * Don’t worry, if you wanna work on it, I’ve already cleaned up the script.
 
 ---
 
-# Credits
+## Credits
 [ZxL](https://youtu.be/dQw4w9WgXcQ?si=IkAXjfO3Uf2UOJ9V) ( ZDex Owner )
 
 [Moon](https://github.com/LorekeeperZinnia) ( Orginal Dex Creator )
@@ -52,22 +52,22 @@ I’m not updating ZDex anymore, but I still fix some issues if I can.
 
 ---
 
-# Dex
+## Dex
 [Dex](https://github.com/LorekeeperZinnia/Dex)
 
 ---
 
-# DexPlusPlus
+## DexPlusPlus
 [DexPlusPlus](https://github.com/AZYsGithub/DexPlusPlus)
 
 ---
 
-# LuauDecompile
+## LuauDecompile
 [LuauDecompile](https://github.com/BOXLEGENDARY/LuauDecompile)
 
 ---
 
-# Client Tracker
+## Client Tracker
 
 [Roblox-Client-Tracker](https://github.com/MaximumADHD/Roblox-Client-Tracker)
 
