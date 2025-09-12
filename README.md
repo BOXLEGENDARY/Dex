@@ -1,6 +1,8 @@
-## ZDex 
+## ZDex ( 11/9/25 )
 IN-DEV ( version 12 )
 * All ZDex versions on GitHub are different from the internal staff version.
+* This is the latest version. Thanks for using ZDex!
+
 ## Script
 * RemoteSpy Version
 ```lua
@@ -34,11 +36,6 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 ## Update Log ( in-dev 12 )
 * remove getlocal
 * Change the way to load the Anti Client Logger
-
----
-
-## Thanks 11/9/25
-This is the latest version. Thanks for using ZDex!
 
 ---
 
