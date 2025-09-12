@@ -71,5 +71,11 @@ Don’t worry, if you wanna work on it, I’ve already cleaned up the script.
 
 ---
 
+## Third Party Components
+* Konstant Decompiler
+* [UniversalSynapseSaveInstance (USSI)](https://github.com/luau/UniversalSynSaveInstance)
+
+---
+
 ## Discord
 if u want contact add: `@xsxs_xsxs_z`
