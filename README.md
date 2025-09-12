@@ -37,12 +37,6 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ---
 
-## Other
-Don’t worry, if you wanna work on it, I’ve already cleaned up the script.
-* Why didn't I give the module scripts? I forgot lol.
-
----
-
 ## Thanks 11/9/25
 This is the latest version. Thanks for using ZDex!
 
@@ -66,7 +60,10 @@ This is the latest version. Thanks for using ZDex!
 
 ---
 
-## link
+## Other
+Don’t worry, if you wanna work on it, I’ve already cleaned up the script.
+* Why didn't I give the module scripts? I forgot lol.
+
 * [Dex](https://github.com/LorekeeperZinnia/Dex)
 
 * [DexPlusPlus](https://github.com/AZYsGithub/DexPlusPlus)
