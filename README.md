@@ -66,24 +66,14 @@ This is the latest version. Thanks for using ZDex!
 
 ---
 
-## Dex
-[Dex](https://github.com/LorekeeperZinnia/Dex)
+## link
+* [Dex](https://github.com/LorekeeperZinnia/Dex)
 
----
+* [DexPlusPlus](https://github.com/AZYsGithub/DexPlusPlus)
 
-## DexPlusPlus
-[DexPlusPlus](https://github.com/AZYsGithub/DexPlusPlus)
+* [Luau Decompile](https://github.com/BOXLEGENDARY/LuauDecompile)
 
----
-
-## Luau Decompile
-[Luau Decompile](https://github.com/BOXLEGENDARY/LuauDecompile)
-
----
-
-## Roblox Client Tracker
-
-[Roblox Client Tracker](https://github.com/MaximumADHD/Roblox-Client-Tracker)
+* [Roblox Client Tracker](https://github.com/MaximumADHD/Roblox-Client-Tracker)
 
 ---
 
