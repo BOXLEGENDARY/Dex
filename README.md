@@ -61,13 +61,15 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 Don’t worry, if you wanna work on it, I’ve already cleaned up the script.
 - Why didn't I give the module scripts? I forgot lol.
 
-* [Dex](https://github.com/LorekeeperZinnia/Dex)
+---
 
-* [DexPlusPlus](https://github.com/AZYsGithub/DexPlusPlus)
+## Used in ZDex
 
-* [Luau Decompile](https://github.com/BOXLEGENDARY/LuauDecompile)
+- [Dex](https://github.com/LorekeeperZinnia/Dex)
 
-* [Roblox Client Tracker](https://github.com/MaximumADHD/Roblox-Client-Tracker)
+- [DexPlusPlus](https://github.com/AZYsGithub/DexPlusPlus)
+
+- [Luau Decompile](https://github.com/BOXLEGENDARY/LuauDecompile)
 
 ---
 
