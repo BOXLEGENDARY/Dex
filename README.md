@@ -49,7 +49,7 @@ This is the latest version. Thanks for using ZDex!
 ---
 
 ## License
-[![ZDex License](https://img.shields.io/badge/Dex++-License-green)]()
+[![ZDex License](https://img.shields.io/badge/ZDex-License-green)](https://github.com/BOXLEGENDARY/ZDex/blob/main/LICENSE)
 
 [![USSI License](https://img.shields.io/badge/USSI-License-green)](https://github.com/luau/UniversalSynSaveInstance/blob/main/LICENSE)
 
