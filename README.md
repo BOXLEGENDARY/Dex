@@ -69,7 +69,8 @@ Don’t worry, if you wanna work on it, I’ve already cleaned up the script.
 
 - [DexPlusPlus](https://github.com/AZYsGithub/DexPlusPlus)
 
-- [Luau Decompile](https://github.com/BOXLEGENDARY/LuauDecompile)
+- [LuauDecompile](https://github.com/BOXLEGENDARY/LuauDecompile)
+- [RemoteSpy](https://scriptblox.com/script/Universal-Script-BootSpy-12998)
 
 ---
 
