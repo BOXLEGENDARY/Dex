@@ -38,6 +38,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ## Other
 Don’t worry, if you wanna work on it, I’ve already cleaned up the script.
+* Why didn't I give the module scripts? I forgot lol.
 
 ---
 
