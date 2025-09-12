@@ -13983,7 +13983,6 @@ Main = (function()
 				env.loadfile = loadfile
 				env.movefileas = movefileas
 				env.saveinstance = saveinstance or (function()
-					if game:GetService("RunService"):IsStudio() then return end
 					local Params = {
 						RepoURL = "https://raw.githubusercontent.com/luau/SynSaveInstance/main/",
 						SSI = "saveinstance",
