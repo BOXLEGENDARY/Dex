@@ -46,6 +46,15 @@ Don’t worry, if you wanna work on it, I’ve already cleaned up the script.
 ## Thanks 11/9/25
 This is the latest version. Thanks for using ZDex!
 
+---
+
+## License
+[![ZDex License](https://img.shields.io/badge/Dex++-License-green)]()
+
+[![USSI License](https://img.shields.io/badge/USSI-License-green)](https://github.com/luau/UniversalSynSaveInstance/blob/main/LICENSE)
+
+---
+
 ## Credits
 [ZxL](https://youtu.be/dQw4w9WgXcQ?si=IkAXjfO3Uf2UOJ9V) ( ZDex Owner )
 
