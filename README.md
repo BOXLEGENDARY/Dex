@@ -1,14 +1,14 @@
 ## ZDex ( 11/9/25 )
 IN-DEV ( version 12 )
-* All ZDex versions on GitHub are different from the internal staff version.
-* This is the latest version. Thanks for using ZDex!
+- All ZDex versions on GitHub are different from the internal staff version.
+- This is the latest version. Thanks for using ZDex!
 
 ## Script
-* RemoteSpy Version
+- RemoteSpy Version
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/main/ZDex1.lua"))()
 ```
-* No RemoteSpy Version
+- No RemoteSpy Version
 ```lua
 loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/main/ZDex2.lua"))()
 ```
@@ -17,25 +17,25 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ## Support
 `Unsupported in Roblox Studio`
-* Mobile/Pc
+- Mobile/Pc
 
 ---
 
 ## Features
-* Explorer
-* Properties
-* ScriptView
-* SecretServicePanel
-* ModelView
-* Console
-* RemoteSpy
-* SaveInstance
+- Explorer
+- Properties
+- ScriptView
+- SecretServicePanel
+- ModelView
+- Console
+- RemoteSpy
+- SaveInstance
 
 ---
 
 ## Update Log ( in-dev 12 )
-* remove getlocal
-* Change the way to load the Anti Client Logger
+- remove getlocal
+- Change the way to load the Anti Client Logger
 
 ---
 
@@ -59,7 +59,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ## Other
 Don’t worry, if you wanna work on it, I’ve already cleaned up the script.
-* Why didn't I give the module scripts? I forgot lol.
+- Why didn't I give the module scripts? I forgot lol.
 
 * [Dex](https://github.com/LorekeeperZinnia/Dex)
 
@@ -72,8 +72,8 @@ Don’t worry, if you wanna work on it, I’ve already cleaned up the script.
 ---
 
 ## Third Party Components
-* Konstant Decompiler
-* [UniversalSynapseSaveInstance (USSI)](https://github.com/luau/UniversalSynSaveInstance)
+- Konstant Decompiler
+- [UniversalSynapseSaveInstance (USSI)](https://github.com/luau/UniversalSynSaveInstance)
 
 ---
 
