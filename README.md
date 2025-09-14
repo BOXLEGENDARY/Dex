@@ -62,7 +62,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 ## Other
 `Not everything in ZDex has been thoroughly tested.`
 
-Don’t worry, if you wanna work on it, I’ve already cleaned up the script.
+if you wanna work on it, I’ve already cleaned up the script.
 - I didn’t give the modules scripts? Honestly, no clue lol.
 
 ---
