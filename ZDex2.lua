@@ -13930,7 +13930,7 @@ DefaultSettings = (function()
 end)()
 
 -- Vars
-local Settings = {}
+local Settings = DefaultSettings or {}
 local Apps = {}
 local env = {}
 
@@ -14082,6 +14082,7 @@ Main = (function()
         		env.isonmobile = game:GetService("UserInputService").TouchEnabled
 
 				-- file
+				env.isfile = isfile
 				env.readfile = readfile
 				env.writefile = writefile
 				env.appendfile = appendfile
@@ -14210,16 +14211,82 @@ Main = (function()
 				setmetatable(env, nil)
 		end
 
-	Main.LoadSettings = function()
-		local s,data = pcall(env.readfile or error,"DexSettings.json")
-		if s and data and data ~= "" then
-			local s,decoded = service.HttpService:JSONDecode(data)
-			if s and decoded then
-				for i,v in next,decoded do
-					
-				end
+	local function serialize(val)
+		if typeof(val) == "Color3" then
+			local serializedColor = {}
+			serializedColor.R = val.R
+			serializedColor.G = val.G
+			serializedColor.B = val.B
+			return serializedColor
+		else
+			return val
+		end
+	end
+	
+	local function deserialize(val)
+		if typeof(val) == "table" then
+			if val.R and val.G and val.B then
+				return Color3.new(val.R, val.G, val.B)
 			else
-			    -- TODO: Notification
+				return val
+			end
+		else
+			return val
+		end
+	end
+	
+	Main.ExportSettings = function()
+		local rawData = Settings or DefaultSettings
+
+		local function recur(tbl)
+			local newTbl = {}
+			for i, v in pairs(tbl) do
+				if typeof(v) == "table" then
+					newTbl[i] = recur(v)
+				else
+					newTbl[i] = serialize(v)
+				end
+			end
+			return newTbl
+		end
+
+		-- serialize color3 sebelum encode
+		local serializedData = recur(rawData)
+
+		local s, json = pcall(service.HttpService.JSONEncode, service.HttpService, serializedData)
+		if s and json then
+			return json
+		end
+	end
+
+
+	--warn(Main.ExportSettings())
+
+	Main.LoadSettings = function()
+		local s, data = pcall(env.readfile or error, "ZDexSettings.json")
+		if s and data and data ~= "" then
+			local s, decoded = pcall(service.HttpService.JSONDecode, service.HttpService, data)
+			if s and decoded then
+
+				local function recur(tbl)
+					local newTbl = {}
+					for i, v in pairs(tbl) do
+						if typeof(v) == "table" then
+							newTbl[i] = deserialize(recur(v))
+						else
+							newTbl[i] = deserialize(v)
+						end
+					end
+					return newTbl
+				end
+
+				local deserializedData = recur(decoded)
+				for k, v in pairs(deserializedData) do
+					Settings[k] = v
+				end
+
+			else
+				warn("failed to decode settings json")
 			end
 		else
 			Main.ResetSettings()
@@ -14901,6 +14968,9 @@ Main = (function()
 	
 	Main.Init = function()
 		Main.Elevated = pcall(function() local a = service.CoreGui:GetFullName() end)
+		if writefile and isfile and not isfile("ZDexSettings.json") then
+			writefile("ZDexSettings.json", Main.ExportSettings())
+		end
 		Main.InitEnv()
 		Main.LoadSettings()
 		Main.SetupFilesystem()
