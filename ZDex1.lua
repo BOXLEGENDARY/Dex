@@ -14511,7 +14511,6 @@ Main = (function()
 				env.getscriptbytecode = getscriptbytecode
 				env.setfflag = setfflag
 				env.request = (syn and syn.request) or (http and http.request) or (http_request) or (request)
-                env.decompile = decompile
 				env.protectgui = protect_gui or (syn and syn.protect_gui)
 				env.gethui = gethui or get_hidden_gui
 				env.setclipboard = setclipboard or toclipboard or set_clipboard or (Clipboard and Clipboard.set)
