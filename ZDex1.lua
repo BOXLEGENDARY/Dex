@@ -41,15 +41,7 @@ cloneref = cloneref or function(ref)
 	return f.invalidate
 end
 
--- Auto service fetch
 local nodes = {}
-local service = setmetatable({}, {
-    __index = function(self, name)
-        local serv = cloneref(game:GetService(name))
-        self[name] = serv
-        return serv
-    end
-})
 
 local selection = nil;
 
@@ -14290,6 +14282,12 @@ end)()
 local Settings = DefaultSettings or {}
 local Apps = {}
 local env = {}
+
+local service = setmetatable({},{__index = function(self,name)
+	local serv = cloneref(game:GetService(name))
+	self[name] = serv
+	return serv
+end})
 
 local plr = service.Players.LocalPlayer or service.Players.PlayerAdded:wait()
 
