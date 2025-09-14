@@ -14439,6 +14439,7 @@ Main = (function()
         		env.isonmobile = game:GetService("UserInputService").TouchEnabled
 
 				-- file
+				env.isfile = isfile
 				env.readfile = readfile
 				env.writefile = writefile
 				env.appendfile = appendfile
