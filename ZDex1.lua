@@ -15406,7 +15406,7 @@ Main = (function()
 			Explorer = 0, Properties = 1, Script_Viewer = 2, Watcher = 3, Console = 4, Script = 5
 		})
 		
-		intro.SetProgress("Loading System",0.1)
+		intro.SetProgress("Loading Another System",0.1)
 		pcall(Main.System)
 
 		-- Fetch version if needed
