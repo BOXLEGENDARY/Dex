@@ -985,7 +985,7 @@ local function main()
 		
 		if presentClasses["BasePart"] or presentClasses["Model"] then
 			context:AddRegistered("TELEPORT_TO")
-			context:AddRegistered("VIEW_MODEL")
+			context:AddRegistered("3DVIEW_MODEL")
 			context:AddRegistered("VIEW_OBJECT")
 		end
 		if presentClasses["Tween"] then context:AddRegistered("PLAY_TWEEN") end
@@ -1512,7 +1512,7 @@ local function main()
 			workspace.CurrentCamera.CameraSubject = plr.Character
 		end})
 		
-		context:Register("VIEW_MODEL",{Name = "View Model", IconMap = Explorer.ClassIcons, Icon = 5, OnClick = function()
+		context:Register("3DVIEW_MODEL",{Name = "3D Preview Object", IconMap = Explorer.ClassIcons, Icon = 5, OnClick = function()
 			local sList = selection.List
 			local isa = game.IsA
 			
@@ -14927,7 +14927,7 @@ Main = (function()
 		
 		Main.CreateApp({Name = "Secret Service Panel", IconMap = Main.LargeIcons, Icon = "Script", Window = SecretServicePanel.Window})
 
-		Main.CreateApp({Name = "Model Viewer", IconMap = Main.LargeIcons, Icon = 6, Window = ModelViewer.Window})
+		Main.CreateApp({Name = "3D Viewer", IconMap = Main.LargeIcons, Icon = 6, Window = ModelViewer.Window})
 
 		Main.CreateApp({Name = "Console", IconMap = Main.LargeIcons, Icon = "Console", Window = Console.Window})
 
