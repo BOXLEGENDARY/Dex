@@ -34,7 +34,9 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 ---
 
 ## Update Log ( in-dev 13 )
-- new function
+- new icon
+- new save
+- add json
 
 ---
 
