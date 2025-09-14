@@ -1382,7 +1382,7 @@ local function main()
 			return str
 		end
 			
-		context:Register("COPY_PATH",{Name = "Copy Path", IconMap = Explorer.ClassIcons, Icon = 50, OnClick = function()
+		context:Register("COPY_PATH",{Name = "Copy Path", IconMap = Explorer.LegacyClassIcons, Icon = 50, OnClick = function()
 			local sList = selection.List
 			if #sList == 1 then
 				env.setclipboard(clth(Explorer.GetInstancePath(sList[1].Obj)))
@@ -1496,7 +1496,7 @@ local function main()
 			end
 		end})
 		
-		context:Register("VIEW_OBJECT",{Name = "View Object (Right click to reset)", IconMap = Explorer.ClassIcons, Icon = 5, OnClick = function()
+		context:Register("VIEW_OBJECT",{Name = "View Object (Right click to reset)", IconMap = Explorer.LegacyClassIcons, Icon = 5, OnClick = function()
 			local sList = selection.List
 			local isa = game.IsA
 
@@ -1512,7 +1512,7 @@ local function main()
 			workspace.CurrentCamera.CameraSubject = plr.Character
 		end})
 		
-		context:Register("3DVIEW_MODEL",{Name = "3D Preview Object", IconMap = Explorer.ClassIcons, Icon = 5, OnClick = function()
+		context:Register("3DVIEW_MODEL",{Name = "3D Preview Object", IconMap = Explorer.LegacyClassIcons, Icon = 5, OnClick = function()
 			local sList = selection.List
 			local isa = game.IsA
 			
@@ -1575,7 +1575,7 @@ local function main()
 			end
 		end})
 		
-		context:Register("SELECT_CHARACTER",{Name = "Select Character", IconMap = Explorer.ClassIcons, Icon = 9, OnClick = function()
+		context:Register("SELECT_CHARACTER",{Name = "Select Character", IconMap = Explorer.LegacyClassIcons, Icon = 9, OnClick = function()
 			local newSelection = {}
 			local count = 1
 			local sList = selection.List
@@ -1597,7 +1597,7 @@ local function main()
 			end
 		end})
 		
-		context:Register("VIEW_PLAYER",{Name = "View Player", IconMap = Explorer.ClassIcons, Icon = 5, OnClick = function()
+		context:Register("VIEW_PLAYER",{Name = "View Player", IconMap = Explorer.LegacyClassIcons, Icon = 5, OnClick = function()
 			local newSelection = {}
 			local count = 1
 			local sList = selection.List
@@ -1613,11 +1613,11 @@ local function main()
 			end
 		end})
 		
-		context:Register("SELECT_LOCAL_PLAYER",{Name = "Select Local Player", IconMap = Explorer.ClassIcons, Icon = 9, OnClick = function()
+		context:Register("SELECT_LOCAL_PLAYER",{Name = "Select Local Player", IconMap = Explorer.LegacyClassIcons, Icon = 9, OnClick = function()
 			pcall(function() if nodes[plr] then selection:Set(nodes[plr]) Explorer.ViewNode(nodes[plr]) end end)
 		end})
 		
-		context:Register("SELECT_ALL_CHARACTERS",{Name = "Select All Characters", IconMap = Explorer.ClassIcons, Icon = 2, OnClick = function()
+		context:Register("SELECT_ALL_CHARACTERS",{Name = "Select All Characters", IconMap = Explorer.LegacyClassIcons, Icon = 2, OnClick = function()
 			local newSelection = {}
 			local sList = selection.List
 			
@@ -2491,6 +2491,8 @@ return search]==]
 	end
 
 	Explorer.Init = function()
+		Explorer.LegacyClassIcons = Lib.IconMap.newLinear("rbxasset://textures/ClassImages.PNG", 16,16)
+
 		if Settings.ClassIcon ~= nil and Settings.ClassIcon ~= "Old" then
 			iconData = Lib.IconMap.getIconDataFromName(Settings.ClassIcon)
 			
@@ -14927,7 +14929,7 @@ Main = (function()
 		
 		Main.CreateApp({Name = "Secret Service Panel", IconMap = Main.LargeIcons, Icon = "Script", Window = SecretServicePanel.Window})
 
-		Main.CreateApp({Name = "3D Viewer", IconMap = Main.LargeIcons, Icon = 6, Window = ModelViewer.Window})
+		Main.CreateApp({Name = "3D Viewer", IconMap = Explorer.LegacyClassIcons, Icon = 54, Window = ModelViewer.Window})
 
 		Main.CreateApp({Name = "Console", IconMap = Main.LargeIcons, Icon = "Console", Window = Console.Window})
 
