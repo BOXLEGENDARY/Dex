@@ -1419,17 +1419,23 @@ local function main()
 		context:Register("SAVE_INST",{Name = "Save to File", IconMap = Explorer.MiscIcons, Icon = "Save", OnClick = function()
 			local sList = selection.List
 			if #sList == 1 then
-				env.saveinstance(sList[1].Obj, "dex/saved/Place_"..game.PlaceId.."_"..sList[1].Obj.ClassName.."_"..sList[1].Obj.Name.."_"..os.time(), {
-					Decompile = true
-				})
+				Lib.SaveAsPrompt("dex/saved/Place_"..game.PlaceId.."_"..sList[1].Obj.ClassName.."_"..sList[1].Obj.Name.."_"..os.time(), function(filename)
+					env.saveinstance(sList[1].Obj, filename, {
+						Decompile = true,
+						RemovePlayerCharacters = false
+					})
+				end)
 			elseif #sList > 1 then
 				for i = 1,#sList do
 					-- sList[i].Obj.Name.." ("..sList[1].Obj.ClassName..")"
 					-- "Place_"..game.PlaceId.."_"..sList[1].Obj.ClassName.."_"..sList[i].Obj.Name.."_"..os.time()
-
-					env.saveinstance(sList[i].Obj, "dex/saved/Place_"..game.PlaceId.."_"..sList[i].Obj.ClassName.."_"..sList[i].Obj.Name.."_"..os.time(), {
-						Decompile = true
-					})
+					Lib.SaveAsPrompt("dex/saved/Place_"..game.PlaceId.."_"..sList[i].Obj.ClassName.."_"..sList[i].Obj.Name.."_"..os.time(), function(filename)
+						env.saveinstance(sList[i].Obj, filename, {
+							Decompile = true,
+							RemovePlayerCharacters = false
+						})
+					end)
+					
 					task.wait(0.1)
 				end
 			end
@@ -1542,49 +1548,33 @@ local function main()
 			if scr then ScriptViewer.ViewScript(scr) end
 		end})
 		
-		context:Register("SAVE_SCRIPT", {
-			Name = "Save Script",
-			IconMap = Explorer.MiscIcons,
-			Icon = "Save",
-			OnClick = function()
-				for _, v in next, selection.List do
-					if v.Obj:IsA("LuaSourceContainer") and env.isViableDecompileScript(v.Obj) then
-						local success, source = pcall(function()
-							return (decompile or env.decompile or function() return "" end)(v.Obj)
-						end)
-						if success and source and source ~= "" then
-							local fileName = ("dex/saved/%i.%s.%s.Source.txt"):format(
-								game.PlaceId,
-								v.Obj.ClassName,
-								v.Obj.Name
-							)
-							env.writefile(fileName, source)
-							task.wait(0.2)
-						end
+		context:Register("SAVE_SCRIPT",{Name = "Save Script", IconMap = Explorer.MiscIcons, Icon = "Save", DisabledIcon = "Empty", OnClick = function()
+			for _, v in next, selection.List do
+				if v.Obj:IsA("LuaSourceContainer") and env.isViableDecompileScript(v.Obj) then
+					local success, source = pcall(decompile or env.decompile, v.Obj)
+					if not success or not source then warn"DEX - Source failed to decompile" end
+					local fileName = ("dex/saved/%s_%s_%i_Source.txt"):format(env.parsefile(v.Obj.Name), v.Obj.ClassName, game.PlaceId)
+					--env.writefile(fileName, source)
+					Lib.SaveAsPrompt(fileName, source)
+					
+					task.wait(0.2)
+				end
+			end
+		end})
+			
+		context:Register("SAVE_BYTECODE",{Name = "Save Script Bytecode", IconMap = Explorer.MiscIcons, Icon = "Save", DisabledIcon = "Empty", OnClick = function()
+			for _, v in next, selection.List do
+				if v.Obj:IsA("LuaSourceContainer") and env.isViableDecompileScript(v.Obj) then
+					local success, bytecode = pcall(env.getscriptbytecode, v.Obj)
+					if success and type(bytecode) == "string" then
+						local fileName = ("dex/saved/%s_%s_%i_Bytecode.txt"):format(env.parsefile(v.Obj.Name), v.Obj.ClassName, game.PlaceId)
+						--env.writefile(fileName, bytecode)
+						Lib.SaveAsPrompt(fileName, bytecode)
+						task.wait(0.2)
 					end
 				end
-			end})
-			
-		context:Register("SAVE_BYTECODE", {
-		    Name = "Save Script Bytecode",
-		    IconMap = Explorer.MiscIcons,
-		    Icon = "Save",
-		    OnClick = function()
-		        for _, v in next, selection.List do
-		            if v.Obj:IsA("LuaSourceContainer") and env.isViableDecompileScript(v.Obj) then
-		                local success, bytecode = pcall(getscriptbytecode, v.Obj)
-		                if success and type(bytecode) == "string" then
-		                    local fileName = ("dex/saved/%i.%s.%s.Bytecode.txt"):format(
-		                        game.PlaceId,
-		                        v.Obj.ClassName,
-		                        v.Obj.Name
-		                    )
-		                    env.writefile(fileName, bytecode)
-		                    task.wait(0.2)
-		                end
-		            end
-		        end
-		    end})
+			end
+		end})
 		
 		context:Register("SELECT_CHARACTER",{Name = "Select Character", IconMap = Explorer.ClassIcons, Icon = 9, OnClick = function()
 			local newSelection = {}
@@ -5460,29 +5450,34 @@ local function main()
 		end})
 		context:Register("SAVE_INST",{Name = "Save to File", OnClick = function()
 			if model then
-				window:SetTitle(originalModel.Name.." - Model Viewer - Saving")
-				local success, result = pcall(env.saveinstance,
-					originalModel, "dex/saved/Place_"..game.PlaceId.."_"..originalModel.Name.."_"..os.time(),
-					{
-						Decompile = true
-					}
-				)
-				if success then
-					window:SetTitle(originalModel.Name.." - Model Viewer - Saved")
-					context:Hide()
-					task.wait(5)
-					if model then
-						window:SetTitle(originalModel.Name.." - Model Viewer")
+				Lib.SaveAsPrompt("dex/saved/Place_"..game.PlaceId.."_"..originalModel.Name.."_"..os.time(), function(filename)
+					window:SetTitle(originalModel.Name.." - Model Viewer - Saving")	
+					
+					local success, result = pcall(env.saveinstance,
+					originalModel, filename,
+						{
+							Decompile = true,
+							RemovePlayerCharacters = false
+						}
+					)
+					
+					if success then
+						window:SetTitle(originalModel.Name.." - Model Viewer - Saved")
+						context:Hide()
+						task.wait(5)
+						if model then
+							window:SetTitle(originalModel.Name.." - Model Viewer")
+						end
+					else
+						window:SetTitle(originalModel.Name.." - Model Viewer - Error")
+						warn("Error while saving model: "..result)
+						context:Hide()
+						task.wait(5)
+						if model then
+							window:SetTitle(originalModel.Name.." - Model Viewer")
+						end
 					end
-				else
-					window:SetTitle(originalModel.Name.." - Model Viewer - Error")
-					warn("Error while saving model: "..result)
-					context:Hide()
-					task.wait(5)
-					if model then
-						window:SetTitle(originalModel.Name.." - Model Viewer")
-					end
-				end
+				end)
 			end
 		end})
 		
@@ -7496,6 +7491,108 @@ local function main()
 		return Lib.LoadCustomAsset(filepath)
 	end
 	
+	local currentfilename, currentextension, currentclickhandler
+	currentclickhandler = function() end
+	Lib.SaveAsPrompt = function(filename, codeToSave, ext)		
+		local win = ScriptViewer.SaveAsWindow
+		if not win then
+			win = Lib.Window.new()
+			win.Alignable = false
+			win.Resizable = false
+			win:SetTitle("Save As")
+			win:SetSize(300,95)
+
+			local saveButton = Lib.Button.new()
+			local nameLabel = Lib.Label.new()
+			nameLabel.Text = "Name"
+			nameLabel.Position = UDim2.new(0,30,0,10)
+			nameLabel.Size = UDim2.new(0,40,0,20)
+			win:Add(nameLabel)
+
+			local nameBox = Lib.ViewportTextBox.new()
+			nameBox.Position = UDim2.new(0,75,0,10)
+			nameBox.Size = UDim2.new(0,220,0,20)
+			win:Add(nameBox,"NameBox")
+
+			--nameBox.TextBox.Text = filename or ""
+
+			nameBox.TextBox:GetPropertyChangedSignal("Text"):Connect(function()
+				saveButton:SetDisabled(#nameBox:GetText() == 0)
+			end)
+
+			local errorLabel = Lib.Label.new()
+			errorLabel.Text = ""
+			errorLabel.Position = UDim2.new(0,5,1,-45)
+			errorLabel.Size = UDim2.new(1,-10,0,20)
+			errorLabel.TextColor3 = Settings.Theme.Important
+			win.ErrorLabel = errorLabel
+			win:Add(errorLabel,"Error")
+
+			local cancelButton = Lib.Button.new()
+			cancelButton.AnchorPoint = Vector2.new(1,1)
+			cancelButton.Text = "Cancel"
+			cancelButton.Position = UDim2.new(1,-5,1,-5)
+			cancelButton.Size = UDim2.new(0.5,-10,0,20)
+			cancelButton.OnClick:Connect(function()
+				win:Close()
+			end)
+			win:Add(cancelButton)
+
+			saveButton.Text = "Save"
+			saveButton.AnchorPoint = Vector2.new(0,1)
+			saveButton.Position = UDim2.new(0,5,1,-5)
+			saveButton.Size = UDim2.new(0.5,-5,0,20)
+			saveButton.OnClick:Connect(function()
+				currentclickhandler()
+			end)
+
+			win:Add(saveButton,"SaveButton")
+
+			ScriptViewer.SaveAsWindow = win
+		end
+
+		currentclickhandler = function()
+			if type(codeToSave) == "string" then
+				filename = (win.Elements.NameBox.TextBox.Text ~= "" and win.Elements.NameBox.TextBox.Text) or filename
+				currentextension = ext or filename:match("%.([^%.]+)$") or "txt"
+				filename = filename:gsub("%.[^.]+$", "") .. "." .. currentextension
+
+				local codeText = codeToSave or ""
+				if env.writefile then
+					local s, msg = pcall(env.writefile, filename, codeText)
+					if not s then
+						win.Elements.Error.Text = "Error: " .. msg
+						task.spawn(error, msg)
+						task.wait(1)
+					end
+				else
+					win.Elements.Error.Text = "Your executor does not support 'writefile'"
+					task.wait(1)
+				end
+			elseif type(codeToSave) == "function" then
+				filename = (win.Elements.NameBox.TextBox.Text ~= "" and win.Elements.NameBox.TextBox.Text) or filename
+				currentextension = ext or filename:match("%.([^%.]+)$") or "txt"
+				filename = filename:gsub("%.[^.]+$", "") .. "." .. currentextension
+
+				local s, msg = pcall(codeToSave,filename) -- callback
+				if not s then
+					win.Elements.Error.Text = "Error: " .. msg
+					task.spawn(error, msg)
+					Lib.FastWait(1)
+				end
+			end
+			win:Close()
+		end
+
+		win:SetTitle("Save As")
+		win.Elements.Error.Text = ""
+		win.Elements.NameBox:SetText(filename or "")
+		
+		win.Elements.SaveButton:SetDisabled(win.Elements.NameBox:GetText() == 0)
+		
+		win:Show()
+	end
+
 	-- Classes
 	
 	Lib.Signal = (function()
@@ -14349,6 +14446,7 @@ Main = (function()
 				env.loadfile = loadfile
 				env.movefileas = movefileas
 				env.saveinstance = saveinstance or (function()
+					if game:GetService("RunService"):IsStudio() then return function() error("Cannot run in Roblox Studio!") end end
 					local Params = {
 						RepoURL = "https://raw.githubusercontent.com/luau/SynSaveInstance/main/",
 						SSI = "saveinstance",
@@ -14357,14 +14455,18 @@ Main = (function()
 				
 					local function wrappedsaveinstance(obj, filepath, options)
 						options["FilePath"] = filepath
-						synsaveinstance(options)
+						--options["ReadMe"] = false
+						options["Object"] = obj
+						return synsaveinstance(options)
 					end
 					
 					getgenv().saveinstance = wrappedsaveinstance
-					env.saveinstance = wrappedsaveinstance
-					env.wrappedsaveinstance = wrappedsaveinstance
 					return wrappedsaveinstance
 				end)()
+				
+				env.parsefile = function(name)
+					return tostring(name):gsub("[*\\?:<>|]+", ""):sub(1, 175)
+				end
 
 				-- debug
 				env.getupvalues = (debug and debug.getupvalues) or getupvalues or getupvals
