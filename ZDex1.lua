@@ -43,7 +43,7 @@ end
 
 local nodes = {}
 
-local selection = nil;
+local selection
 
 local oldgame = game
 local game = workspace.Parent
