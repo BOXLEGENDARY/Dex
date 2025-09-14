@@ -15326,7 +15326,7 @@ Main = (function()
 	
 	Main.Init = function()
 		Main.Elevated = pcall(function() local a = service.CoreGui:GetFullName() end)
-		if writefile and isfile and not isfile("DexPlusPlusSettings.json") then
+		if writefile and isfile and not isfile("ZDexSettings.json") then
 			writefile("ZDexSettings.json", Main.ExportSettings())
 		end
 		Main.InitEnv()
