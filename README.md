@@ -1,6 +1,6 @@
 ## ZDex ( 14/9/25 )
 IN-DEV ( version 13 )
-- All ZDex versions on GitHub are different from the internal staff version.
+- All public ZDex versions on GitHub differ from the internal staff version.
 - This is the latest version. Thanks for using ZDex!
 
 ## Script
