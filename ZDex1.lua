@@ -14579,12 +14579,8 @@ Main = (function()
 					return decompile
 				end)()
 
-				if identifyexecutor and type(identifyexecutor) == "function" then
+				if identifyexecutor then
 					Main.Executor = identifyexecutor()
-					print("[System] Executor Detected:", Main.Executor)
-				else
-				    Main.Executor = "???"
-				    warn(("[System] Executor Detected: %s (unsupported / skidware)"):format(Main.Executor))
 				end
 
 				Main.GuiHolder = Main.Elevated and service.CoreGui or plr:FindFirstChildWhichIsA("PlayerGui")
