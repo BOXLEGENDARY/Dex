@@ -1,5 +1,5 @@
-## ZDex ( 11/9/25 )
-IN-DEV ( version 12 )
+## ZDex ( 14/9/25 )
+IN-DEV ( version 13 )
 - All ZDex versions on GitHub are different from the internal staff version.
 - This is the latest version. Thanks for using ZDex!
 
@@ -33,9 +33,8 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ---
 
-## Update Log ( in-dev 12 )
-- remove getlocal
-- Change the way to load the Anti Client Logger
+## Update Log ( in-dev 13 )
+- new function
 
 ---
 
