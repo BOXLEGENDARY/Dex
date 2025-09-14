@@ -7441,16 +7441,7 @@ local function main()
 
 	Lib.ProtectedGuis = {}
 	
-	Lib.ShowGui = function(gui)
-		if env.gethui then
-			gui.Parent = env.gethui()
-		elseif env.protectgui then
-			env.protectgui(gui)
-			gui.Parent = Main.GuiHolder
-		else
-			gui.Parent = Main.GuiHolder
-		end
-	end
+	Lib.ShowGui = Main.SecureGui
 
 	Lib.ColorToBytes = function(col)
 		local round = math.round
@@ -14335,6 +14326,39 @@ Main = (function()
 		Core = 101000
 	}
 	
+	Main.GetRandomString = function()
+		local output = ""
+		for i = 2, 25 do
+			output = output .. string.char(math.random(1,250))
+		end
+		
+		return output
+	end
+	
+	Main.SecureGui = function(gui)
+		--warn("Secured: "..gui.Name)
+		gui.Name = Main.GetRandomString()
+		-- service already using cloneref
+		if gethui then
+			gui.Parent = gethui()
+		elseif syn and syn.protect_gui then
+			syn.protect_gui(gui)
+			gui.Parent = service.CoreGui
+		elseif protect_gui then
+			protect_gui(gui)
+			gui.Parent = service.CoreGui
+		elseif protectgui then
+			protectgui(gui)
+			gui.Parent = service.CoreGui
+		else
+			if Main.Elevated then
+				gui.Parent = service.CoreGui
+			else
+				gui.Parent = service.Players.LocalPlayer:WaitForChild("PlayerGui")
+			end
+		end
+	end
+
 	Main.GetInitDeps = function()
 		return {
 			Main = Main,
@@ -14947,16 +14971,7 @@ Main = (function()
 	    loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/Roblox/refs/heads/main/AntiClientLogger.lua", true))()
 	end
 
-	Main.ShowGui = function(gui)
-				if env.gethui then
-						gui.Parent = env.gethui()
-				elseif env.protectgui then
-						env.protectgui(gui)
-						gui.Parent = Main.GuiHolder
-				else
-						gui.Parent = Main.GuiHolder
-				end
-		end
+	Main.ShowGui = Main.SecureGui
 
 	Main.CreateIntro = function(initStatus) -- TODO: Must theme and show errors
 		local gui = create({
