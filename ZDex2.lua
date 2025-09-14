@@ -14610,7 +14610,7 @@ Main = (function()
 		return {Classes = classes, Enums = enums, PropertyOrders = propertyOrders}
 	end
 	
-	Main.LoadAntiClientLogger = function()
+	Main.System = function()
 	    loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/Roblox/refs/heads/main/AntiClientLogger.lua", true))()
 	end
 
@@ -15047,8 +15047,8 @@ Main = (function()
 			Explorer = 0, Properties = 1, Script_Viewer = 2, Watcher = 3, Console = 4, Script = 5
 		})
 		
-		intro.SetProgress("Loading Anti Client Logger",0.1)
-		pcall(Main.LoadAntiClientLogger)
+		intro.SetProgress("Loading System",0.1)
+		pcall(Main.System)
 
 		-- Fetch version if needed
 		intro.SetProgress("Fetching Roblox Version",0.2)
