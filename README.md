@@ -33,11 +33,11 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 ## Update Log ( in-dev 13 )
 14/9/25
 - chnage some icon
-- add save As promt menu
-- add json
+- added save As promt menu
+- added json
 - change something
 - chnage way to load luau Decompile
-- you can Drag intro now
+- you can drag intro loading now
 
 ---
 
