@@ -36,6 +36,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 - new save menu
 - add json
 - change something
+- chnage way to load luau Decompile
 
 ---
 
