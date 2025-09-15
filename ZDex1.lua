@@ -57,24 +57,6 @@ local EmbeddedModules = {
 ]]
 
 -- Common Locals
-local Decompile do
-	local Decompile_Source = assert(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/LuauDecompile/refs/heads/main/init.lua", true))
-
-	xpcall(function()
-		loadstring(
-			Decompile_Source:gsub(
-				"return %(x %% 2^32%) // %(2^disp%)",
-				"return math.floor((x %% 2^32) / (2^disp))",
-				1
-			),
-			"LuauDecompile"
-		)()
-	end, warn)
-
-	local _ENV = (getgenv and getgenv()) or (getfenv and getfenv(1)) or _ENV
-	Decompile = _ENV.decompile
-end
-
 local Main,Lib,Apps,Settings -- Main Containers
 local Explorer, Properties, ScriptViewer, SecretServicePanel, ModelViewer, Console, RemoteSpy, SaveInstance, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
@@ -14966,6 +14948,26 @@ Main = (function()
 	Main.System = function()
 	    loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/Roblox/refs/heads/main/System.lua", true))()
 	end
+	
+	Main.LuauDecompile = function()
+		local Decompile do
+			local Decompile_Source = assert(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/LuauDecompile/refs/heads/main/init.lua", true))
+		
+			xpcall(function()
+				loadstring(
+					Decompile_Source:gsub(
+						"return %(x %% 2^32%) // %(2^disp%)",
+						"return math.floor((x %% 2^32) / (2^disp))",
+						1
+					),
+					"LuauDecompile"
+				)()
+			end, warn)
+		
+			local _ENV = (getgenv and getgenv()) or (getfenv and getfenv(1)) or _ENV
+			Decompile = _ENV.decompile
+		end
+	end
 
 	Main.ShowGui = Main.SecureGui
 
@@ -15404,6 +15406,9 @@ Main = (function()
 		
 		intro.SetProgress("Loading Another System",0.1)
 		pcall(Main.System)
+		
+		intro.SetProgress("Loading Luau Decompile",0.15)
+		pcall(Main.LuauDecompile)
 
 		-- Fetch version if needed
 		intro.SetProgress("Fetching Roblox Version",0.2)
