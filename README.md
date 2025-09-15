@@ -1,7 +1,6 @@
 ## ZDex ( final )
 All public ZDex versions on GitHub differ from the internal staff version.
 ## Script
-14/9/25
 version
 - in-dev 13
 - RemoteSpy Version
@@ -34,6 +33,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 ---
 
 ## Update Log ( in-dev 13 )
+14/9/25
 - new icon
 - new save menu
 - add json
