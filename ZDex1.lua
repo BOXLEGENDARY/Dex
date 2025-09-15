@@ -2,9 +2,7 @@
 
 	
 
-local LOAD = (getgenv and getgenv()) or (getfenv and getfenv(1)) or _ENV
-if LOAD.ZDex_load and _G.ZDex_load ~= true then return end
-pcall(function() LOAD.ZDex_load = true end)
+local E = getgenv and getgenv() or getfenv and getfenv(1) or _ENV or _G; if E.ZDex_load then return end; E.ZDex_load = true
 
 wait(0.1)
 
