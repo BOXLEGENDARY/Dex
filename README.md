@@ -22,7 +22,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 - Explorer
 - Properties
 - ScriptView
-- SecretServicePanel
+- ~~SecretServicePanel~~
 - ModelView
 - Console
 - RemoteSpy
