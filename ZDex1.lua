@@ -14930,7 +14930,7 @@ Main = (function()
 		
 		Main.CreateApp({Name = "Remote Spy", IconMap = Main.LargeIcons, Icon = "Watcher", Window = RemoteSpy.Window})
 
-		Main.CreateApp({Name = "Save Instance", IconMap = Main.LargeIcons, Icon = "Watcher", Window = SaveInstance.Window})
+		Main.CreateApp({Name = "Save Instance", IconMap = Main.LargeIcons, Icon = "Script", Window = SaveInstance.Window})
 
 		local cptsOnMouseClick = nil
 		Main.CreateApp({Name = "Click part to select", IconMap = Main.LargeIcons, Icon = 6, OnClick = function(callback)
