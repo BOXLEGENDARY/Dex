@@ -32,8 +32,8 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ## Update Log ( in-dev 13 )
 14/9/25
-- new some icon
-- new save menu
+- chnage some icon
+- add save As promt menu
 - add json
 - change something
 - chnage way to load luau Decompile
