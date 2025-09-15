@@ -1,5 +1,4 @@
-## ZDex ( final )
-All public ZDex versions on GitHub differ from the internal staff version.
+# ZDex
 ## Script
 version
 - in-dev 13
