@@ -37,6 +37,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 - add json
 - change something
 - chnage way to load luau Decompile
+- you can Drag intro now
 
 ---
 
