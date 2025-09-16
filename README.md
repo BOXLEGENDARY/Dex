@@ -68,6 +68,11 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ---
 
+## TODO
+- Luau Decompile should fallback instead of Konstant, Konstant should be removed, and the executor should handle decompilation as the primary component.
+
+---
+
 ## Used in ZDex
 
 - [Dex](https://github.com/LorekeeperZinnia/Dex)
