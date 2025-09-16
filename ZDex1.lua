@@ -14571,10 +14571,6 @@ Main = (function()
 		return {Classes = classes, Enums = enums, PropertyOrders = propertyOrders}
 	end
 	
-	Main.System = function()
-	    loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/Roblox/refs/heads/main/System.lua", true))()
-	end
-	
 	Main.LuauDecompile = function()
 		local Decompile do
 			local Success, Decompile_Source = pcall(function()
@@ -15053,10 +15049,7 @@ Main = (function()
 			Explorer = 0, Properties = 1, Script_Viewer = 2, Watcher = 3, Console = 4, Script = 5
 		})
 		
-		intro.SetProgress("Loading Another System",0.1)
-		pcall(Main.System)
-		
-		intro.SetProgress("Loading Luau Decompile",0.15)
+		intro.SetProgress("Loading Luau Decompile",0.1)
 		pcall(Main.LuauDecompile)
 
 		-- Fetch version if needed
