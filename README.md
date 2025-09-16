@@ -40,6 +40,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 - you can draggable intro now
 - remove SecretServicePanel because too much problem
 - clean one-time Loader
+- syntax clean yahoo
 
 ---
 
