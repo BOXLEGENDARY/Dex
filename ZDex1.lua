@@ -14613,7 +14613,7 @@ Main = (function()
 					)()
 				end, warn)
 				
-				local _ENV = (getgenv or getrenv or getfenv)()
+				local _ENV = getgenv and getgenv() or getfenv and getfenv(1) or _ENV
 				Decompile = _ENV.decompile
 			end
 		end
