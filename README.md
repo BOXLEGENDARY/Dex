@@ -39,7 +39,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 - chnage way to load luau Decompile
 - you can draggable intro now
 - remove SecretServicePanel because too much problem
-- remake One-time Loader
+- clean one-time Loader
 
 ---
 
