@@ -67,11 +67,6 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ---
 
-## TODO
-- The executor should handle decompilation primarily, with Konstant as its first fallback, and Luau Decompile as the final fallback.
-
----
-
 ## Used in ZDex
 
 - [Dex](https://github.com/LorekeeperZinnia/Dex)
