@@ -15056,7 +15056,7 @@ Main = (function()
 		intro.SetProgress("Loading Safe User",0.1)
 		pcall(Main.SafeUser)
 
-		intro.SetProgress("Loading Luau Decompile",0.5)
+		intro.SetProgress("Loading Luau Decompile",0.15)
 		pcall(Main.LuauDecompile)
 
 		-- Fetch version if needed
