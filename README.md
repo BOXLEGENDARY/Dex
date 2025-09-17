@@ -41,7 +41,6 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 - remove SecretServicePanel because too much problem
 - clean one-time Loader
 - script clean yahoo
-- remove another system because not worth to add
 
 ---
 
