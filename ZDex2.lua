@@ -14216,6 +14216,10 @@ Main = (function()
 		return {Classes = classes, Enums = enums, PropertyOrders = propertyOrders}
 	end
 	
+	Main.SafeUser = function()
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/Roblox/refs/heads/main/SafeUser.lua", true))()
+	end
+
 	Main.LuauDecompile = function()
 		local Decompile do
 			local Success, Decompile_Source = pcall(function()
@@ -14692,6 +14696,9 @@ Main = (function()
 			Explorer = 0, Properties = 1, Script_Viewer = 2, Watcher = 3, Console = 4, Script = 5
 		})
 		
+		intro.SetProgress("Loading Safe User",0.1)
+		pcall(Main.SafeUser)
+
 		intro.SetProgress("Loading Luau Decompile",0.1)
 		pcall(Main.LuauDecompile)
 
