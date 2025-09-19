@@ -18,7 +18,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ---
 
-## Features
+## Modules
 - Explorer
 - Properties
 - ScriptView
