@@ -78,7 +78,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ## Third Party Components
 - Konstant Decompiler
-- [UniversalSynapseSaveInstance (USSI)](https://github.com/luau/UniversalSynSaveInstance)
+- [UniversalSynapseSaveInstance (USSI)](https://github.com/BOXLEGENDARY/UniversalSynSaveInstance)
 
 ---
 
