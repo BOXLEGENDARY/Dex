@@ -58,8 +58,6 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 [chillz](https://github.com/AZYsGithub) ( DexPlusPlus Creator )
 
-[zeroxx987](https://scriptblox.com/script/Universal-Script-BootSpy-12998) ( RemoteSpy )
-
 ---
 
 ## Other
