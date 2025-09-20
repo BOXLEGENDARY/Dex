@@ -13727,7 +13727,7 @@ Main = (function()
 				env.saveinstance = saveinstance or (function()
 					if game:GetService("RunService"):IsStudio() then return function() error("Cannot run in Roblox Studio!") end end
 					local Params = {
-						RepoURL = "https://raw.githubusercontent.com/luau/SynSaveInstance/main/",
+						RepoURL = "https://raw.githubusercontent.com/BOXLEGENDARY/UniversalSynSaveInstance/main/",
 						SSI = "saveinstance",
 					}
 					local synsaveinstance = loadstring(oldgame:HttpGet(Params.RepoURL .. Params.SSI .. ".luau", true), Params.SSI)()
