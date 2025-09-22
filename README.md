@@ -83,6 +83,3 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 - [UniversalSynapseSaveInstance (USSI)](https://github.com/BOXLEGENDARY/UniversalSynSaveInstance)
 
 ---
-
-## Discord
-if u want contact add: `@xsxs_xsxs_z`
