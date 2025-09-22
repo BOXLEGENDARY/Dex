@@ -62,8 +62,6 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ## Other
 `Not everything in ZDex has been thoroughly tested.`
-* 2 failback decompile
-* 1 failabck saveinstance
 
 ---
 
