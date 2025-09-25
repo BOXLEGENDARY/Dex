@@ -14254,7 +14254,7 @@ Main = (function()
 							string.gsub(
 								Decompile_Source, "return %(x %% 2^32%) // %(2^disp%)", "return math.floor((x %% 2^32) / (2^disp))", 1
 							), ";;CONSTANTS HERE;;", CONSTANTS
-						), "LuauDecompile"
+						), "Advanced-Luau-Decompiler"
 					)()
 				end, warn)
 				
