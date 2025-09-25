@@ -14220,7 +14220,7 @@ Main = (function()
 		loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/Roblox/refs/heads/main/SafeUser.lua", true))()
 	end
 
-	Main.LuauDecompile = function()
+	Main.AdvancedLuauDecompile = function()
 		local Decompile do
 			local Success, Decompile_Source = pcall(function()
 				return game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/Advanced-Luau-Decompiler/refs/heads/main/init.lua", true)
@@ -14699,8 +14699,8 @@ Main = (function()
 		intro.SetProgress("Loading Safe User",0.1)
 		pcall(Main.SafeUser)
 
-		intro.SetProgress("Loading Luau Decompile",0.15)
-		pcall(Main.LuauDecompile)
+		intro.SetProgress("Loading Advanced Luau Decompiler",0.15)
+		pcall(Main.AdvancedLuauDecompile)
 
 		-- Fetch version if needed
 		intro.SetProgress("Fetching Roblox Version",0.2)
