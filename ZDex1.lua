@@ -14578,7 +14578,7 @@ Main = (function()
 	Main.LuauDecompile = function()
 		local Decompile do
 			local Success, Decompile_Source = pcall(function()
-				return game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/LuauDecompile/refs/heads/main/init.lua", true)
+				return game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/Advanced-Luau-Decompiler/refs/heads/main/init.lua", true)
 			end)
 			
 			if Success then
