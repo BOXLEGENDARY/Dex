@@ -32,15 +32,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ## Update Log ( in-dev 13 )
 14/9/25
-- chnage some icon
-- added save As promt menu
-- added json
-- change something
-- chnage way to load luau Decompile
-- you can draggable intro now
-- remove SecretServicePanel because too much problem
-- clean one-time Loader
-- script clean yahoo
+- fix Decompiler
 
 ---
 
