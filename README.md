@@ -63,13 +63,15 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 - [DexPlusPlus](https://github.com/AZYsGithub/DexPlusPlus)
 
-- [Advanced-Luau-Decompiler](https://github.com/BOXLEGENDARY/Advanced-Luau-Decompiler)
 - [RemoteSpy](https://scriptblox.com/script/Universal-Script-BootSpy-12998)
 
 ---
 
 ## Third Party Components
 - Konstant Decompiler
+
+- [Advanced-Luau-Decompiler](https://github.com/BOXLEGENDARY/Advanced-Luau-Decompiler)
+
 - [UniversalSynapseSaveInstance (USSI)](https://github.com/BOXLEGENDARY/UniversalSynSaveInstance)
 
 ---
