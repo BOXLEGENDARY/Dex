@@ -14570,10 +14570,6 @@ Main = (function()
 		
 		return {Classes = classes, Enums = enums, PropertyOrders = propertyOrders}
 	end
-	
-	Main.SafeUser = function()
-		loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/Roblox/refs/heads/main/SafeUser.lua", true))()
-	end
 
 	Main.AdvancedLuauDecompiler = function()
 		local Decompile do
@@ -15052,11 +15048,8 @@ Main = (function()
 		Main.LargeIcons:SetDict({
 			Explorer = 0, Properties = 1, Script_Viewer = 2, Watcher = 3, Console = 4, Script = 5
 		})
-		
-		intro.SetProgress("Loading Safe User",0.1)
-		pcall(Main.SafeUser)
 
-		intro.SetProgress("Loading ALD",0.15)
+		intro.SetProgress("Loading ALD",0.1)
 		pcall(Main.AdvancedLuauDecompiler)
 
 		-- Fetch version if needed
