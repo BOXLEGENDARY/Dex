@@ -46,22 +46,14 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 ## Credits
 [ZxL](https://youtu.be/dQw4w9WgXcQ?si=IkAXjfO3Uf2UOJ9V) ( ZDex Owner )
 
-[Moon](https://github.com/LorekeeperZinnia) ( Orginal Dex Creator )
+[Moon](https://github.com/LorekeeperZinnia) ( Orginal Dex )
 
-[chillz](https://github.com/AZYsGithub) ( DexPlusPlus Creator )
+[chillz](https://github.com/AZYsGithub) ( DexPlusPlus )
 
 ---
 
 ## Other
 `Not everything in ZDex has been thoroughly tested.`
-
----
-
-## Used in ZDex
-
-- [Dex](https://github.com/LorekeeperZinnia/Dex)
-
-- [DexPlusPlus](https://github.com/AZYsGithub/DexPlusPlus)
 
 ---
 
