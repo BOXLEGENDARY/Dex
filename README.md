@@ -25,7 +25,8 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 - ~~SecretServicePanel~~
 - ModelView
 - Console
-- RemoteSpy
+° [RemoteSpy](https://scriptblox.com/script/Universal-Script-BootSpy-12998)
+
 - SaveInstance
 
 ---
@@ -62,8 +63,6 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 - [Dex](https://github.com/LorekeeperZinnia/Dex)
 
 - [DexPlusPlus](https://github.com/AZYsGithub/DexPlusPlus)
-
-- [RemoteSpy](https://scriptblox.com/script/Universal-Script-BootSpy-12998)
 
 ---
 
