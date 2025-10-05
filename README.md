@@ -60,10 +60,10 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 ---
 
 ## Third Party Components
-- Konstant Decompiler
+Konstant Decompiler
 
-- [Advanced-Luau-Decompiler](https://github.com/BOXLEGENDARY/Advanced-Luau-Decompiler)
+[Advanced-Luau-Decompiler](https://github.com/BOXLEGENDARY/Advanced-Luau-Decompiler)
 
-- [UniversalSynapseSaveInstance (USSI)](https://github.com/BOXLEGENDARY/UniversalSynSaveInstance)
+[UniversalSynapseSaveInstance (USSI)](https://github.com/BOXLEGENDARY/UniversalSynSaveInstance)
 
 ---
