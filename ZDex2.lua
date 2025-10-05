@@ -13708,138 +13708,137 @@ Main = (function()
 	end
 	
 	Main.InitEnv = function()
-				setmetatable(env, {__newindex = function(self, name, func)
-						if not func then Main.MissingEnv[#Main.MissingEnv + 1] = name return end
-						rawset(self, name, func)
-				end})
-
-        		env.isonmobile = game:GetService("UserInputService").TouchEnabled
-
-				-- file
-				env.isfile = isfile
-				env.readfile = readfile
-				env.writefile = writefile
-				env.appendfile = appendfile
-				env.makefolder = makefolder
-				env.listfiles = listfiles
-				env.loadfile = loadfile
-				env.movefileas = movefileas
-				env.saveinstance = saveinstance or (function()
-					if game:GetService("RunService"):IsStudio() then return function() error("Cannot run in Roblox Studio!") end end
-					local Params = {
-						RepoURL = "https://raw.githubusercontent.com/BOXLEGENDARY/UniversalSynSaveInstance/main/",
-						SSI = "saveinstance",
-					}
-					local synsaveinstance = loadstring(oldgame:HttpGet(Params.RepoURL .. Params.SSI .. ".luau", true), Params.SSI)()
-				
-					local function wrappedsaveinstance(obj, filepath, options)
-						options["FilePath"] = filepath
-						--options["ReadMe"] = false
-						options["Object"] = obj
-						return synsaveinstance(options)
-					end
-					
-					getgenv().saveinstance = wrappedsaveinstance
-					return wrappedsaveinstance
-				end)()
-				
-				env.parsefile = function(name)
-					return tostring(name):gsub("[*\\?:<>|]+", ""):sub(1, 175)
-				end
-
-				-- debug
-				env.getupvalues = (debug and debug.getupvalues) or getupvalues or getupvals
-				env.getconstants = (debug and debug.getconstants) or getconstants or getconsts
-				env.getinfo = (debug and (debug.getinfo or debug.info)) or getinfo
-				env.islclosure = islclosure or is_l_closure or is_lclosure
-				env.checkcaller = checkcaller
-				env.getreg = getreg
-				env.getgc = getgc or get_gc_objects
-
-				-- hooks
-				env.hookfunction = hookfunction
-				env.hookmetamethod = hookmetamethod
-
-				-- other
-				env.getscriptbytecode = getscriptbytecode
-				env.setfflag = setfflag
-				env.request = (syn and syn.request) or (http and http.request) or (http_request) or (request)
-				env.protectgui = protect_gui or (syn and syn.protect_gui)
-				env.gethui = gethui or get_hidden_gui
-				env.setclipboard = setclipboard or toclipboard or set_clipboard or (Clipboard and Clipboard.set)
-				env.getnilinstances = getnilinstances or get_nil_instances
-				env.getloadedmodules = getloadedmodules
-
-                -- check decompile
-				env.isViableDecompileScript = function(obj)
-					if obj:IsA("ModuleScript") then
-						return true
-					elseif obj:IsA("LocalScript") and (obj.RunContext == Enum.RunContext.Client or obj.RunContext == Enum.RunContext.Legacy) then
-						return true
-					elseif obj:IsA("Script") and obj.RunContext == Enum.RunContext.Client then
-						return true
-					end
-					return false
-				end
-
-				env.decompile = decompile or (function()
+		setmetatable(env, {__newindex = function(self, name, func)
+			if not func then Main.MissingEnv[#Main.MissingEnv + 1] = name return end
+			rawset(self, name, func)
+		end})
+	
+		env.isonmobile = game:GetService("UserInputService").TouchEnabled
+	
+		-- file
+		env.isfile = isfile
+		env.readfile = readfile
+		env.writefile = writefile
+		env.appendfile = appendfile
+		env.makefolder = makefolder
+		env.listfiles = listfiles
+		env.loadfile = loadfile
+		env.movefileas = movefileas
+		env.saveinstance = saveinstance or (function()
+			if game:GetService("RunService"):IsStudio() then return function() error("Cannot run in Roblox Studio!") end end
+			local Params = {
+				RepoURL = "https://raw.githubusercontent.com/BOXLEGENDARY/UniversalSynSaveInstance/main/",
+				SSI = "saveinstance",
+			}
+			local synsaveinstance = loadstring(oldgame:HttpGet(Params.RepoURL .. Params.SSI .. ".luau", true), Params.SSI)()
 		
-					if not env.getscriptbytecode then return end
+			local function wrappedsaveinstance(obj, filepath, options)
+				options["FilePath"] = filepath
+				--options["ReadMe"] = false
+				options["Object"] = obj
+				return synsaveinstance(options)
+			end
+			
+			getgenv().saveinstance = wrappedsaveinstance
+			return wrappedsaveinstance
+		end)()
 		
-					local API = "http://api.plusgiant5.com"
-		
-					local last_call = 0
-		
-					local request = env.request
-		
-					local function call(konstantType, scriptPath)
-						local success, bytecode = pcall(getscriptbytecode, scriptPath)
-		
-						if (not success) then
-							return `-- Failed to get script bytecode, error:\n\n--[[\n{bytecode}\n--]]`
-						end
-		
-						local time_elapsed = os.clock() - last_call
-						if time_elapsed <= .5 then
-							task.wait(.5 - time_elapsed)
-						end
-		
-						local httpResult = request({
-							Url = API .. konstantType,
-							Body = bytecode,
-							Method = "POST",
-							Headers = {
-								["Content-Type"] = "text/plain"
-							}
-						})
-		
-						last_call = os.clock()
-		
-						if (httpResult.StatusCode ~= 200) then
-							return `-- Error occurred while requesting Konstant API, error:\n\n--[[\n{httpResult.Body}\n--]]`
-						else
-							return httpResult.Body
-						end
-					end
-		
-					local function decompile(scriptPath)
-						return call("/konstant/decompile", scriptPath)
-					end
-		
-					getgenv().decompile = decompile
-					
-					env.decompile = decompile
-					return decompile
-				end)()
-
-				if identifyexecutor then
-					Main.Executor = identifyexecutor()
-				end
-
-				Main.GuiHolder = Main.Elevated and service.CoreGui or plr:FindFirstChildWhichIsA("PlayerGui")
-
-				setmetatable(env, nil)
+		env.parsefile = function(name)
+			return tostring(name):gsub("[*\\?:<>|]+", ""):sub(1, 175)
 		end
+	
+		-- debug
+		env.getupvalues = (debug and debug.getupvalues) or getupvalues or getupvals
+		env.getconstants = (debug and debug.getconstants) or getconstants or getconsts
+		env.getinfo = (debug and (debug.getinfo or debug.info)) or getinfo
+		env.islclosure = islclosure or is_l_closure or is_lclosure
+		env.checkcaller = checkcaller
+		env.getreg = getreg
+		env.getgc = getgc or get_gc_objects
+	
+		-- hooks
+		env.hookfunction = hookfunction
+		env.hookmetamethod = hookmetamethod
+	
+		-- other
+		env.getscriptbytecode = getscriptbytecode
+		env.setfflag = setfflag
+		env.request = (syn and syn.request) or (http and http.request) or (http_request) or (request)
+		env.protectgui = protect_gui or (syn and syn.protect_gui)
+		env.gethui = gethui or get_hidden_gui
+		env.setclipboard = setclipboard or toclipboard or set_clipboard or (Clipboard and Clipboard.set)
+		env.getnilinstances = getnilinstances or get_nil_instances
+		env.getloadedmodules = getloadedmodules
+	
+		env.isViableDecompileScript = function(obj)
+			if obj:IsA("ModuleScript") then
+				return true
+			elseif obj:IsA("LocalScript") and (obj.RunContext == Enum.RunContext.Client or obj.RunContext == Enum.RunContext.Legacy) then
+				return true
+			elseif obj:IsA("Script") and obj.RunContext == Enum.RunContext.Client then
+				return true
+			end
+			return false
+		end
+	
+		env.decompile = decompile or (function()
+	
+			if not env.getscriptbytecode then return end
+	
+			local API = "http://api.plusgiant5.com"
+	
+			local last_call = 0
+	
+			local request = env.request
+	
+			local function call(konstantType, scriptPath)
+				local success, bytecode = pcall(getscriptbytecode, scriptPath)
+	
+				if (not success) then
+					return `-- Failed to get script bytecode, error:\n\n--[[\n{bytecode}\n--]]`
+				end
+	
+				local time_elapsed = os.clock() - last_call
+				if time_elapsed <= .5 then
+					task.wait(.5 - time_elapsed)
+				end
+	
+				local httpResult = request({
+					Url = API .. konstantType,
+					Body = bytecode,
+					Method = "POST",
+					Headers = {
+						["Content-Type"] = "text/plain"
+					}
+				})
+	
+				last_call = os.clock()
+	
+				if (httpResult.StatusCode ~= 200) then
+					return `-- Error occurred while requesting Konstant API, error:\n\n--[[\n{httpResult.Body}\n--]]`
+				else
+					return httpResult.Body
+				end
+			end
+	
+			local function decompile(scriptPath)
+				return call("/konstant/decompile", scriptPath)
+			end
+	
+			getgenv().decompile = decompile
+			
+			env.decompile = decompile
+			return decompile
+		end)()
+	
+		if identifyexecutor then
+			Main.Executor = identifyexecutor()
+		end
+	
+		Main.GuiHolder = Main.Elevated and service.CoreGui or plr:FindFirstChildWhichIsA("PlayerGui")
+	
+		setmetatable(env, nil)
+	end
 
 	local function serialize(val)
 		if typeof(val) == "Color3" then
