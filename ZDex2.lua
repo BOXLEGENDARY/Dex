@@ -1389,7 +1389,7 @@ local function main()
 		context:Register("SAVE_INST",{Name = "Save to File", IconMap = Explorer.MiscIcons, Icon = "Save", OnClick = function()
 			local sList = selection.List
 			if #sList == 1 then
-				Lib.SaveAsPrompt("dex/saved/Place_"..game.PlaceId.."_"..sList[1].Obj.ClassName.."_"..sList[1].Obj.Name.."_"..os.time(), function(filename)
+				Lib.SaveAsPrompt("Place_"..game.PlaceId.."_"..sList[1].Obj.ClassName.."_"..sList[1].Obj.Name.."_"..os.time(), function(filename)
 					env.saveinstance(sList[1].Obj, filename, {
 						Decompile = true,
 						RemovePlayerCharacters = false
@@ -1399,7 +1399,7 @@ local function main()
 				for i = 1,#sList do
 					-- sList[i].Obj.Name.." ("..sList[1].Obj.ClassName..")"
 					-- "Place_"..game.PlaceId.."_"..sList[1].Obj.ClassName.."_"..sList[i].Obj.Name.."_"..os.time()
-					Lib.SaveAsPrompt("dex/saved/Place_"..game.PlaceId.."_"..sList[i].Obj.ClassName.."_"..sList[i].Obj.Name.."_"..os.time(), function(filename)
+					Lib.SaveAsPrompt("Place_"..game.PlaceId.."_"..sList[i].Obj.ClassName.."_"..sList[i].Obj.Name.."_"..os.time(), function(filename)
 						env.saveinstance(sList[i].Obj, filename, {
 							Decompile = true,
 							RemovePlayerCharacters = false
@@ -1523,7 +1523,7 @@ local function main()
 				if v.Obj:IsA("LuaSourceContainer") and env.isViableDecompileScript(v.Obj) then
 					local success, source = pcall(decompile or env.decompile, v.Obj)
 					if not success or not source then warn"DEX - Source failed to decompile" end
-					local fileName = ("dex/saved/%s_%s_%i_Source.txt"):format(env.parsefile(v.Obj.Name), v.Obj.ClassName, game.PlaceId)
+					local fileName = ("%s_%s_%i_Source.txt"):format(env.parsefile(v.Obj.Name), v.Obj.ClassName, game.PlaceId)
 					--env.writefile(fileName, source)
 					Lib.SaveAsPrompt(fileName, source)
 					
@@ -1537,7 +1537,7 @@ local function main()
 				if v.Obj:IsA("LuaSourceContainer") and env.isViableDecompileScript(v.Obj) then
 					local success, bytecode = pcall(env.getscriptbytecode, v.Obj)
 					if success and type(bytecode) == "string" then
-						local fileName = ("dex/saved/%s_%s_%i_Bytecode.txt"):format(env.parsefile(v.Obj.Name), v.Obj.ClassName, game.PlaceId)
+						local fileName = ("%s_%s_%i_Bytecode.txt"):format(env.parsefile(v.Obj.Name), v.Obj.ClassName, game.PlaceId)
 						--env.writefile(fileName, bytecode)
 						Lib.SaveAsPrompt(fileName, bytecode)
 						task.wait(0.2)
@@ -4631,7 +4631,7 @@ local function main()
 		
 		save.MouseButton1Click:Connect(function()
 			local source = codeFrame:GetText()
-			local filename = "dex/saved/Place_"..game.PlaceId.."_Script_"..os.time()..".txt"
+			local filename = "Place_"..game.PlaceId.."_Script_"..os.time()..".txt"
 
 			env.writefile(filename, source)
 			if env.movefileas then
@@ -5054,7 +5054,7 @@ local function main()
 		end})
 		context:Register("SAVE_INST",{Name = "Save to File", OnClick = function()
 			if model then
-				Lib.SaveAsPrompt("dex/saved/Place_"..game.PlaceId.."_"..originalModel.Name.."_"..os.time(), function(filename)
+				Lib.SaveAsPrompt("Place_"..game.PlaceId.."_"..originalModel.Name.."_"..os.time(), function(filename)
 					window:SetTitle(originalModel.Name.." - Model Viewer - Saving")	
 					
 					local success, result = pcall(env.saveinstance,
@@ -6002,7 +6002,7 @@ end
 local function main()
 	local SaveInstance = {}
 	local window, ListFrame
-	local fileName = "dex/saved/Place_"..game.PlaceId.."_"..game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name.."_{TIMESTAMP}"
+	local fileName = "Place_"..game.PlaceId.."_"..game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name.."_{TIMESTAMP}"
 	local Saving = false
 	
 	local SaveInstanceArgs = {
