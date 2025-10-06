@@ -1522,7 +1522,7 @@ local function main()
 		context:Register("SAVE_SCRIPT",{Name = "Save Script", IconMap = Explorer.MiscIcons, Icon = "Save", DisabledIcon = "Empty", OnClick = function()
 			for _, v in next, selection.List do
 				if v.Obj:IsA("LuaSourceContainer") and env.isViableDecompileScript(v.Obj) then
-					local success, source = pcall(env.decompile, v.Obj)
+					local success, source = pcall(decompile or env.decompile, v.Obj)
 					if not success or not source then source = "-- DEX - Source failed to decompile" end
 					local fileName = ("%s_%s_%i_Source.txt"):format(env.parsefile(v.Obj.Name), v.Obj.ClassName, game.PlaceId)
 					--env.writefile(fileName, source)
@@ -4596,7 +4596,7 @@ local function main()
 	local PreviousScr = nil
 	
 	ScriptViewer.ViewScript = function(scr)
-		local success, source = pcall(env.decompile or function() end, scr)
+		local success, source = pcall(decompile or env.decompile or function() end, scr)
 		if not success or not source then source, PreviousScr = "-- DEX - Source failed to decompile", nil else PreviousScr = scr end
 		codeFrame:SetText(source:gsub("\0", "\\0"))
 		window:Show()
