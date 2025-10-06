@@ -31,9 +31,8 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 ---
 
 ## Update Log ( in-dev 13 )
-25/9/25
-- Fix Decompiler
-- Clean script again
+6/10/25
+- Disable the decompiler for a few weeks.
 
 ---
 
