@@ -14247,7 +14247,7 @@ Main = (function()
 	--warn(Main.ExportSettings())
 
 	Main.LoadSettings = function()
-		local s, data = pcall(env.readfile or error, "ZDexSettings.json")
+		local s, data = pcall(env.readfile or error, "dex/ZDexSettings.json")
 		if s and data and data ~= "" then
 			local s, decoded = pcall(service.HttpService.JSONDecode, service.HttpService, data)
 			if s and decoded then
@@ -14984,8 +14984,8 @@ Main = (function()
 	
 	Main.Init = function()
 		Main.Elevated = pcall(function() local a = service.CoreGui:GetFullName() end)
-		if writefile and isfile and not isfile("ZDexSettings.json") then
-			writefile("ZDexSettings.json", Main.ExportSettings())
+		if writefile and isfile and not isfile("dex/ZDexSettings.json") then
+			writefile("dex/ZDexSettings.json", Main.ExportSettings())
 		end
 		Main.InitEnv()
 		Main.LoadSettings()
