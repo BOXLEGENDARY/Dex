@@ -32,7 +32,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ## Update Log ( in-dev 13 )
 6/10/25
-- ~~Disable the decompiler for a few weeks.~~
+- ~~Disable the decompiler for a few weeks.~~ ( cancel )
 
 ---
 
