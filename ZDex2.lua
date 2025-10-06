@@ -14217,7 +14217,7 @@ Main = (function()
 		return {Classes = classes, Enums = enums, PropertyOrders = propertyOrders}
 	end
 
-	Main.AdvancedLuauDecompiler = function()
+	--[[ Main.AdvancedLuauDecompiler = function()
 		local Decompile do
 			local Success, Decompile_Source = pcall(function()
 				return game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/Advanced-Luau-Decompiler/refs/heads/main/init.lua", true)
@@ -14259,7 +14259,7 @@ Main = (function()
 				Decompile = _ENV.decompile
 			end
 		end
-	end
+	end]]
 
 	Main.ShowGui = Main.SecureGui
 
@@ -14693,8 +14693,8 @@ Main = (function()
 			Explorer = 0, Properties = 1, Script_Viewer = 2, Watcher = 3, Console = 4, Script = 5
 		})
 
-		intro.SetProgress("Loading ALD",0.1)
-		pcall(Main.AdvancedLuauDecompiler)
+		--[[ intro.SetProgress("Loading ALD",0.1)
+		pcall(Main.AdvancedLuauDecompiler)]]
 
 		-- Fetch version if needed
 		intro.SetProgress("Fetching Roblox Version",0.2)
