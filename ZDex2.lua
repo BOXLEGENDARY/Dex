@@ -1,6 +1,6 @@
 --[[ Developed by ZxL ]]
 
--- TODO: Place save files and other files in the correct locations
+
 
 local E = getgenv and getgenv() or getfenv and getfenv(1) or _ENV or _G; if E.ZDex_load then return end; E.ZDex_load = true
 
