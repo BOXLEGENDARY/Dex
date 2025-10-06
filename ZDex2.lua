@@ -1521,8 +1521,7 @@ local function main()
 		context:Register("SAVE_SCRIPT",{Name = "Save Script", IconMap = Explorer.MiscIcons, Icon = "Save", DisabledIcon = "Empty", OnClick = function()
 			for _, v in next, selection.List do
 				if v.Obj:IsA("LuaSourceContainer") and env.isViableDecompileScript(v.Obj) then
-					-- local success, source = pcall(decompile or env.decompile, v.Obj)
-					local success, source = pcall(env.decompile, v.Obj)
+					local success, source = pcall(decompile or env.decompile, v.Obj)
 					if not success or not source then source = "-- DEX - Source failed to decompile" end
 					local fileName = ("%s_%s_%i_Source.txt"):format(env.parsefile(v.Obj.Name), v.Obj.ClassName, game.PlaceId)
 					--env.writefile(fileName, source)
@@ -4594,8 +4593,7 @@ local function main()
 	local PreviousScr = nil
 	
 	ScriptViewer.ViewScript = function(scr)
-		-- local success, source = pcall(decompile or env.decompile or function() end, scr)
-		local success, source = pcall(env.decompile or function() end, scr)
+		local success, source = pcall(decompile or env.decompile or function() end, scr)
 		if not success or not source then source, PreviousScr = "-- DEX - Source failed to decompile", nil else PreviousScr = scr end
 		codeFrame:SetText(source:gsub("\0", "\\0"))
 		window:Show()
@@ -14217,7 +14215,7 @@ Main = (function()
 		return {Classes = classes, Enums = enums, PropertyOrders = propertyOrders}
 	end
 
-	--[[ Main.AdvancedLuauDecompiler = function()
+	Main.AdvancedLuauDecompiler = function()
 		local Decompile do
 			local Success, Decompile_Source = pcall(function()
 				return game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/Advanced-Luau-Decompiler/refs/heads/main/init.lua", true)
@@ -14259,7 +14257,7 @@ Main = (function()
 				Decompile = _ENV.decompile
 			end
 		end
-	end]]
+	end
 
 	Main.ShowGui = Main.SecureGui
 
@@ -14693,8 +14691,8 @@ Main = (function()
 			Explorer = 0, Properties = 1, Script_Viewer = 2, Watcher = 3, Console = 4, Script = 5
 		})
 
-		--[[ intro.SetProgress("Loading ALD",0.1)
-		pcall(Main.AdvancedLuauDecompiler)]]
+		intro.SetProgress("Loading ALD",0.1)
+		pcall(Main.AdvancedLuauDecompiler)
 
 		-- Fetch version if needed
 		intro.SetProgress("Fetching Roblox Version",0.2)
