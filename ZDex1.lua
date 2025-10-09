@@ -14116,6 +14116,7 @@ Main = (function()
 		env.hookmetamethod = hookmetamethod
 	
 		-- other
+		env.decompile = decompile
 		env.getscriptbytecode = getscriptbytecode
 		env.setfflag = setfflag
 		env.request = (syn and syn.request) or (http and http.request) or (http_request) or (request)
@@ -14135,8 +14136,6 @@ Main = (function()
 			end
 			return false
 		end
-	
-		env.decompile = decompile
 	
 		if identifyexecutor then
 			Main.Executor = identifyexecutor()
