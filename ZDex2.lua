@@ -1471,25 +1471,19 @@ local function main()
 		end})
 		
 		context:Register("VIEW_OBJECT",{Name = "View Object (Right click to reset)", IconMap = Explorer.LegacyClassIcons, Icon = 5, OnClick = function()
-		    local sList = selection.List
-		    local isa = game.IsA
-		
-		    for i = 1,#sList do
-		        local node = sList[i]
-		
-		        if isa(node.Obj,"BasePart") or isa(node.Obj, "Model") then
-		            workspace.CurrentCamera.CameraSubject = node.Obj
-		            break
-		        end
-		    end
-		end,
-		OnRightClick = function()
-		    workspace.CurrentCamera.CameraSubject = plr.Character
-		end,
-		OnClick = function()
-		    if env.isonmobile then
-		        workspace.CurrentCamera.CameraSubject = plr.Character        
-		    end
+			local sList = selection.List
+			local isa = game.IsA
+
+			for i = 1,#sList do
+				local node = sList[i]
+
+				if isa(node.Obj,"BasePart") or isa(node.Obj, "Model") then
+					workspace.CurrentCamera.CameraSubject = node.Obj
+					break
+				end
+			end
+		end, OnRightClick = function()
+			workspace.CurrentCamera.CameraSubject = plr.Character
 		end})
 		
 		context:Register("3DVIEW_MODEL",{Name = "3D Preview Object", IconMap = Explorer.LegacyClassIcons, Icon = 5, OnClick = function()
