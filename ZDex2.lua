@@ -957,7 +957,7 @@ local function main()
 		if presentClasses["BasePart"] or presentClasses["Model"] then
 			context:AddRegistered("TELEPORT_TO")
 			context:AddRegistered("3DVIEW_MODEL")
-			context:AddRegistered("VIEW_OBJECT", (function() if env.isonmobile then return true end end)())
+			context:AddRegistered("VIEW_OBJECT", env.isonmobile == true)
 		end
 		if presentClasses["Tween"] then context:AddRegistered("PLAY_TWEEN") end
 		if presentClasses["Animation"] then
@@ -985,7 +985,7 @@ local function main()
 		if presentClasses["BindableFunction"] then context:AddRegistered("BLOCK_REMOTE", env.hookfunction == nil) end
 		if presentClasses["BindableFunction"] then context:AddRegistered("UNBLOCK_REMOTE", env.hookfunction == nil) end
 
-		if presentClasses["Player"] then context:AddRegistered("SELECT_CHARACTER")context:AddRegistered("VIEW_PLAYER", (function() if env.isonmobile then return true end end)())
+		if presentClasses["Player"] then context:AddRegistered("SELECT_CHARACTER")context:AddRegistered("VIEW_PLAYER", env.isonmobile == true)
 		if presentClasses["Players"] then
 			context:AddRegistered("SELECT_LOCAL_PLAYER")
 			context:AddRegistered("SELECT_ALL_CHARACTERS")
