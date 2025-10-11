@@ -1204,44 +1204,46 @@ local function main()
 
 		-- if it works, it's ok
 		context:Register("TELEPORT_TO",{Name = "Teleport To", IconMap = Explorer.MiscIcons, Icon = "TeleportTo", OnClick = function()
-		    local sList = selection.List
-		    local plrRP = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
-		    
-		    if not plrRP then return end
-		    
-		    for _, node in next, sList do
-		        local Obj = node.Obj
-		        
-		        if Obj:IsA("BasePart") then
-		            if Obj.CanCollide then
-		                plr.Character:MoveTo(Obj.Position)
-		            else
-		                plrRP.CFrame = CFrame.new((Obj.Position or Vector3.new(0,0,0)) + (Settings.Explorer.TeleportToOffset or Vector3.new(0,0,0)))
-		            end
-		            break
-		        elseif Obj:IsA("Model") then
-		            if Obj.PrimaryPart then
-		                if Obj.PrimaryPart.CanCollide then
-		                    plr.Character:MoveTo(Obj.PrimaryPart.Position)
-		                else
-		                    plrRP.CFrame = CFrame.new((Obj.PrimaryPart.Position or Vector3.new(0,0,0)) + (Settings.Explorer.TeleportToOffset or Vector3.new(0,0,0)))
-		                end
-		                break
-		            else
-		                local part = Obj:FindFirstChildWhichIsA("BasePart", true)
-		                if part and nodes[part] then
-		                    if part.CanCollide then
-		                        plr.Character:MoveTo(part.Position)
-		                    else
-		                        plrRP.CFrame = CFrame.new((part.Position or Vector3.new(0,0,0)) + (Settings.Explorer.TeleportToOffset or Vector3.new(0,0,0)))
-		                    end
-		                    break
-		                elseif Obj.WorldPivot then
-		                    plrRP.CFrame = Obj.WorldPivot
-		                end
-		            end
-		        end
-		    end
+			local sList = selection.List
+			local plrRP = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
+
+			if not plrRP then return end
+			
+			local TeleportToOffset = Settings.Explorer.TeleportToOffset or Vector3.new(0,0,0)
+
+			for _,node in next, sList do
+				local Obj = node.Obj
+
+				if Obj:IsA("BasePart") then
+					if Obj.CanCollide then
+						plr.Character:MoveTo(Obj.Position)
+					else
+						plrRP.CFrame = CFrame.new(Obj.Position + TeleportToOffset)
+					end
+					break
+				elseif Obj:IsA("Model") then
+					if Obj.PrimaryPart then
+						if Obj.PrimaryPart.CanCollide then
+							plr.Character:MoveTo(Obj.PrimaryPart.Position)
+						else
+							plrRP.CFrame = CFrame.new(Obj.PrimaryPart.Position + TeleportToOffset)
+						end
+						break
+					else
+						local part = Obj:FindFirstChildWhichIsA("BasePart", true)
+						if part and nodes[part] then
+							if part.CanCollide then
+								plr.Character:MoveTo(part.Position)
+							else
+								plrRP.CFrame = CFrame.new(part.Position + TeleportToOffset)
+							end
+							break
+						elseif Obj.WorldPivot then
+							plrRP.CFrame = Obj.WorldPivot
+						end
+					end
+				end
+			end
 		end})
 		
 		local OldAnimation
