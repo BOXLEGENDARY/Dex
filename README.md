@@ -31,9 +31,9 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 ---
 
 ## Update Log ( in-dev 13 )
-9/10/25
+11/10/25
 - Move ALD to failback decompile
-- Fix teleport
+- Fix teleport (new)
 
 ---
 
