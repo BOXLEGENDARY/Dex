@@ -1482,8 +1482,12 @@ local function main()
 					break
 				end
 			end
-		end, OnRightClick = function()
+		end,
+        OnRightClick = function()
 			workspace.CurrentCamera.CameraSubject = plr.Character
+		OnClick = function()
+        if env.isonmobile then then
+            workspace.CurrentCamera.CameraSubject = plr.Character        
 		end})
 		
 		context:Register("3DVIEW_MODEL",{Name = "3D Preview Object", IconMap = Explorer.LegacyClassIcons, Icon = 5, OnClick = function()
