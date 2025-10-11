@@ -957,7 +957,7 @@ local function main()
 		if presentClasses["BasePart"] or presentClasses["Model"] then
 			context:AddRegistered("TELEPORT_TO")
 			context:AddRegistered("3DVIEW_MODEL")
-			context:AddRegistered("VIEW_OBJECT")
+			context:AddRegistered("VIEW_OBJECT", (function() if env.isonmobile then return true end end)())
 		end
 		if presentClasses["Tween"] then context:AddRegistered("PLAY_TWEEN") end
 		if presentClasses["Animation"] then
