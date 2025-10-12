@@ -29,8 +29,8 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 ---
 
 ## Update Log ( in-dev 13 )
-11/10/25
-- Fix teleport (new)
+13/10/25
+- clean script again i think
 
 ---
 
