@@ -1,5 +1,3 @@
-## ZDex
-- All public ZDex versions on GitHub different from the internal staff version.
 ## Script
 - RemoteSpy Version
 ```lua
