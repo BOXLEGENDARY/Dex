@@ -31,6 +31,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 ## Update Log ( in-dev 13 )
 13/10/25
 - clean script again i think
+- add env.executor
 
 ---
 
