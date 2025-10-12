@@ -13483,6 +13483,7 @@ local API, RM
 -- Default Settings
 DefaultSettings = (function()
 	local rgb = Color3.fromRGB
+
 	return {
 		Explorer = {
 			_Recurse = true,
