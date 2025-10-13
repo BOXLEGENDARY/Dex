@@ -4596,7 +4596,7 @@ local function main()
 	
 	ScriptViewer.ViewScript = function(scr)
 		local success, source = pcall(env.decompile or decompile or function() end, scr)
-		if success and source == env.env.isViableDecompileScript then
+		if success and source == env.isViableDecompileScript then
 			if not success or not source then
 				source, PreviousScr = "-- DEX - Source failed to decompile", nil
 			else
