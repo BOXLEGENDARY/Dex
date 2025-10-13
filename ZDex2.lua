@@ -4601,6 +4601,7 @@ local function main()
 		window:Show()
 	end
 	
+    -- Slow
 	--[[ScriptViewer.ViewScript = function(scr)
 		local success, source = pcall(env.decompile or decompile or function() end, scr)
 		
