@@ -4600,29 +4600,6 @@ local function main()
 		codeFrame:SetText(source:gsub("\0", "\\0"))
 		window:Show()
 	end
-	
-    -- Slow
-	--[[ScriptViewer.ViewScript = function(scr)
-		local success, source = pcall(env.decompile or decompile or function() end, scr)
-		
-		local viable = false
-		pcall(function() viable = env.isViableDecompileScript(scr) end)
-		
-		if success and viable then
-			if not source then
-				source = "-- DEX - Source failed to decompile"
-				PreviousScr = nil
-			else
-				PreviousScr = scr
-			end
-		else
-			source = "-- DEX - Failed to decompile (invalid or error)"
-			PreviousScr = nil
-		end
-		
-		codeFrame:SetText(source:gsub("\0", "\\0"))
-		window:Show()
-	end]]
 
 	ScriptViewer.Init = function()
 		window = Lib.Window.new()
