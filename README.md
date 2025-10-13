@@ -24,6 +24,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 - Console
 - [RemoteSpy](https://scriptblox.com/script/Universal-Script-BootSpy-12998)
 - SaveInstance
+- Lib
 
 ---
 
