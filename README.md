@@ -11,7 +11,6 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 ---
 
 ## Support
-`Unsupported in Roblox Studio`
 - Mobile/Pc
 
 ---
