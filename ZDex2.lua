@@ -14618,8 +14618,8 @@ Main = (function()
 		Main.Elevated = pcall(function() local a = service.CoreGui:GetFullName() end)
 		Main.InitEnv()
 		Main.SetupFilesystem()
-		if writefile and isfile and not isfile("dex/ZDexSettings.json") then
-			writefile("dex/ZDexSettings.json", Main.ExportSettings())
+		if env.writefile and env.isfile and not env.isfile("dex/ZDexSettings.json") then
+			env.writefile("dex/ZDexSettings.json", Main.ExportSettings())
 		end
 		Main.LoadSettings()
 		
