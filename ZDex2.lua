@@ -14616,12 +14616,12 @@ Main = (function()
 	
 	Main.Init = function()
 		Main.Elevated = pcall(function() local a = service.CoreGui:GetFullName() end)
+		Main.SetupFilesystem()
 		if writefile and isfile and not isfile("dex/ZDexSettings.json") then
 			writefile("dex/ZDexSettings.json", Main.ExportSettings())
 		end
-		Main.InitEnv()
 		Main.LoadSettings()
-		Main.SetupFilesystem()
+		Main.InitEnv()
 		
 		-- Load Lib
 		local intro = Main.CreateIntro("Initializing Library")
