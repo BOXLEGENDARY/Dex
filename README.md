@@ -53,7 +53,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 ## Credits
 [ZxL](https://youtu.be/dQw4w9WgXcQ?si=IkAXjfO3Uf2UOJ9V) - ZDex Owner
 
-[Moon](https://github.com/LorekeeperZinnia/Dex) - Original Dex
+[Moon](https://github.com/LorekeeperZinnia/Dex) - Dex
 
 [chillz](https://github.com/AZYsGithub/DexPlusPlus) - DexPlusPlus
 
