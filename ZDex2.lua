@@ -14620,8 +14620,8 @@ Main = (function()
 		if writefile and isfile and not isfile("dex/ZDexSettings.json") then
 			writefile("dex/ZDexSettings.json", Main.ExportSettings())
 		end
-		Main.LoadSettings()
 		Main.InitEnv()
+		Main.LoadSettings()
 		
 		-- Load Lib
 		local intro = Main.CreateIntro("Initializing Library")
