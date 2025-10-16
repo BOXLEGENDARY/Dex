@@ -14310,7 +14310,7 @@ Main = (function()
 				end
 
 			else
-				warn("failed to decode settings json")
+				warn("[ZDex] failed to decode settings json")
 			end
 		else
 			Main.ResetSettings()
