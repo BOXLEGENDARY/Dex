@@ -992,7 +992,7 @@ local function main()
 		if presentClasses["LuaSourceContainer"] then
 			context:AddRegistered("VIEW_SCRIPT")
             context:AddRegistered("SAVE_SCRIPT")
-			context:AddRegistered("SAVE_BYTECODE", not presentClasses.isViableDecompileScript or env.getscriptbytecode == nil or env.writefile == nil)
+			context:AddRegistered("SAVE_BYTECODE")
 		end
 		
 		if sMap[nilNode] then
