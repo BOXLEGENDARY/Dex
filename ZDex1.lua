@@ -14115,7 +14115,7 @@ Main = (function()
 		env.loadfile = loadfile
 		env.movefileas = movefileas
 		env.saveinstance = saveinstance or (function()
-			--warn("No built-in saveinstance exists, using SynSaveInstance and wrapper...")
+			warn("[ZDex] No built-in saveinstance exists, using SynSaveInstance and wrapper...")
 			if game:GetService("RunService"):IsStudio() then return function() error("Cannot run in Roblox Studio!") end end
 			local Params = {
 				RepoURL = "https://raw.githubusercontent.com/BOXLEGENDARY/UniversalSynSaveInstance/main/",
@@ -14154,7 +14154,7 @@ Main = (function()
 		-- other
 		env.decompile = decompile or (function()
 			-- by lovrewe
-			--warn("No built-in decompiler exists, using Konstant decompiler...")
+			warn("[ZDex] No built-in decompiler exists, using Konstant decompiler...")
 			--assert(getscriptbytecode, "Exploit not supported.")
 			
 			if not env.getscriptbytecode then --[[warn('Konstant decompiler is not supported. "getscriptbytecode" is missing.')]] return end
