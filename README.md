@@ -30,7 +30,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ## Update Log ( in-dev 13 )
 17/10/25
-- disable Advanced Luau Decompiler (ALD) for some week because make Save Instance broken
+- Disable Advanced Luau Decompiler for a few weeks because it breaks SaveInstance.
 
 ---
 
