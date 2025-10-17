@@ -14153,56 +14153,52 @@ Main = (function()
 	
 		-- other
 		env.decompile = decompile or (function()
-			-- by lovrewe
-			warn("[ZDex] No built-in decompiler exists, using Konstant decompiler...")
-			--assert(getscriptbytecode, "Exploit not supported.")
-			
-			if not env.getscriptbytecode then --[[warn('Konstant decompiler is not supported. "getscriptbytecode" is missing.')]] return end
-
-			local API = "http://api.plusgiant5.com"
-
-			local last_call = 0
-
-			local request = env.request
-
-			local function call(konstantType, scriptPath)
-				local success, bytecode = pcall(env.getscriptbytecode, scriptPath)
-
-				if (not success) then
-					return `-- Failed to get script bytecode, error:\n\n--[[\n{bytecode}\n--]]`
-				end
-
-				local time_elapsed = os.clock() - last_call
-				if time_elapsed <= .5 then
-					task.wait(.5 - time_elapsed)
-				end
-
-				local httpResult = request({
-					Url = API .. konstantType,
-					Body = bytecode,
-					Method = "POST",
-					Headers = {
-						["Content-Type"] = "text/plain"
-					}
-				})
-
-				last_call = os.clock()
-
-				if (httpResult.StatusCode ~= 200) then
-					return `-- Error occurred while requesting Konstant API, error:\n\n--[[\n{httpResult.Body}\n--]]`
-				else
-					return httpResult.Body
-				end
-			end
-
-			local function decompile(scriptPath)
-				return call("/konstant/decompile", scriptPath)
-			end
-
-			getgenv().decompile = decompile
-			
-			env.decompile = decompile
-			return decompile
+            -- will fix later
+		    warn("[ZDex] No built-in decompiler exists, using Advanced Luau Decompiler...")
+		
+		    local Decompile
+		
+		    local Success, Decompile_Source = pcall(function()
+		        return game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/Advanced-Luau-Decompiler/main/init.lua", true)
+		    end)
+		
+		    if Success then
+		        local CONSTANTS = [[
+					local ENABLED_REMARKS = {
+				COLD_REMARK = false,
+				INLINE_REMARK = false -- currently unused
+			}
+			------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+			local DECOMPILER_TIMEOUT = 2 -- seconds
+			local READER_FLOAT_PRECISION = 7 -- up to 99
+			local DECOMPILER_MODE = "disasm" -- disasm/optdec
+			local SHOW_DEBUG_INFORMATION = true -- show trivial function and array allocation details
+			local SHOW_INSTRUCTION_LINES = true -- show lines as they are in the source code
+			local SHOW_OPERATION_NAMES = true
+			local SHOW_OPERATION_INDEX = true -- show instruction index. used in jumps #n.
+			local SHOW_TRIVIAL_OPERATIONS = true
+			local USE_TYPE_INFO = true -- allow adding types to function parameters (ex. p1: string, p2: number)
+			local LIST_USED_GLOBALS = true -- list all (non-Roblox!!) globals used in the script as a top comment
+			local RETURN_ELAPSED_TIME = true -- return time it took to finish processing the bytecode
+			local DECODE_AS_BASE64 = false -- Decodes the bytecode as base64 if it's returned as such.
+			local USE_IN_STUDIO = false -- Toggles Roblox Studio mode
+			------------------------------------------------------------------------------------------------------------------------------------------------------------------------]]
+		
+		        xpcall(function()
+		            Decompile = loadstring(
+		                string.gsub(
+		                    string.gsub(Decompile_Source, "return %(x %% 2^32%) // %(2^disp%)", "return math.floor((x %% 2^32) / (2^disp))", 1),
+		                    ";;CONSTANTS HERE;;",
+		                    CONSTANTS
+		                ),
+		                "Advanced-Luau-Decompiler"
+		            )()
+		        end, warn)
+		    end
+		
+		    local _ENV = getgenv and getgenv() or getfenv and getfenv(1) or _ENV
+		    _ENV.decompile = Decompile
+		    return Decompile
 		end)()
 		
 		env.getscriptbytecode = getscriptbytecode
