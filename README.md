@@ -30,7 +30,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ## Update Log ( in-dev 13 )
 17/10/25
-- now Advanced Luau Decompiler don't break saveinstante
+- now Advanced Luau Decompiler don't break saveinstance
 
 ---
 
