@@ -30,8 +30,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ## Update Log ( in-dev 13 )
 17/10/25
-- Disable Advanced Luau Decompiler for a few weeks because it breaks SaveInstance.
-- fix output remote spy
+- now Advanced Luau Decompiler don't break saveinstante
 
 ---
 
