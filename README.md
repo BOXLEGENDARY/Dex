@@ -45,7 +45,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 [![ALD License](https://img.shields.io/badge/ALD-License-green)](https://github.com/BOXLEGENDARY/Advanced-Luau-Decompiler/blob/main/LICENSE)
 
-[![USSI License](https://img.shields.io/badge/USSI-License-green)](https://github.com/BOXLEGENDARY/UniversalSynSaveInstance/blob/main/LICENSE)
+[![USSI License](https://img.shields.io/badge/USSI-License-green)](https://github.com/luau/UniversalSynSaveInstance/blob/main/LICENSE)
 
 ---
 
