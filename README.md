@@ -63,6 +63,6 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 [Advanced-Luau-Decompiler (ALD)](https://github.com/BOXLEGENDARY/Advanced-Luau-Decompiler)
 
-[UniversalSynapseSaveInstance (USSI)]([https://github.com/BOXLEGENDARY/UniversalSynSaveInstance)
+[UniversalSynapseSaveInstance (USSI)](https://github.com/BOXLEGENDARY/UniversalSynSaveInstance)
 
 ---
