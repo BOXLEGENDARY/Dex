@@ -992,7 +992,7 @@ local function main()
 		if presentClasses["LuaSourceContainer"] then
 			context:AddRegistered("VIEW_SCRIPT")
             context:AddRegistered("SAVE_SCRIPT")
-			context:AddRegistered("SAVE_BYTECODE")
+			context:AddRegistered("SAVE_BYTECODE", env.getscriptbytecode == nil)
 		end
 		
 		if sMap[nilNode] then
