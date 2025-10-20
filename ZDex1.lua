@@ -919,7 +919,16 @@ local function main()
 		for i = 1, #sList do
 			local node = sList[i]
 			local class = node.Class
-			if not class then class = node.Obj.ClassName node.Class = class end
+			local obj = node.Obj
+
+			if not presentClasses.isViableDecompileScript then
+				presentClasses.isViableDecompileScript = env.isViableDecompileScript(obj)
+			end
+			if not class then
+				class = obj.ClassName
+				node.Class = class
+			end
+
 			local curClass = apiClasses[class]
 			while curClass and not presentClasses[curClass.Name] do
 				presentClasses[curClass.Name] = true
@@ -991,8 +1000,8 @@ local function main()
 			context:AddRegistered("SELECT_ALL_CHARACTERS")
 		end
 		if presentClasses["LuaSourceContainer"] then
-			context:AddRegistered("VIEW_SCRIPT", env.isViableDecompileScript == nil)
-            context:AddRegistered("SAVE_SCRIPT", env.isViableDecompileScript == nil)
+			context:AddRegistered("VIEW_SCRIPT", not presentClasses.isViableDecompileScript)
+            context:AddRegistered("SAVE_SCRIPT", not presentClasses.isViableDecompileScript)
 			context:AddRegistered("SAVE_BYTECODE", env.getscriptbytecode == nil)
 		end
 		
