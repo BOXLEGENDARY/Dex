@@ -15047,7 +15047,7 @@ Main = (function()
 				intro.SetProgress("Fetching API, Please Wait.",0.4)
 			end,
 			function()
-				intro.SetProgress("Fetching API, still downloading. Please wait.",0.45)
+				intro.SetProgress("Fetching API, Still downloading, please wait.",0.45)
 			end
 		)
 		Lib.FastWait()
