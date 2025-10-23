@@ -4632,9 +4632,7 @@ local function main()
 
 		copy.MouseButton1Click:Connect(function()
 			local source = codeFrame:GetText()
-			if env.setclipboard then
-			    env.setclipboard(source)
-			end
+			env.setclipboard(source)
 		end)
 
 		local save = Instance.new("TextButton",window.GuiElems.Content)
