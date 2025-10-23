@@ -4624,7 +4624,6 @@ local function main()
 		codeFrame.Frame.Size = UDim2.new(1,0,1,-20)
 		codeFrame.Frame.Parent = window.GuiElems.Content
 		
-		-- TODO: REMOVE AND MAKE BETTER
 		local copy = Instance.new("TextButton", window.GuiElems.Content)
 		copy.BackgroundTransparency = 1
 		copy.Size = UDim2.new(0.5,0,0,20)
@@ -4633,7 +4632,9 @@ local function main()
 
 		copy.MouseButton1Click:Connect(function()
 			local source = codeFrame:GetText()
-			env.setclipboard(source)
+			if env.setclipboard then
+			    env.setclipboard(source)
+			end
 		end)
 
 		local save = Instance.new("TextButton",window.GuiElems.Content)
