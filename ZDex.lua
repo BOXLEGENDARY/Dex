@@ -15044,10 +15044,10 @@ Main = (function()
 		intro.SetProgress("Fetching API",0.35)
 		API = Main.FetchAPI(
 			function()
-				intro.SetProgress("Please Wait",0.4)
+				intro.SetProgress("Fetching API, Please Wait.",0.4)
 			end,
 			function()
-				intro.SetProgress("Keep Waiting",0.45)
+				intro.SetProgress("Fetching API, still downloading. Please wait.",0.45)
 			end
 		)
 		Lib.FastWait()
