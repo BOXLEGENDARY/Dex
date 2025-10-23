@@ -6060,7 +6060,7 @@ local function main()
 		toggleButton.BackgroundTransparency = 1
 		toggleButton.Position = UDim2.new(0, 0, 0, 0)
 		toggleButton.Size = UDim2.new(0.25, 0, 0, 20)
-		toggleButton.Text = "Toggle"
+		toggleButton.Text = "toggle"
 		toggleButton.TextColor3 = Color3.new(1, 1, 0)
 		
 		statusLabel = Instance.new("TextLabel", window.GuiElems.Content)
