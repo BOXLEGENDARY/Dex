@@ -953,7 +953,7 @@ local function main()
 		
 		context:AddDivider()
 		if expanded == Explorer.SearchExpanded then context:AddRegistered("CLEAR_SEARCH_AND_JUMP_TO") end
-		if env.setclipboard then context:AddRegistered("COPY_PATH") end
+		context:AddRegistered("COPY_PATH", env.setclipboard == nil)
 		context:AddRegistered("INSERT_OBJECT")
 		context:AddRegistered("SAVE_INST")
 		-- context:AddRegistered("CALL_FUNCTION")
