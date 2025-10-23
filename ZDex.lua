@@ -14652,17 +14652,17 @@ Main = (function()
 		
 		local ti = TweenInfo.new(0.4,Enum.EasingStyle.Quad,Enum.EasingDirection.Out)
 		tweenNumber(100,ti,function(val)
-					val = val/200
-				local start = NumberSequenceKeypoint.new(0,0)
-				local a1 = NumberSequenceKeypoint.new(val,0)
-				local a2 = NumberSequenceKeypoint.new(math.min(0.5,val+math.min(0.05,val)),1)
-				if a1.Time == a2.Time then a2 = a1 end
-				local b1 = NumberSequenceKeypoint.new(1-val,0)
-				local b2 = NumberSequenceKeypoint.new(math.max(0.5,1-val-math.min(0.05,val)),1)
-				if b1.Time == b2.Time then b2 = b1 end
-				local goal = NumberSequenceKeypoint.new(1,0)
-				backGradient.Transparency = NumberSequence.new({start,a1,a2,b2,b1,goal})
-				outlinesGradient.Transparency = NumberSequence.new({start,a1,a2,b2,b1,goal})
+			val = val/200
+			local start = NumberSequenceKeypoint.new(0,0)
+			local a1 = NumberSequenceKeypoint.new(val,0)
+			local a2 = NumberSequenceKeypoint.new(math.min(0.5,val+math.min(0.05,val)),1)
+			if a1.Time == a2.Time then a2 = a1 end
+			local b1 = NumberSequenceKeypoint.new(1-val,0)
+			local b2 = NumberSequenceKeypoint.new(math.max(0.5,1-val-math.min(0.05,val)),1)
+			if b1.Time == b2.Time then b2 = b1 end
+			local goal = NumberSequenceKeypoint.new(1,0)
+			backGradient.Transparency = NumberSequence.new({start,a1,a2,b2,b1,goal})
+			outlinesGradient.Transparency = NumberSequence.new({start,a1,a2,b2,b1,goal})
 		end)
 		
 		fastwait(0.4)
