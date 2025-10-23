@@ -24,8 +24,8 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 ---
 
 ## Update Log ( in-dev 13 )
-23/10/25
-- ZDex1 and ZDex2 now same
+24/10/25
+- Clean script again and next update clean script too
 
 ---
 
