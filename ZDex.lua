@@ -6121,7 +6121,7 @@ local function main()
 		local BootlegDebug = {}
 		local function Output(text)
 		    local oldText = codeFrame:GetText()
-		    local timestamp = os.date("[%H:%M:%S]")  -- เวลาแบบ [ชั่วโมง:นาที:วินาที]
+		    local timestamp = os.date("[%H:%M:%S]")
 		    local separator = "------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
 		    local newText = oldText .. "\n" .. timestamp .. "\n" .. text .. "\n" .. separator .. "\n"
 		    codeFrame:SetText(newText)
