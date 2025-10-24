@@ -6123,7 +6123,7 @@ local function main()
 		    local oldText = codeFrame:GetText()
 		    local timestamp = os.date("[%H:%M:%S]")
 		    local separator = "------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
-		    local newText = oldText .. "\n" .. timestamp .. "\n" .. text .. "\n" .. separator .. "\n"
+		    local newText = oldText .. "\n" .. timestamp .. "\n" .. text .. "\n\n" .. separator .. "\n"
 		    codeFrame:SetText(newText)
 		end
 
