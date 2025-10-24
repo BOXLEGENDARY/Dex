@@ -25,7 +25,7 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ## Update Log ( in-dev 13 )
 24/10/25
-- Clean script again
+- fix remote spy
 
 ---
 
