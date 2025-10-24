@@ -6120,11 +6120,8 @@ local function main()
 
 		local BootlegDebug = {}
 		local function Output(text)
-		    local oldText = codeFrame:GetText()
-		    local timestamp = os.date("[%H:%M:%S]")
-		    local separator = "------------------------------------------------------------------------------------------------------------------------------------------------------------------------"
-		    local newText = oldText .. "\n" .. timestamp .. "\n" .. text .. "\n\n" .. separator .. "\n"
-		    codeFrame:SetText(newText)
+			local oldText = codeFrame:GetText()
+			codeFrame:SetText(oldText.."\n"..text)
 		end
 
 		function BootlegDebug.getinfo(thread)
