@@ -6014,7 +6014,7 @@ local function main()
 	local window, codeFrame
 	local isRemoteSpyActive = false
 	local statusLabel
-	local RemoteSpyCon = {}
+	local connections = {}
 
 	RemoteSpy.Init = function()
 		window = Lib.Window.new()
@@ -6091,7 +6091,7 @@ local function main()
 				end
 			else
 				print("[ACTION] Deactivation sequence initiated. Commencing connection cleanup...")
-				for groupIndex, connList in pairs(RemoteSpyCon) do
+				for groupIndex, connList in pairs(connections) do
 					print(string.format("[ITER] Processing connection group #%s", tostring(groupIndex)))
 					for entryIndex, conn in pairs(connList) do
 						local typ = typeof(conn)
@@ -6121,7 +6121,7 @@ local function main()
 						end
 					end
 				end
-				RemoteSpyCon = {}
+				connections = {}
 				print("[CLEANUP] Connection registry reinitialized. Deactivation sequence completed.")
 			end
 		end)
@@ -6283,7 +6283,7 @@ local function main()
 
 		function EventMain(Event)
 		    Logger[Event] = 0
-		    RemoteSpyCon[Event] = RemoteSpyCon[Event] or {}
+		    connections[Event] = connections[Event] or {}
 		
 		    local conn = Event.OnClientEvent:Connect(function(...)
 		        local limit = Limits[Event.ClassName] or math.huge
@@ -6302,12 +6302,12 @@ local function main()
 		        end)
 		    end)
 		
-		    table.insert(RemoteSpyCon[Event], conn)
+		    table.insert(connections[Event], conn)
 		end
 		
 		function BEventMain(Event)
 		    Logger[Event] = 0
-		    RemoteSpyCon[Event] = RemoteSpyCon[Event] or {}
+		    connections[Event] = connections[Event] or {}
 		
 		    local conn = Event.Event:Connect(function(...)
 		        local limit = Limits[Event.ClassName] or math.huge
@@ -6326,13 +6326,13 @@ local function main()
 		        end)
 		    end)
 		
-		    table.insert(RemoteSpyCon[Event], conn)
+		    table.insert(connections[Event], conn)
 		end
 		
 		function FunctionMain(Func)
 		    -- We cannot obtain the old function of the RemoteFunction so we have to override it, Breaking SOME scripts and potentially getting you kicked
 		    Logger[Func] = 0
-		    RemoteSpyCon[Func] = RemoteSpyCon[Func] or {}
+		    connections[Func] = connections[Func] or {}
 		
 		    Func.OnClientInvoke = function(...)
 		        local limit = Limits[Func.ClassName] or math.huge
@@ -6356,7 +6356,7 @@ local function main()
 		function BFunctionMain(Func)
 		    -- We cannot obtain the old function of the BindableFunction so we have to override it, Breaking SOME scripts and potentially getting you kicked
 		    Logger[Func] = 0
-		    RemoteSpyCon[Func] = RemoteSpyCon[Func] or {}
+		    connections[Func] = connections[Func] or {}
 		
 		    Func.OnInvoke = function(...)
 		        local limit = Limits[Func.ClassName] or math.huge
