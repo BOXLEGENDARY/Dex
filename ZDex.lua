@@ -6300,7 +6300,6 @@ local function main()
 		    Logger[Func] = 0
 		    connections[Func] = connections[Func] or {}
 		
-		    local oldInvoke = Func.OnClientInvoke
 		    Func.OnClientInvoke = function(...)
 		        local limit = Limits[Func.ClassName] or math.huge
 		        if Logger[Func] > limit then
@@ -6332,7 +6331,6 @@ local function main()
 		    Logger[Func] = 0
 		    connections[Func] = connections[Func] or {}
 		
-		    local oldInvoke = Func.OnInvoke
 		    Func.OnInvoke = function(...)
 		        local limit = Limits[Func.ClassName] or math.huge
 		        if Logger[Func] > limit then
