@@ -6077,10 +6077,10 @@ local function main()
 			-- Update visual status indicator
 			statusLabel.TextColor3 = isRemoteSpyActive and Color3.new(0,1,0) or Color3.new(1,0,0)
 			statusLabel.Text = "Status: " .. (isRemoteSpyActive and "ON" or "OFF")
-			--print(string.format("[UI] StatusLabel updated: Text = \"%s\" | Color = %s",
+			--[[print(string.format("[UI] StatusLabel updated: Text = \"%s\" | Color = %s",
 				statusLabel.Text,
 				isRemoteSpyActive and "Color3(0,1,0)" or "Color3(1,0,0)")
-			)
+			)]]
 			if isRemoteSpyActive then
 				--print("[ACTION] Activation sequence initiated. Executing RemoteSpyFunctionality()...")
 				local ok, err = pcall(function() RemoteSpyFunctionality() end)
