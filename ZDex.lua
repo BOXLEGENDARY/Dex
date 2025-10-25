@@ -6354,7 +6354,6 @@ local function main()
 		
 		    table.insert(connections[Func], {
 		        revert = function()
-		            -- restore original handler (pcall to be safe)
 		            pcall(function() Func.OnClientInvoke = oldInvoke end)
 		        end
 		    })
