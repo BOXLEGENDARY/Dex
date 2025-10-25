@@ -29,11 +29,6 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ---
 
-## Other
-`Not everything in ZDex has been thoroughly tested.`
-
----
-
 ## License
 [![ZDex License](https://img.shields.io/badge/ZDex-License-green)](https://github.com/BOXLEGENDARY/ZDex/blob/main/LICENSE)
 
