@@ -6351,12 +6351,6 @@ local function main()
 		        end)
 		        return '1'
 		    end
-		
-		    table.insert(connections[Func], {
-		        revert = function()
-		            pcall(function() Func.OnClientInvoke = oldInvoke end)
-		        end
-		    })
 		end
 		
 		function BFunctionMain(Func)
@@ -6381,12 +6375,6 @@ local function main()
 		        end)
 		        return '1'
 		    end
-		
-		    table.insert(connections[Func], {
-		        revert = function()
-		            pcall(function() Func.OnInvoke = oldInvoke end)
-		        end
-		    })
 		end
 
 		local a,b,c,d = GetEvents(), GetFunctions(), GetBEvents(), GetBFunctions()
