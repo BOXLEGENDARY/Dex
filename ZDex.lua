@@ -55,7 +55,7 @@ local EmbeddedModules = {
 
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, ModelViewer, Console, RemoteSpy, SaveInstance, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, ModelViewer, Console, SaveInstance, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -79,7 +79,6 @@ local function initAfterMain()
 	ScriptViewer = Apps.ScriptViewer
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
-    RemoteSpy = Apps.RemoteSpy
 	SaveInstance = Apps.SaveInstance
 	Notebook = Apps.Notebook
 end
@@ -2645,7 +2644,7 @@ end,
 
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, ModelViewer, Console, RemoteSpy, SaveInstance, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, ModelViewer, Console, SaveInstance, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -2669,7 +2668,6 @@ local function initAfterMain()
 	ScriptViewer = Apps.ScriptViewer
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
-    RemoteSpy = Apps.RemoteSpy
 	SaveInstance = Apps.SaveInstance
 	Notebook = Apps.Notebook
 end
@@ -4572,7 +4570,7 @@ end,
 
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, ModelViewer, Console, RemoteSpy, SaveInstance, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, ModelViewer, Console, SaveInstance, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -4596,7 +4594,6 @@ local function initAfterMain()
 	ScriptViewer = Apps.ScriptViewer
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
-    RemoteSpy = Apps.RemoteSpy
 	SaveInstance = Apps.SaveInstance
 	Notebook = Apps.Notebook
 end
@@ -4784,7 +4781,7 @@ end,
 
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, ModelViewer, Console, RemoteSpy, SaveInstance, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, ModelViewer, Console, SaveInstance, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -4808,7 +4805,6 @@ local function initAfterMain()
 	ScriptViewer = Apps.ScriptViewer
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
-    RemoteSpy = Apps.RemoteSpy
 	SaveInstance = Apps.SaveInstance
 	Notebook = Apps.Notebook
 end
@@ -5188,7 +5184,7 @@ end,
 ]]
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, ModelViewer, Console, RemoteSpy, SaveInstance, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, ModelViewer, Console, SaveInstance, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -5212,7 +5208,6 @@ local function initAfterMain()
 	ScriptViewer = Apps.ScriptViewer
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
-    RemoteSpy = Apps.RemoteSpy
 	SaveInstance = Apps.SaveInstance
 	Notebook = Apps.Notebook
 end
@@ -5977,418 +5972,6 @@ end
 
 	return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
 end,
-["RemoteSpy"] = function()
--- Common Locals
-local Main,Lib,Apps,Settings
-local Explorer, Properties, ScriptViewer, ModelViewer, Console, RemoteSpyApp, SaveInstance, Notebook
-local API,RMD,env,service,plr,create,createSimple
-
-local function initDeps(data)
-	Main = data.Main
-	Lib = data.Lib
-	Apps = data.Apps
-	Settings = data.Settings
-
-	API = data.API
-	RMD = data.RMD
-	env = data.env
-	service = data.service
-	plr = data.plr
-	create = data.create
-	createSimple = data.createSimple
-end
-
-local function initAfterMain()
-	Explorer = Apps.Explorer
-	Properties = Apps.Properties
-	ScriptViewer = Apps.ScriptViewer
-	ModelViewer = Apps.ModelViewer
-	Console = Apps.Console
-    RemoteSpyApp = Apps.RemoteSpy
-	SaveInstance = Apps.SaveInstance
-	Notebook = Apps.Notebook
-end
-
-local function main()
-	local RemoteSpy = {}
-	local window, codeFrame
-	local isRemoteSpyActive = false
-	local statusLabel
-	local connections = {}
-
-	RemoteSpy.Init = function()
-		window = Lib.Window.new()
-		window:SetTitle("RemoteSpy")
-		window:Resize(500, 400)
-		RemoteSpy.Window = window
-
-		codeFrame = Lib.CodeFrame.new()
-		codeFrame.Frame.Position = UDim2.new(0, 0, 0, 20)
-		codeFrame.Frame.Size = UDim2.new(1, 0, 1, -20)
-		codeFrame.Frame.Parent = window.GuiElems.Content
-
-		-- Clear
-		local clear = Instance.new("TextButton", window.GuiElems.Content)
-		clear.BackgroundTransparency = 1
-		clear.Position = UDim2.new(0.25, 0, 0, 0)
-		clear.Size = UDim2.new(0.25, 0, 0, 20)
-		clear.Text = "Clear"
-		clear.TextColor3 = Color3.new(1, 1, 1)
-		clear.MouseButton1Click:Connect(function()
-			codeFrame:SetText("")
-		end)
-
-		-- Save
-		local save = Instance.new("TextButton", window.GuiElems.Content)
-		save.BackgroundTransparency = 1
-		save.Position = UDim2.new(0.5, 0, 0, 0)
-		save.Size = UDim2.new(0.25, 0, 0, 20)
-		save.Text = "Save"
-		save.TextColor3 = Color3.new(1, 1, 1)
-		save.MouseButton1Click:Connect(function()
-			local source = codeFrame:GetText()
-			local filename = "Place_"..game.PlaceId.."_Script_"..os.time()..".txt"
-			env.writefile(filename, source)
-			if env.movefileas then
-				env.movefileas(filename, ".txt")
-			end
-		end)
-
-		-- Toggle
-		local toggleButton = Instance.new("TextButton", window.GuiElems.Content)
-		toggleButton.BackgroundTransparency = 1
-		toggleButton.Position = UDim2.new(0, 0, 0, 0)
-		toggleButton.Size = UDim2.new(0.25, 0, 0, 20)
-		toggleButton.Text = "Toggle"
-		toggleButton.TextColor3 = Color3.new(1, 1, 1)
-		
-		statusLabel = Instance.new("TextLabel", window.GuiElems.Content)
-		statusLabel.BackgroundTransparency = 1
-		statusLabel.Position = UDim2.new(0.75, 0, 0, 0)
-		statusLabel.Size = UDim2.new(0.25, 0, 0, 20)
-		statusLabel.TextColor3 = Color3.new(1, 0, 0)
-		statusLabel.Text = "Status: OFF"
-
-		toggleButton.MouseButton1Click:Connect(function()
-			--print("[EVENT] ToggleButton: MouseButton1Click received.")
-			-- Toggle internal system state
-			isRemoteSpyActive = not isRemoteSpyActive
-			--print("[STATE] isRemoteSpyActive ->", isRemoteSpyActive and "ENABLED" or "DISABLED")
-			-- Update visual status indicator
-			statusLabel.TextColor3 = isRemoteSpyActive and Color3.new(0,1,0) or Color3.new(1,0,0)
-			statusLabel.Text = "Status: " .. (isRemoteSpyActive and "ON" or "OFF")
-			--[[print(string.format("[UI] StatusLabel updated: Text = \"%s\" | Color = %s",
-				statusLabel.Text,
-				isRemoteSpyActive and "Color3(0,1,0)" or "Color3(1,0,0)")
-			)]]
-			if isRemoteSpyActive then
-				--print("[ACTION] Activation sequence initiated. Executing RemoteSpyFunctionality()...")
-				local ok, err = pcall(function() RemoteSpyFunctionality() end)
-				if ok then
-					--print("[ACTION] Activation routine completed successfully.")
-				else
-					--print("[ERROR] Activation routine failed:", err)
-				end
-			else
-				--print("[ACTION] Deactivation sequence initiated. Commencing connection cleanup...")
-				for groupIndex, connList in pairs(connections) do
-					--print(string.format("[ITER] Processing connection group #%s", tostring(groupIndex)))
-					for entryIndex, conn in pairs(connList) do
-						local typ = typeof(conn)
-						--print(string.format("[INSPECT] Entry #%s: type = %s", tostring(entryIndex), typ))
-						if typ == "RBXScriptConnection" then
-							--print("[RC] RBXScriptConnection identified.")
-							if conn.Connected then
-								local success, disconnectErr = pcall(function() conn:Disconnect() end)
-								if success then
-									--print("[RC] Disconnection succeeded for entry #" .. tostring(entryIndex))
-								else
-									--print("[ERROR] Disconnection failed:", disconnectErr)
-								end
-							else
-								--print("[RC] Connection already inactive; skipping.")
-							end
-						elseif typ == "table" and type(conn.revert) == "function" then
-							--print(string.format("[RT] Revert-capable table identified (entry #%s). Executing revert().", tostring(entryIndex)))
-							local success, revertErr = pcall(conn.revert)
-							if success then
-								--print("[RT] Revert operation completed.")
-							else
-								--print("[ERROR] Revert operation failed:", revertErr)
-							end
-						else
-							--print(string.format("[WARN] Unrecognized connection type at entry #%s (%s)", tostring(entryIndex), typ))
-						end
-					end
-				end
-				connections = {}
-				--print("[CLEANUP] Connection registry reinitialized. Deactivation sequence completed.")
-			end
-		end)
-	end
-
-	function RemoteSpyFunctionality()
-		getgenv = getgenv or function() return getfenv(2) end
-		local Logger = {}
-		local Limits = {BindableEvent=3, BindableFunction=3, RemoteFunction=3, RemoteEvent=3}
-		local vers = ''
-
-		local function keyF(a)
-			return typeof(a) == 'number' and ('[%d] = '):format(a) or ('[\'%s\'] = '):format(tostring(a))
-		end
-		local function keyE(a,b)
-			if typeof(b):lower() == 'instance' then
-				return b.Name:gsub(' ','_')
-			elseif typeof(b) == 'boolean' then
-				return 'bool'..tostring(a)
-			elseif typeof(b) == 'string' then
-				return 'str'..tostring(a)
-			elseif typeof(b) == 'number' then
-				return 'num'..tostring(a)
-			elseif typeof(b) == 'table' then
-				return 'tbl'..tostring(a)
-			else
-				return typeof(b)..tostring(a)
-			end
-		end
-
-		local BootlegDebug = {}
-		local function Output(text)
-			local oldText = codeFrame:GetText()
-			codeFrame:SetText(oldText.."\n"..text)
-		end
-
-		function BootlegDebug.getinfo(thread)
-			local CurrentLine = tonumber(debug.info(thread,'l'))
-			local Source = debug.info(thread,'s')
-			local name = debug.info(thread,'n')
-			local numparams,isvrg = debug.info(thread,'a')
-			if #name==0 then name=nil end
-			return {['currentline']=CurrentLine,['Source']=Source,['name']=tostring(name),['numparams']=tonumber(numparams),['is_vararg']=isvrg and 1 or 0,['short_src']=tostring(Source:sub(1,60))}
-		end
-
-		local function GetFullName(instance)
-			local p = instance
-			local lo = {}
-			while (p~=game and p.Parent~=nil) do
-				table.insert(lo,p)
-				p = p.Parent
-			end
-			local fullName
-			if #lo==0 then
-				return "nil --[[ PARENTED TO NIL OR DESTROYED ]]"
-			end
-			if lo[#lo].ClassName~="Workspace" then
-				fullName = 'game:GetService("'..lo[#lo].ClassName..'")'
-			else
-				fullName = "workspace"
-			end
-			for i=#lo-1,1,-1 do
-				fullName = fullName..':FindFirstChild("'..lo[i].Name..'")'
-			end
-			return fullName
-		end
-
-		local function tableloop(tbl, indent, equal, meta)
-			meta = meta or 0
-			indent = indent or 0
-			local result = (not equal and string.rep('  ', indent) or '')..'{'
-			equal = false
-			if typeof(tbl)~='table' then
-				return Handle(tbl, indent)
-			end
-			local _AM=0
-			for key,value in pairs(tbl) do
-				_AM=_AM+1
-				if typeof(value)=='table' then
-					if getmetatable(value) then
-						result = result..string.rep('  ',indent)..'local meta'..(meta~=0 and tostring(meta) or '')..' = '..tableloop(getmetatable(value),indent,true,meta+1)
-						meta = meta+1
-					else
-						result=result..'\n'..(not equal and string.rep('  ',indent+1) or '')..keyF(key)..tableloop(value,indent+1,true,meta)
-					end
-				else
-					result=result..'\n'..(not equal and string.rep('  ',indent+1) or '')..keyF(key)..Handle(value,indent+1,keyE(key,value))..';'
-				end
-			end
-			return _AM>0 and (result..'\n'..string.rep('  ',indent)..'}') or '{}'
-		end
-
-		function Handle(data, indent, identifier)
-			local dataType = typeof(data)
-			local constructors = {
-				['string']=function(d) return "'"..d.."'" end,
-				['table']=function(d) return tableloop(d, indent and indent+1 or 1, identifier and true or false) end,
-				['function']=function(d) return string.format("function(%s) --[[ i forgor the source? ]] end", BootlegDebug.getinfo(d).numparams) end,
-				['number']=function(d) return tostring(d) end,
-				['Vector3']=function(d) return string.format("Vector3.new(%f,%f,%f)",d.X,d.Y,d.Z) end,
-				['Vector2']=function(d) return string.format("Vector2.new(%f,%f)",d.X,d.Y) end,
-				['UDim']=function(d) return string.format("UDim.new(%f,%f)",d.Scale,d.Offset) end,
-				['UDim2']=function(d) return string.format("UDim2.new(%f,%f,%f,%f)",d.X.Scale,d.X.Offset,d.Y.Scale,d.Y.Offset) end,
-				['CFrame']=function(d) local c={d:GetComponents()} return string.format("CFrame.new(%s)",table.concat(c,", ")) end,
-				['Color3']=function(d) return string.format("Color3.fromRGB(%d,%d,%d)",math.floor(d.R*255),math.floor(d.G*255),math.floor(d.B*255)) end,
-				['BrickColor']=function(d) return string.format("BrickColor.new('%s')",tostring(d)) end,
-				['Enum']=function(d) return tostring(d) end,
-				['EnumItem']=function(d) return tostring(d) end,
-				['Instance']=function(d) return GetFullName(d) end,
-				['buffer']=function(d) return string.rep('  ',indent)..('buffer.create(%d)'):format(buffer.len(d)) end,
-				['boolean']=function(d) return tostring(d) end
-			}
-			if constructors[dataType] then return constructors[dataType](data) else return tostring(typeof(data))..'.new('..tostring(data)..')' end
-		end
-
-		local function GetEvents()
-			local Events = {}
-			for _,v in ipairs(game:GetDescendants()) do
-				if v:IsA("RemoteEvent") or v:IsA("UnreliableRemoteEvent") then
-					if v:IsDescendantOf(game.Players.LocalPlayer) then table.insert(Events,v)
-					elseif not v:IsDescendantOf(game.Players) then table.insert(Events,v) end
-				end
-			end
-			return Events
-		end
-
-		local function GetBEvents()
-			local Events = {}
-			for _,v in ipairs(game:GetDescendants()) do
-				if v:IsA("BindableEvent") then
-					if v:IsDescendantOf(game.Players.LocalPlayer) then table.insert(Events,v)
-					elseif not v:IsDescendantOf(game.Players) then table.insert(Events,v) end
-				end
-			end
-			return Events
-		end
-
-		local function GetFunctions()
-			local Funcs = {}
-			for _,v in ipairs(game:GetDescendants()) do
-				if v:IsA("RemoteFunction") then
-					if v:IsDescendantOf(game.Players.LocalPlayer) then table.insert(Funcs,v)
-					elseif not v:IsDescendantOf(game.Players) then table.insert(Funcs,v) end
-				end
-			end
-			return Funcs
-		end
-
-		local function GetBFunctions()
-			local Funcs = {}
-			for _,v in ipairs(game:GetDescendants()) do
-				if v:IsA("BindableFunction") then
-					if v:IsDescendantOf(game.Players.LocalPlayer) then table.insert(Funcs,v)
-					elseif not v:IsDescendantOf(game.Players) then table.insert(Funcs,v) end
-				end
-			end
-			return Funcs
-		end
-
-		function EventMain(Event)
-		    Logger[Event] = 0
-		    connections[Event] = connections[Event] or {}
-		
-		    local conn = Event.OnClientEvent:Connect(function(...)
-		        local limit = Limits[Event.ClassName] or math.huge
-		        if Logger[Event] > limit then
-		            return
-		        end
-		        Logger[Event] = Logger[Event] + 1
-		        local StrArgs = tableloop({...})
-		        local FullData = string.format(
-		            '--[[ Script generated by RemoteSpy %s\nRemote Type: %s ]]\n\nlocal args = %s\n\n--[[ THE FOLLOWING LINE CANNOT BE EXECUTED BY YOUR EXECUTOR, AS ITS JUST DEMONSTRATING WHAT THE SERVER DID. ]]\n\n%s:FireClient(game:GetService("Players").%s, unpack(args));',
-		            vers, Event.ClassName, StrArgs, GetFullName(Event), game:GetService("Players").LocalPlayer.Name
-		        )
-		        Output(FullData)
-		        task.delay(1, function()
-		            Logger[Event] = Logger[Event] - 1
-		        end)
-		    end)
-		
-		    table.insert(connections[Event], conn)
-		end
-		
-		function BEventMain(Event)
-		    Logger[Event] = 0
-		    connections[Event] = connections[Event] or {}
-		
-		    local conn = Event.Event:Connect(function(...)
-		        local limit = Limits[Event.ClassName] or math.huge
-		        if Logger[Event] > limit then
-		            return
-		        end
-		        Logger[Event] = Logger[Event] + 1
-		        local StrArgs = tableloop({...})
-		        local FullData = string.format(
-		            '--[[ Script generated by RemoteSpy %s\nRemote Type: %s ]]\n\nlocal args = %s\n\n--[[ THE FOLLOWING LINE **CAN** BE EXECUTED BY YOUR EXECUTOR AS THE FOLLOWING REMOTE IS A BINDABLE EVENT. ]]\n\n%s:Fire(unpack(args));',
-		            vers, Event.ClassName, StrArgs, GetFullName(Event)
-		        )
-		        Output(FullData)
-		        task.delay(1, function()
-		            Logger[Event] = Logger[Event] - 1
-		        end)
-		    end)
-		
-		    table.insert(connections[Event], conn)
-		end
-		
-		function FunctionMain(Func)
-		    -- We cannot obtain the old function of the RemoteFunction so we have to override it, Breaking SOME scripts and potentially getting you kicked
-		    Logger[Func] = 0
-		    connections[Func] = connections[Func] or {}
-		
-		    Func.OnClientInvoke = function(...)
-		        local limit = Limits[Func.ClassName] or math.huge
-		        if Logger[Func] > limit then
-		            return
-		        end
-		        Logger[Func] = Logger[Func] + 1
-		        local StrArgs = tableloop({...})
-		        local FullData = string.format(
-		            '--[[ Script generated by RemoteSpy %s\nRemote Type: %s ]]\n\nlocal args = %s\n\n--[[ THE FOLLOWING LINE CANNOT BE EXECUTED BY YOUR EXECUTOR, AS ITS JUST DEMONSTRATING WHAT THE SERVER DID. ]]\n\n%s:InvokeClient(game:GetService("Players").%s, unpack(args));',
-		            vers, Func.ClassName, StrArgs, GetFullName(Func), game:GetService("Players").LocalPlayer.Name
-		        )
-		        Output(FullData)
-		        task.delay(1, function()
-		            Logger[Func] = Logger[Func] - 1
-		        end)
-		        return '1'
-		    end
-		end
-		
-		function BFunctionMain(Func)
-		    -- We cannot obtain the old function of the BindableFunction so we have to override it, Breaking SOME scripts and potentially getting you kicked
-		    Logger[Func] = 0
-		    connections[Func] = connections[Func] or {}
-		
-		    Func.OnInvoke = function(...)
-		        local limit = Limits[Func.ClassName] or math.huge
-		        if Logger[Func] > limit then
-		            return
-		        end
-		        Logger[Func] = Logger[Func] + 1
-		        local StrArgs = tableloop({...})
-		        local FullData = string.format(
-		            '--[[ Script generated by RemoteSpy %s\nRemote Type: %s ]]\n\nlocal args = %s\n\n--[[ THE FOLLOWING LINE **CAN** BE EXECUTED BY YOUR EXECUTOR, BUT A RETURN VALUE AND MAIN FUNCTIONALITY IS MISSING FOR THIS FUNCTIONS SO IT MIGHT NOT DO WHAT YOU EXPECT. ]]\n\n%s:Invoke(unpack(args));',
-		            vers, Func.ClassName, StrArgs, GetFullName(Func)
-		        )
-		        Output(FullData)
-		        task.delay(1, function()
-		            Logger[Func] = Logger[Func] - 1
-		        end)
-		        return '1'
-		    end
-		end
-
-		local a,b,c,d = GetEvents(), GetFunctions(), GetBEvents(), GetBFunctions()
-		for _,v in pairs(a) do EventMain(v) end
-		for _,v in pairs(b) do FunctionMain(v) end
-		for _,v in pairs(c) do BEventMain(v) end
-		for _,v in pairs(d) do BFunctionMain(v) end
-	end
-
-	return RemoteSpy
-end
-
-return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
-end,
 ["SaveInstance"] = function()
 --[[
 	Save Instance App Module
@@ -6398,7 +5981,7 @@ end,
 
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, ModelViewer, Console, RemoteSpy, SaveInstance, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, ModelViewer, Console, SaveInstance, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -6422,7 +6005,6 @@ local function initAfterMain()
 	ScriptViewer = Apps.ScriptViewer
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
-    RemoteSpy = Apps.RemoteSpy
 	SaveInstance = Apps.SaveInstance
 	Notebook = Apps.Notebook
 end
@@ -6698,7 +6280,7 @@ end,
 
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, ModelViewer, Console, RemoteSpy, SaveInstance, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, ModelViewer, Console, SaveInstance, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -6722,7 +6304,6 @@ local function initAfterMain()
 	ScriptViewer = Apps.ScriptViewer
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
-    RemoteSpy = Apps.RemoteSpy
 	SaveInstance = Apps.SaveInstance
 	Notebook = Apps.Notebook
 end
@@ -13894,7 +13475,7 @@ cloneref = cloneref or function(ref)
 end
 
 -- Main vars
-local Main, Explorer, Properties, ScriptViewer, ModelViewer, Console, RemoteSpy, SaveInstance, DefaultSettings, Notebook, Serializer, Lib
+local Main, Explorer, Properties, ScriptViewer, ModelViewer, Console, SaveInstance, DefaultSettings, Notebook, Serializer, Lib
 local API, RM
 
 -- Default Settings
@@ -14020,7 +13601,7 @@ end
 Main = (function()
 	local Main = {}
 	
-	Main.ModuleList = {"Explorer","Properties","ScriptViewer","ModelViewer","Console","RemoteSpy","SaveInstance"}
+	Main.ModuleList = {"Explorer","Properties","ScriptViewer","ModelViewer","Console","SaveInstance"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
 	Main.Version = "in-dev 13"
@@ -14139,7 +13720,6 @@ Main = (function()
 		ScriptViewer = Apps.ScriptViewer
 		ModelViewer = Apps.ModelViewer
 		Console = Apps.Console
-        RemoteSpy = Apps.RemoteSpy
 		SaveInstance = Apps.SaveInstance
 		Notebook = Apps.Notebook
 		local appTable = {
@@ -14148,7 +13728,6 @@ Main = (function()
 			ScriptViewer = ScriptViewer,
 			ModelViewer = ModelViewer,
 			Console = Console,
-            RemoteSpy = RemoteSpy,
 			SaveInstance = SaveInstance,
 			Notebook = Notebook
 		}
@@ -15000,8 +14579,6 @@ Main = (function()
 		Main.CreateApp({Name = "3D Viewer", IconMap = Explorer.LegacyClassIcons, Icon = 54, Window = ModelViewer.Window})
 
 		Main.CreateApp({Name = "Console", IconMap = Main.LargeIcons, Icon = "Console", Window = Console.Window})
-		
-		Main.CreateApp({Name = "Remote Spy", IconMap = Main.LargeIcons, Icon = "Watcher", Window = RemoteSpy.Window})
 
 		Main.CreateApp({Name = "Save Instance", IconMap = Main.LargeIcons, Icon = "Script", Window = SaveInstance.Window})
 
@@ -15153,7 +14730,6 @@ Main = (function()
 		ScriptViewer.Init()
 		ModelViewer.Init()
 		Console.Init()
-        RemoteSpy.Init()
 		SaveInstance.Init()
 		Lib.FastWait()
 		
