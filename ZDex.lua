@@ -6070,25 +6070,59 @@ local function main()
 		statusLabel.Text = "Status: OFF"
 
 		toggleButton.MouseButton1Click:Connect(function()
+			print("[EVENT] ToggleButton: MouseButton1Click received.")
+			-- Toggle internal system state
 			isRemoteSpyActive = not isRemoteSpyActive
+			print("[STATE] isRemoteSpyActive ->", isRemoteSpyActive and "ENABLED" or "DISABLED")
+			-- Update visual status indicator
 			statusLabel.TextColor3 = isRemoteSpyActive and Color3.new(0,1,0) or Color3.new(1,0,0)
 			statusLabel.Text = "Status: " .. (isRemoteSpyActive and "ON" or "OFF")
-
+			print(string.format("[UI] StatusLabel updated: Text = \"%s\" | Color = %s",
+				statusLabel.Text,
+				isRemoteSpyActive and "Color3(0,1,0)" or "Color3(1,0,0)")
+			)
 			if isRemoteSpyActive then
-				RemoteSpyFunctionality()
+				print("[ACTION] Activation sequence initiated. Executing RemoteSpyFunctionality()...")
+				local ok, err = pcall(function() RemoteSpyFunctionality() end)
+				if ok then
+					print("[ACTION] Activation routine completed successfully.")
+				else
+					print("[ERROR] Activation routine failed:", err)
+				end
 			else
-				for _, connList in pairs(connections) do
-					for _, conn in pairs(connList) do
-						if typeof(conn) == "RBXScriptConnection" then
+				print("[ACTION] Deactivation sequence initiated. Commencing connection cleanup...")
+				for groupIndex, connList in pairs(connections) do
+					print(string.format("[ITER] Processing connection group #%s", tostring(groupIndex)))
+					for entryIndex, conn in pairs(connList) do
+						local typ = typeof(conn)
+						print(string.format("[INSPECT] Entry #%s: type = %s", tostring(entryIndex), typ))
+						if typ == "RBXScriptConnection" then
+							print("[RC] RBXScriptConnection identified.")
 							if conn.Connected then
-								pcall(function() conn:Disconnect() end)
+								local success, disconnectErr = pcall(function() conn:Disconnect() end)
+								if success then
+									print("[RC] Disconnection succeeded for entry #" .. tostring(entryIndex))
+								else
+									print("[ERROR] Disconnection failed:", disconnectErr)
+								end
+							else
+								print("[RC] Connection already inactive; skipping.")
 							end
-						elseif typeof(conn) == "table" and conn.revert then
-							pcall(conn.revert)
+						elseif typ == "table" and type(conn.revert) == "function" then
+							print(string.format("[RT] Revert-capable table identified (entry #%s). Executing revert().", tostring(entryIndex)))
+							local success, revertErr = pcall(conn.revert)
+							if success then
+								print("[RT] Revert operation completed.")
+							else
+								print("[ERROR] Revert operation failed:", revertErr)
+							end
+						else
+							print(string.format("[WARN] Unrecognized connection type at entry #%s (%s)", tostring(entryIndex), typ))
 						end
 					end
 				end
 				connections = {}
+				print("[CLEANUP] Connection registry reinitialized. Deactivation sequence completed.")
 			end
 		end)
 	end
