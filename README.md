@@ -17,15 +17,15 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 - ~~SecretServicePanel~~
 - ModelView
 - Console
-- [RemoteSpy](https://scriptblox.com/script/Universal-Script-BootSpy-12998)
+- ~~[RemoteSpy](https://scriptblox.com/script/Universal-Script-BootSpy-12998)~~
 - SaveInstance
 - Lib
 
 ---
 
 ## Update Log ( in-dev 13 )
-24/10/25
-- fix remote spy
+25/10/25
+- remove RemoteSpy because too much problem
 
 ---
 
