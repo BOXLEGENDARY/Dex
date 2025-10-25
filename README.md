@@ -25,12 +25,13 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/mai
 
 ## Update Log ( in-dev 13 )
 24/10/25
-- fix remote spy
+- fix remote spy (1/2)
 
 ---
 
 ## Log
-RemoteSpy will be fix later
+25/10/25
+RemoteSpy will be fix later (2/2)
 
 ---
 
