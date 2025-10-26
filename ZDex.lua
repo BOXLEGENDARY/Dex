@@ -13693,28 +13693,14 @@ Main = (function()
 			local moduleData = control.Main()
 			Apps[name] = moduleData
 			return moduleData
-		elseif Main.Elevated and not EmbeddedModules then
-			-- Download and cache
-			local s, moduleStr = pcall(oldgame.HttpGet, game, "https://api.github.com/repos/"..Main.GitRepoName.."/Modules/"..name..".lua")
-			if not s then Main.Error("Failed to get external module data of " .. name) end
-	
-			env.writefile(filePath, moduleStr)
-			local control = loadstring(moduleStr)()
-	
-			Main.AppControls[name] = control
-			control.InitDeps(Main.GetInitDeps())
-	
-			local moduleData = control.Main()
-			Apps[name] = moduleData
-			return moduleData
 		else
 			local module = script:WaitForChild("Modules"):WaitForChild(name, 2)
 			if not module then Main.Error("CANNOT FIND MODULE " .. name) end
-	
+			
 			local control = require(module)
 			Main.AppControls[name] = control
 			control.InitDeps(Main.GetInitDeps())
-	
+			
 			local moduleData = control.Main()
 			Apps[name] = moduleData
 			return moduleData
