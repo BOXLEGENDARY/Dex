@@ -14,8 +14,6 @@
 ## License
 [![ZDex License](https://img.shields.io/badge/ZDex-License-green)](https://github.com/BOXLEGENDARY/ZDex/blob/main/LICENSE)
 
-[![ALD License](https://img.shields.io/badge/ALD-License-green)](https://github.com/BOXLEGENDARY/Advanced-Luau-Decompiler/blob/main/LICENSE)
-
 [![USSI License](https://img.shields.io/badge/USSI-License-green)](https://github.com/luau/UniversalSynSaveInstance/blob/main/LICENSE)
 
 ---
