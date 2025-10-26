@@ -13609,6 +13609,7 @@ Main = (function()
 	Main.AppControls = {}
 	Main.Apps = Apps
 	Main.MenuApps = {}
+	Main.GitRepoName = "BOXLEGENDARY/ZDex"
 	
 	Main.DisplayOrders = {
 		SideWindow = 8,
