@@ -13693,7 +13693,7 @@ Main = (function()
 			local moduleData = control.Main()
 			Apps[name] = moduleData
 			return moduleData
-		elseif not Main.Elevated then
+		elseif Main.Elevated and not EmbeddedModules then
 			-- Download and cache
 			local s, moduleStr = pcall(oldgame.HttpGet, game, "https://api.github.com/repos/"..Main.GitRepoName.."/Modules/"..name..".lua")
 			if not s then Main.Error("Failed to get external module data of " .. name) end
