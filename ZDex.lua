@@ -13678,38 +13678,33 @@ Main = (function()
 	end
 	
 	Main.LoadModule = function(name)
-		local control
-	
 		if Main.Elevated then -- If you don't have filesystem api then ur outta luck tbh
+			local control
+			
 			if EmbeddedModules then -- Offline Modules
 				control = EmbeddedModules[name]()
-				if not control then 
-					Main.Error("Missing Embedded Module: "..name) 
-				end
-			else
-				local s, moduleStr = pcall(oldgame.HttpGet, game, "https://api.github.com/repos/"..Main.GitRepoName.."/Modules/"..name..".lua")
-				if not s then 
-					Main.Error("Failed to get external module data of "..name) 
-				end
-	
-				env.writefile(filePath, moduleStr)
-				control = loadstring(moduleStr)()
+				
+				if not control then Main.Error("Missing Embedded Module: "..name) end
 			end
+			
+			Main.AppControls[name] = control
+			control.InitDeps(Main.GetInitDeps())
+
+			local moduleData = control.Main()
+			Apps[name] = moduleData
+			return moduleData
 		else
 			local module = script:WaitForChild("Modules"):WaitForChild(name, 2)
-			if not module then 
-				Main.Error("CANNOT FIND MODULE "..name) 
-			end
-			control = require(module)
+			if not module then Main.Error("CANNOT FIND MODULE " .. name) end
+			
+			local control = require(module)
+			Main.AppControls[name] = control
+			control.InitDeps(Main.GetInitDeps())
+			
+			local moduleData = control.Main()
+			Apps[name] = moduleData
+			return moduleData
 		end
-	
-		-- Initialize common steps
-		Main.AppControls[name] = control
-		control.InitDeps(Main.GetInitDeps())
-	
-		local moduleData = control.Main()
-		Apps[name] = moduleData
-		return moduleData
 	end
 	
 	Main.LoadModules = function()
