@@ -25,7 +25,7 @@ for filename in files:
     addModuleFile("Modules/" + filename)
 
 embedStr = embedStr + "}"
-embedStr = embedStr + "\n" + readfile("main.lua")
+embedStr = embedStr + "\n\n" + readfile("main.lua")
 
 file = open("out.lua","w")
 file.write(embedStr)
