@@ -27,6 +27,6 @@ for filename in files:
 embedStr = embedStr + "}"
 embedStr = embedStr + "\n" + readfile("main.lua")
 
-file = open("ZDex.lua","w")
+file = open("out.lua","w")
 file.write(embedStr)
 file.close()
