@@ -1,4 +1,3 @@
-["Explorer"] = function()
 --[[
 	Explorer App Module
 	
