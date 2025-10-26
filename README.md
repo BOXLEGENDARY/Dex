@@ -1,18 +1,4 @@
-## Modules
-- Explorer
-- Properties
-- ScriptView
-- ~~SecretServicePanel~~
-- ModelView
-- Console
-- ~~[RemoteSpy](https://scriptblox.com/script/Universal-Script-BootSpy-12998)~~
-- SaveInstance
-- Lib
-
----
-
-## Update Log ( in-dev 13 )
-25/10/25
+## Update Log
 - remove RemoteSpy because too much problem
 
 ---
