@@ -30,7 +30,6 @@
 ---
 
 ## Third Party Components
-~~Konstant Decompiler~~
 
 [Advanced-Luau-Decompiler (ALD)](https://github.com/BOXLEGENDARY/Advanced-Luau-Decompiler)
 
