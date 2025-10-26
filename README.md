@@ -1,8 +1,3 @@
-## Support
-- Mobile/Pc
-
----
-
 ## Modules
 - Explorer
 - Properties
