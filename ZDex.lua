@@ -5174,7 +5174,7 @@ local function main()
 	return ModelViewer
 end
 
-	return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
+return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
 end,
 ["Console"] = function()
 --[[
@@ -5970,7 +5970,7 @@ local function main()
 	return Console
 end
 
-	return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
+return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
 end,
 ["SaveInstance"] = function()
 --[[
@@ -6269,7 +6269,7 @@ local function main()
 	return SaveInstance
 end
 
-	return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
+return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
 end,
 ["Lib"] = function()
 --[[
