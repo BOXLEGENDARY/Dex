@@ -1,10 +1,3 @@
-## Loadstring
-```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/ZDex/main/ZDex.lua"))()
-```
-
----
-
 ## Support
 - Mobile/Pc
 
