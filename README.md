@@ -1,6 +1,3 @@
-# ZDex
-normal dex
-
 ## Modules
 - Explorer
 - Properties
