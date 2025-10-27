@@ -2,7 +2,7 @@
 
 
 
-local E = getgenv and getgenv() or getfenv and getfenv(1) or _ENV or _G; if E.ZDex_load then return end; E.ZDex_load = true
+local E = getgenv and getgenv() or getfenv and getfenv(1) or _ENV or _G; if E.Dex_load then return end; E.Dex_load = true
 
 wait(0.1)
 
