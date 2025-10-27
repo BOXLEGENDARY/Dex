@@ -7,7 +7,7 @@
 ---
 
 ## License
-[![Dex License](https://img.shields.io/badge/ZDex-License-green)](https://github.com/BOXLEGENDARY/Dex/blob/main/LICENSE)
+[![Dex License](https://img.shields.io/badge/Dex-License-green)](https://github.com/BOXLEGENDARY/Dex/blob/main/LICENSE)
 
 ---
 
