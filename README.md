@@ -1,4 +1,4 @@
-## Update Log ( Repo )
+## Update Log ( 0.0.1 )
 - reset version
 
 ---
