@@ -1,7 +1,3 @@
-## Current Version - 0.0.1
-
----
-
 ## To Build
 1. Download this repository
 2. Ensure you have Python 3 (I use 3.9.0)
