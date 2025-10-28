@@ -6,11 +6,6 @@
 
 ---
 
-## License
-[![Dex License](https://img.shields.io/badge/Dex-License-green)](https://github.com/BOXLEGENDARY/Dex/blob/main/LICENSE)
-
----
-
 ## Credits
 [ZxL](https://youtu.be/dQw4w9WgXcQ?si=IkAXjfO3Uf2UOJ9V) - Dex Developer
 
