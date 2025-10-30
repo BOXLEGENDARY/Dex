@@ -163,7 +163,7 @@ Main = (function()
 	Main.ModuleList = {"Explorer","Properties","ScriptViewer","ModelViewer","Console","SaveInstance"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
-	Main.Version = "0.0.1"
+	Main.Version = "0.0.2"
 	Main.Mouse = plr:GetMouse()
 	Main.AppControls = {}
 	Main.Apps = Apps
@@ -489,7 +489,7 @@ Main = (function()
 		recur(DefaultSettings,Settings)
 	end
 	
-	Main.FetchAPI = function(callbackiflong, callbackiftoolong)
+	Main.FetchAPI = function(toolong)
 		local downloaded = false
 		local api, rawAPI
 	
@@ -504,11 +504,8 @@ Main = (function()
 			end
 	
 			task.spawn(function()
-				task.wait(10)
-				if not downloaded and callbackiflong then callbackiflong() end
-	
-				task.wait(20)
-				if not downloaded and callbackiftoolong then callbackiftoolong() end
+				task.wait(15)
+				if not downloaded and toolong then toolong() end
 			end)
 	
 			rawAPI = rawAPI or game:HttpGet("http://setup.roblox.com/"..Main.RobloxVersion.."-API-Dump.json")
@@ -1259,10 +1256,7 @@ Main = (function()
 		intro.SetProgress("Fetching API",0.35)
 		API = Main.FetchAPI(
 			function()
-				intro.SetProgress("Fetching API, Please Wait.",0.4)
-			end,
-			function()
-				intro.SetProgress("Fetching API, Still downloading, please wait.",0.45)
+				intro.SetProgress("API Is Still Downloading...",0.4)
 			end
 		)
 		Lib.FastWait()
