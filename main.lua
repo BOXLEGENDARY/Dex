@@ -163,7 +163,7 @@ Main = (function()
 	Main.ModuleList = {"Explorer","Properties","ScriptViewer","ModelViewer","Console","SaveInstance"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
-	Main.Version = "0.0.2"
+	Main.Version = "0.0.3"
 	Main.Mouse = plr:GetMouse()
 	Main.AppControls = {}
 	Main.Apps = Apps
@@ -368,7 +368,6 @@ Main = (function()
 		env.setclipboard = setclipboard or toclipboard or set_clipboard or (Clipboard and Clipboard.set)
 		env.getnilinstances = getnilinstances or get_nil_instances
 		env.getloadedmodules = getloadedmodules
-		env.executor = identifyexecutor()	
 
 		env.isViableDecompileScript = function(obj)
 			if obj:IsA("ModuleScript") then
@@ -383,7 +382,11 @@ Main = (function()
 	
 		if identifyexecutor then
 			Main.Executor = identifyexecutor()
+		else
+			Main.Executor = "???"
 		end
+		
+		env.executor = Main.Executor
 	
 		Main.GuiHolder = Main.Elevated and service.CoreGui or plr:FindFirstChildWhichIsA("PlayerGui")
 	
