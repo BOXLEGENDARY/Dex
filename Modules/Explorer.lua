@@ -1160,14 +1160,11 @@ local function main()
 			end
 		end})
 
-		-- if it works, it's ok
 		context:Register("TELEPORT_TO",{Name = "Teleport To", IconMap = Explorer.MiscIcons, Icon = "TeleportTo", OnClick = function()
 			local sList = selection.List
 			local plrRP = plr.Character and plr.Character:FindFirstChild("HumanoidRootPart")
 
 			if not plrRP then return end
-			
-			local TeleportToOffset = Settings.Explorer.TeleportToOffset or Vector3.new(0,0,0)
 
 			for _,node in next, sList do
 				local Obj = node.Obj
@@ -1176,7 +1173,7 @@ local function main()
 					if Obj.CanCollide then
 						plr.Character:MoveTo(Obj.Position)
 					else
-						plrRP.CFrame = CFrame.new(Obj.Position + TeleportToOffset)
+						plrRP.CFrame = CFrame.new(Obj.Position + Settings.Explorer.TeleportToOffset)
 					end
 					break
 				elseif Obj:IsA("Model") then
@@ -1184,7 +1181,7 @@ local function main()
 						if Obj.PrimaryPart.CanCollide then
 							plr.Character:MoveTo(Obj.PrimaryPart.Position)
 						else
-							plrRP.CFrame = CFrame.new(Obj.PrimaryPart.Position + TeleportToOffset)
+							plrRP.CFrame = CFrame.new(Obj.PrimaryPart.Position + Settings.Explorer.TeleportToOffset)
 						end
 						break
 					else
@@ -1193,7 +1190,7 @@ local function main()
 							if part.CanCollide then
 								plr.Character:MoveTo(part.Position)
 							else
-								plrRP.CFrame = CFrame.new(part.Position + TeleportToOffset)
+								plrRP.CFrame = CFrame.new(part.Position + Settings.Explorer.TeleportToOffset)
 							end
 							break
 						elseif Obj.WorldPivot then
