@@ -163,7 +163,7 @@ Main = (function()
 	Main.ModuleList = {"Explorer","Properties","ScriptViewer","ModelViewer","Console","SaveInstance"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
-	Main.Version = "0.0.3"
+	Main.Version = "0.0.4"
 	Main.Mouse = plr:GetMouse()
 	Main.AppControls = {}
 	Main.Apps = Apps
@@ -400,6 +400,12 @@ Main = (function()
 			serializedColor.G = val.G
 			serializedColor.B = val.B
 			return serializedColor
+		elseif typeof(val) == "Vector3" then
+			local serializedVector = {}
+			serializedVector.X = val.X
+			serializedVector.Y = val.Y
+			serializedVector.Z = val.Z
+			return serializedVector
 		else
 			return val
 		end
@@ -409,6 +415,8 @@ Main = (function()
 		if typeof(val) == "table" then
 			if val.R and val.G and val.B then
 				return Color3.new(val.R, val.G, val.B)
+			elseif val.X and val.Y and val.Z then
+				return Vector3.new(val.X, val.Y, val.Z)
 			else
 				return val
 			end
