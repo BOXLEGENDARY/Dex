@@ -819,7 +819,7 @@ Main = (function()
 
 	Main.ShowGui = Main.SecureGui
 
-	Main.CreateIntro = function(initStatus) -- TODO: Must theme and show errors
+	Main.CreateIntro = function(initStatus) -- TODO: Must show errors
 		local gui = create({
 			{1,"ScreenGui",{Name="Intro",}},
 			{2,"Frame",{Active=true,BackgroundColor3=Color3.new(0.95,0.95,0.95),BorderSizePixel=0,Name="Main",Parent={1},Position=UDim2.new(0.5,-175,0.5,-100),Size=UDim2.new(0,350,0,200),}},
