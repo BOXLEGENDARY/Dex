@@ -440,7 +440,7 @@ Main = (function()
 			return newTbl
 		end
 
-		-- serialize color3 sebelum encode
+		-- Serialize before encoding
 		local serializedData = recur(rawData)
 
 		local s, json = pcall(service.HttpService.JSONEncode, service.HttpService, serializedData)
