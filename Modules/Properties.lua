@@ -165,53 +165,69 @@ local function main()
 
 	Properties.AllowedAttributeTypes = {"string","boolean","number","UDim","UDim2","BrickColor","Color3","Vector2","Vector3","NumberSequence","ColorSequence","NumberRange","Rect"}
 
-	Properties.StringToValue = function(prop,str)
-		local typeData = prop.ValueType
-		local typeName = typeData.Name
-
-		if typeName == "string" or typeName == "Content" then
-			return str
-		elseif Properties.ToNumberTypes[typeName] then
-			return tonumber(str)
-		elseif typeName == "Vector2" then
+	local StringConverters = {
+		string = function(str) return str end,
+		Content = function(str) return str end,
+		Vector2 = function(str)
 			local vals = str:split(",")
 			local x,y = tonumber(vals[1]),tonumber(vals[2])
 			if x and y and #vals >= 2 then return Vector2.new(x,y) end
-		elseif typeName == "Vector3" then
+		end,
+		Vector3 = function(str)
 			local vals = str:split(",")
 			local x,y,z = tonumber(vals[1]),tonumber(vals[2]),tonumber(vals[3])
 			if x and y and z and #vals >= 3 then return Vector3.new(x,y,z) end
-		elseif typeName == "UDim" then
+		end,
+		UDim = function(str)
 			local vals = str:split(",")
 			local scale,offset = tonumber(vals[1]),tonumber(vals[2])
 			if scale and offset and #vals >= 2 then return UDim.new(scale,offset) end
-		elseif typeName == "UDim2" then
+		end,
+		UDim2 = function(str)
 			local vals = str:gsub("[{}]",""):split(",")
 			local xScale,xOffset,yScale,yOffset = tonumber(vals[1]),tonumber(vals[2]),tonumber(vals[3]),tonumber(vals[4])
 			if xScale and xOffset and yScale and yOffset and #vals >= 4 then return UDim2.new(xScale,xOffset,yScale,yOffset) end
-		elseif typeName == "CFrame" then
+		end,
+		CFrame = function(str)
 			local vals = str:split(",")
 			local s,result = pcall(CFrame.new, unpack(vals))
 			if s and #vals >= 12 then return result end
-		elseif typeName == "Rect" then
+		end,
+		Rect = function(str)
 			local vals = str:split(",")
 			local s,result = pcall(Rect.new,unpack(vals))
 			if s and #vals >= 4 then return result end
-		elseif typeName == "Ray" then
+		end,
+		Ray = function(str)
 			local vals = str:gsub("[{}]",""):split(",")
 			local s,origin = pcall(Vector3.new,unpack(vals,1,3))
 			local s2,direction = pcall(Vector3.new,unpack(vals,4,6))
 			if s and s2 and #vals >= 6 then return Ray.new(origin,direction) end
-		elseif typeName == "NumberRange" then
+		end,
+		NumberRange = function(str)
 			local vals = str:split(",")
 			local s,result = pcall(NumberRange.new,unpack(vals))
 			if s and #vals >= 1 then return result end
-		elseif typeName == "Color3" then
+		end,
+		Color3 = function(str)
 			local vals = str:gsub("[{}]",""):split(",")
 			local s,result = pcall(Color3.fromRGB,unpack(vals))
 			if s and #vals >= 3 then return result end
+		end,
+	}
+	
+	Properties.StringToValue = function(prop,str)
+		local typeName = prop.ValueType.Name
+	
+		if Properties.ToNumberTypes[typeName] then
+			return tonumber(str)
 		end
-
+	
+		local converter = StringConverters[typeName]
+		if converter then
+			return converter(str)
+		end
+	
 		return nil
 	end
 
@@ -540,64 +556,89 @@ local function main()
 		return subProp
 	end
 
-	Properties.GetExpandedProps = function(prop) -- TODO: Optimize using table
+	local ExpandedPropsMap = {
+		Vector2 = {
+			{".X", "float"},
+			{".Y", "float"},
+		},
+		Vector3 = {
+			{".X", "float"},
+			{".Y", "float"},
+			{".Z", "float"},
+		},
+		CFrame = {
+			{".Position", "Vector3"},
+			{".RightVector", "Vector3"},
+			{".UpVector", "Vector3"},
+			{".LookVector", "Vector3"},
+		},
+		UDim = {
+			{".Scale", "float"},
+			{".Offset", "int"},
+		},
+		UDim2 = {
+			{".X", "UDim"},
+			{".Y", "UDim"},
+		},
+		Rect = {
+			{".Min.X", "float", "X0"},
+			{".Min.Y", "float", "Y0"},
+			{".Max.X", "float", "X1"},
+			{".Max.Y", "float", "Y1"},
+		},
+		PhysicalProperties = {
+			{".Density", "float"},
+			{".Elasticity", "float"},
+			{".ElasticityWeight", "float"},
+			{".Friction", "float"},
+			{".FrictionWeight", "float"},
+		},
+		Ray = {
+			{".Origin", "Vector3"},
+			{".Direction", "Vector3"},
+		},
+		NumberRange = {
+			{".Min", "float"},
+			{".Max", "float"},
+		},
+		Faces = {
+			{".Back", "bool"},
+			{".Bottom", "bool"},
+			{".Front", "bool"},
+			{".Left", "bool"},
+			{".Right", "bool"},
+			{".Top", "bool"},
+		},
+		Axes = {
+			{".X", "bool"},
+			{".Y", "bool"},
+			{".Z", "bool"},
+		},
+	}
+	
+	Properties.GetExpandedProps = function(prop)
 		local result = {}
-		local typeData = prop.ValueType
-		local typeName = typeData.Name
+		local typeName = prop.ValueType.Name
 		local makeSubProp = Properties.MakeSubProp
-
-		if typeName == "Vector2" then
-			result[1] = makeSubProp(prop,".X",{Name = "float"})
-			result[2] = makeSubProp(prop,".Y",{Name = "float"})
-		elseif typeName == "Vector3" then
-			result[1] = makeSubProp(prop,".X",{Name = "float"})
-			result[2] = makeSubProp(prop,".Y",{Name = "float"})
-			result[3] = makeSubProp(prop,".Z",{Name = "float"})
-		elseif typeName == "CFrame" then
-			result[1] = makeSubProp(prop,".Position",{Name = "Vector3"})
-			result[2] = makeSubProp(prop,".RightVector",{Name = "Vector3"})
-			result[3] = makeSubProp(prop,".UpVector",{Name = "Vector3"})
-			result[4] = makeSubProp(prop,".LookVector",{Name = "Vector3"})
-		elseif typeName == "UDim" then
-			result[1] = makeSubProp(prop,".Scale",{Name = "float"})
-			result[2] = makeSubProp(prop,".Offset",{Name = "int"})
-		elseif typeName == "UDim2" then
-			result[1] = makeSubProp(prop,".X",{Name = "UDim"})
-			result[2] = makeSubProp(prop,".Y",{Name = "UDim"})
-		elseif typeName == "Rect" then
-			result[1] = makeSubProp(prop,".Min.X",{Name = "float"},"X0")
-			result[2] = makeSubProp(prop,".Min.Y",{Name = "float"},"Y0")
-			result[3] = makeSubProp(prop,".Max.X",{Name = "float"},"X1")
-			result[4] = makeSubProp(prop,".Max.Y",{Name = "float"},"Y1")
-		elseif typeName == "PhysicalProperties" then
-			result[1] = makeSubProp(prop,".Density",{Name = "float"})
-			result[2] = makeSubProp(prop,".Elasticity",{Name = "float"})
-			result[3] = makeSubProp(prop,".ElasticityWeight",{Name = "float"})
-			result[4] = makeSubProp(prop,".Friction",{Name = "float"})
-			result[5] = makeSubProp(prop,".FrictionWeight",{Name = "float"})
-		elseif typeName == "Ray" then
-			result[1] = makeSubProp(prop,".Origin",{Name = "Vector3"})
-			result[2] = makeSubProp(prop,".Direction",{Name = "Vector3"})
-		elseif typeName == "NumberRange" then
-			result[1] = makeSubProp(prop,".Min",{Name = "float"})
-			result[2] = makeSubProp(prop,".Max",{Name = "float"})
-		elseif typeName == "Faces" then
-			result[1] = makeSubProp(prop,".Back",{Name = "bool"})
-			result[2] = makeSubProp(prop,".Bottom",{Name = "bool"})
-			result[3] = makeSubProp(prop,".Front",{Name = "bool"})
-			result[4] = makeSubProp(prop,".Left",{Name = "bool"})
-			result[5] = makeSubProp(prop,".Right",{Name = "bool"})
-			result[6] = makeSubProp(prop,".Top",{Name = "bool"})
-		elseif typeName == "Axes" then
-			result[1] = makeSubProp(prop,".X",{Name = "bool"})
-			result[2] = makeSubProp(prop,".Y",{Name = "bool"})
-			result[3] = makeSubProp(prop,".Z",{Name = "bool"})
+	
+		local subPropDefinitions = ExpandedPropsMap[typeName]
+	
+		if subPropDefinitions then
+			for i, def in ipairs(subPropDefinitions) do
+				local suffix = def[1]
+				local subTypeName = def[2]
+				local overrideName = def[3]
+	
+				local subTypeData = {Name = subTypeName}
+				
+				result[i] = makeSubProp(prop, suffix, subTypeData, overrideName)
+			end
 		end
-
+	
 		if prop.Name == "SoundId" and prop.Class == "Sound" then
 			result[1] = Properties.SoundPreviewProp
 		end
-
+	
 		return result
 	end
 
@@ -1578,6 +1619,84 @@ local function main()
 		end
 	end
 
+	local SubPropSetters = {
+		Vector2 = function(root, setVal, subName)
+			return Vector2.new((subName == ".X" and setVal) or root.X, (subName == ".Y" and setVal) or root.Y)
+		end,
+		Vector3 = function(root, setVal, subName)
+			return Vector3.new((subName == ".X" and setVal) or root.X, (subName == ".Y" and setVal) or root.Y, (subName == ".Z" and setVal) or root.Z)
+		end,
+		UDim = function(root, setVal, subName)
+			return UDim.new((subName == ".Scale" and setVal) or root.Scale, (subName == ".Offset" and setVal) or root.Offset)
+		end,
+		UDim2 = function(root, setVal, subName)
+			local rootX,rootY = root.X,root.Y
+			local X_UDim = (subName == ".X" and setVal) or UDim.new((subName == ".X.Scale" and setVal) or rootX.Scale, (subName == ".X.Offset" and setVal) or rootX.Offset)
+			local Y_UDim = (subName == ".Y" and setVal) or UDim.new((subName == ".Y.Scale" and setVal) or rootY.Scale, (subName == ".Y.Offset" and setVal) or rootY.Offset)
+			return UDim2.new(X_UDim,Y_UDim)
+		end,
+		CFrame = function(root, setVal, subName)
+			local rootPos,rootRight,rootUp,rootLook = root.Position,root.RightVector,root.UpVector,root.LookVector
+			local pos = (subName == ".Position" and setVal) or Vector3.new((subName == ".Position.X" and setVal) or rootPos.X, (subName == ".Position.Y" and setVal) or rootPos.Y, (subName == ".Position.Z" and setVal) or rootPos.Z)
+			local rightV = (subName == ".RightVector" and setVal) or Vector3.new((subName == ".RightVector.X" and setVal) or rootRight.X, (subName == ".RightVector.Y" and setVal) or rootRight.Y, (subName == ".RightVector.Z" and setVal) or rootRight.Z)
+			local upV = (subName == ".UpVector" and setVal) or Vector3.new((subName == ".UpVector.X" and setVal) or rootUp.X, (subName == ".UpVector.Y" and setVal) or rootUp.Y, (subName == ".UpVector.Z" and setVal) or rootUp.Z)
+			local lookV = (subName == ".LookVector" and setVal) or Vector3.new((subName == ".LookVector.X" and setVal) or rootLook.X, (subName == ".RightVector.Y" and setVal) or rootLook.Y, (subName == ".RightVector.Z" and setVal) or rootLook.Z)
+			return CFrame.fromMatrix(pos,rightV,upV,-lookV)
+		end,
+		Rect = function(root, setVal, subName)
+			local rootMin,rootMax = root.Min,root.Max
+			local min = Vector2.new((subName == ".Min.X" and setVal) or rootMin.X, (subName == ".Min.Y" and setVal) or rootMin.Y)
+			local max = Vector2.new((subName == ".Max.X" and setVal) or rootMax.X, (subName == ".Max.Y" and setVal) or rootMax.Y)
+			return Rect.new(min,max)
+		end,
+		PhysicalProperties = function(root, setVal, subName, obj)
+			local rootProps = PhysicalProperties.new(obj.Material)
+			local density = (subName == ".Density" and setVal) or (root and root.Density) or rootProps.Density
+			local friction = (subName == ".Friction" and setVal) or (root and root.Friction) or rootProps.Friction
+			local elasticity = (subName == ".Elasticity" and setVal) or (root and root.Elasticity) or rootProps.Elasticity
+			local frictionWeight = (subName == ".FrictionWeight" and setVal) or (root and root.FrictionWeight) or rootProps.FrictionWeight
+			local elasticityWeight = (subName == ".ElasticityWeight" and setVal) or (root and root.ElasticityWeight) or rootProps.ElasticityWeight
+			return PhysicalProperties.new(density,friction,elasticity,frictionWeight,elasticityWeight)
+		end,
+		Ray = function(root, setVal, subName)
+			local rootOrigin,rootDirection = root.Origin,root.Direction
+			local origin = (subName == ".Origin" and setVal) or Vector3.new((subName == ".Origin.X" and setVal) or rootOrigin.X, (subName == ".Origin.Y" and setVal) or rootOrigin.Y, (subName == ".Origin.Z" and setVal) or rootOrigin.Z)
+			local direction = (subName == ".Direction" and setVal) or Vector3.new((subName == ".Direction.X" and setVal) or rootDirection.X, (subName == ".Direction.Y" and setVal) or rootDirection.Y, (subName == ".Direction.Z" and setVal) or rootDirection.Z)
+			return Ray.new(origin,direction)
+		end,
+		Faces = function(root, setVal, subName)
+			local faces = {}
+			local faceList = {"Back","Bottom","Front","Left","Right","Top"}
+			for _,face in pairs(faceList) do
+				local val
+				if subName == "."..face then
+					val = setVal
+				else
+					val = root[face]
+				end
+				if val then faces[#faces+1] = Enum.NormalId[face] end
+			end
+			return Faces.new(unpack(faces))
+		end,
+		Axes = function(root, setVal, subName)
+			local axes = {}
+			local axesList = {"X","Y","Z"}
+			for _,axe in pairs(axesList) do
+				local val
+				if subName == "."..axe then
+					val = setVal
+				else
+					val = root[axe]
+				end
+				if val then axes[#axes+1] = Enum.Axis[axe] end
+			end
+			return Axes.new(unpack(axes))
+		end,
+		NumberRange = function(root, setVal, subName)
+			return NumberRange.new(subName == ".Min" and setVal or root.Min, subName == ".Max" and setVal or root.Max)
+		end,
+	}
+	
 	Properties.SetProp = function(prop,val,noupdate,prevAttribute)
 		local sList = Explorer.Selection.List
 		local propName = prop.Name
@@ -1589,12 +1708,11 @@ local function main()
 		local rootTypeData = prop.RootType
 		local rootTypeName = rootTypeData and rootTypeData.Name
 		local fullName = prop.Class.."."..prop.Name..(prop.SubName or "")
-		local Vector3 = Vector3
-
+	
 		for i = 1,#sList do
 			local node = sList[i]
 			local obj = node.Obj
-
+	
 			if isa(obj,propClass) then
 				pcall(function()
 					local setVal = val
@@ -1604,86 +1722,25 @@ local function main()
 					else
 						root = obj[propName]
 					end
-
+	
 					if prevAttribute then
 						if prevAttribute.ValueType.Name == typeName then
 							setVal = getAttribute(obj,prevAttribute.AttributeName) or setVal
 						end
 						setAttribute(obj,prevAttribute.AttributeName,nil)
 					end
-
+	
 					if rootTypeName then
-						if rootTypeName == "Vector2" then
-							setVal = Vector2.new((subName == ".X" and setVal) or root.X, (subName == ".Y" and setVal) or root.Y)
-						elseif rootTypeName == "Vector3" then
-							setVal = Vector3.new((subName == ".X" and setVal) or root.X, (subName == ".Y" and setVal) or root.Y, (subName == ".Z" and setVal) or root.Z)
-						elseif rootTypeName == "UDim" then
-							setVal = UDim.new((subName == ".Scale" and setVal) or root.Scale, (subName == ".Offset" and setVal) or root.Offset)
-						elseif rootTypeName == "UDim2" then
-							local rootX,rootY = root.X,root.Y
-							local X_UDim = (subName == ".X" and setVal) or UDim.new((subName == ".X.Scale" and setVal) or rootX.Scale, (subName == ".X.Offset" and setVal) or rootX.Offset)
-							local Y_UDim = (subName == ".Y" and setVal) or UDim.new((subName == ".Y.Scale" and setVal) or rootY.Scale, (subName == ".Y.Offset" and setVal) or rootY.Offset)
-							setVal = UDim2.new(X_UDim,Y_UDim)
-						elseif rootTypeName == "CFrame" then
-							local rootPos,rootRight,rootUp,rootLook = root.Position,root.RightVector,root.UpVector,root.LookVector
-							local pos = (subName == ".Position" and setVal) or Vector3.new((subName == ".Position.X" and setVal) or rootPos.X, (subName == ".Position.Y" and setVal) or rootPos.Y, (subName == ".Position.Z" and setVal) or rootPos.Z)
-							local rightV = (subName == ".RightVector" and setVal) or Vector3.new((subName == ".RightVector.X" and setVal) or rootRight.X, (subName == ".RightVector.Y" and setVal) or rootRight.Y, (subName == ".RightVector.Z" and setVal) or rootRight.Z)
-							local upV = (subName == ".UpVector" and setVal) or Vector3.new((subName == ".UpVector.X" and setVal) or rootUp.X, (subName == ".UpVector.Y" and setVal) or rootUp.Y, (subName == ".UpVector.Z" and setVal) or rootUp.Z)
-							local lookV = (subName == ".LookVector" and setVal) or Vector3.new((subName == ".LookVector.X" and setVal) or rootLook.X, (subName == ".RightVector.Y" and setVal) or rootLook.Y, (subName == ".RightVector.Z" and setVal) or rootLook.Z)
-							setVal = CFrame.fromMatrix(pos,rightV,upV,-lookV)
-						elseif rootTypeName == "Rect" then
-							local rootMin,rootMax = root.Min,root.Max
-							local min = Vector2.new((subName == ".Min.X" and setVal) or rootMin.X, (subName == ".Min.Y" and setVal) or rootMin.Y)
-							local max = Vector2.new((subName == ".Max.X" and setVal) or rootMax.X, (subName == ".Max.Y" and setVal) or rootMax.Y)
-							setVal = Rect.new(min,max)
-						elseif rootTypeName == "PhysicalProperties" then
-							local rootProps = PhysicalProperties.new(obj.Material)
-							local density = (subName == ".Density" and setVal) or (root and root.Density) or rootProps.Density
-							local friction = (subName == ".Friction" and setVal) or (root and root.Friction) or rootProps.Friction
-							local elasticity = (subName == ".Elasticity" and setVal) or (root and root.Elasticity) or rootProps.Elasticity
-							local frictionWeight = (subName == ".FrictionWeight" and setVal) or (root and root.FrictionWeight) or rootProps.FrictionWeight
-							local elasticityWeight = (subName == ".ElasticityWeight" and setVal) or (root and root.ElasticityWeight) or rootProps.ElasticityWeight
-							setVal = PhysicalProperties.new(density,friction,elasticity,frictionWeight,elasticityWeight)
-						elseif rootTypeName == "Ray" then
-							local rootOrigin,rootDirection = root.Origin,root.Direction
-							local origin = (subName == ".Origin" and setVal) or Vector3.new((subName == ".Origin.X" and setVal) or rootOrigin.X, (subName == ".Origin.Y" and setVal) or rootOrigin.Y, (subName == ".Origin.Z" and setVal) or rootOrigin.Z)
-							local direction = (subName == ".Direction" and setVal) or Vector3.new((subName == ".Direction.X" and setVal) or rootDirection.X, (subName == ".Direction.Y" and setVal) or rootDirection.Y, (subName == ".Direction.Z" and setVal) or rootDirection.Z)
-							setVal = Ray.new(origin,direction)
-						elseif rootTypeName == "Faces" then
-							local faces = {}
-							local faceList = {"Back","Bottom","Front","Left","Right","Top"}
-							for _,face in pairs(faceList) do
-								local val
-								if subName == "."..face then
-									val = setVal
-								else
-									val = root[face]
-								end
-								if val then faces[#faces+1] = Enum.NormalId[face] end
-							end
-							setVal = Faces.new(unpack(faces))
-						elseif rootTypeName == "Axes" then
-							local axes = {}
-							local axesList = {"X","Y","Z"}
-							for _,axe in pairs(axesList) do
-								local val
-								if subName == "."..axe then
-									val = setVal
-								else
-									val = root[axe]
-								end
-								if val then axes[#axes+1] = Enum.Axis[axe] end
-							end
-							setVal = Axes.new(unpack(axes))
-						elseif rootTypeName == "NumberRange" then
-							setVal = NumberRange.new(subName == ".Min" and setVal or root.Min, subName == ".Max" and setVal or root.Max)
+						local setter = SubPropSetters[rootTypeName]
+						if setter then
+							setVal = setter(root, setVal, subName, obj)
 						end
 					end
-
+	
 					if typeName == "PhysicalProperties" and setVal then
 						setVal = root or PhysicalProperties.new(obj.Material)
 					end
-
+	
 					if prop.IsAttribute then
 						setAttribute(obj,attributeName,setVal)
 					else
@@ -1692,7 +1749,7 @@ local function main()
 				end)
 			end
 		end
-
+	
 		if not noupdate then
 			Properties.ComputeConflicts(prop)
 		end
