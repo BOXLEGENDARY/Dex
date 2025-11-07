@@ -38,9 +38,6 @@ local function main()
 
 	local window,ConsoleFrame
 
-	local LINE_HEIGHT = 20
-	local VISIBLE_POOL_SIZE = 50
-
 	local LogData = {}
 	
 	local OutputPool = {}
@@ -325,22 +322,6 @@ local function main()
 	G2L["18"]["PaddingRight"] = UDim.new(0, 6);
 	G2L["18"]["PaddingLeft"] = UDim.new(0, 6);
 
-	do
-		local template = G2L["17"]
-		for i = 1, VISIBLE_POOL_SIZE do
-			local outputText = template:Clone()
-			outputText.Name = "LogEntry_" .. i
-			outputText.Text = ""
-			outputText.Size = UDim2.new(1, 0, 0, LINE_HEIGHT)
-			outputText.AutomaticSize = Enum.AutomaticSize.None
-			outputText.Visible = true
-			outputText.Parent = G2L["a"]
-			table.insert(OutputPool, outputText)
-		end
-		template:Destroy()
-		G2L["17"] = nil
-	end
-
 	-- StarterGui.ScreenGui.Console.CtrlScroll
 	G2L["19"] = Instance.new("ImageButton", ConsoleFrame);
 	G2L["19"]["BorderSizePixel"] = 0;
@@ -613,34 +594,6 @@ local function main()
 		end;
 	};
 	
-	local function UpdateVisibleLogs()
-		local totalLogCount = #LogData
-		
-		local totalHeight = totalLogCount * LINE_HEIGHT
-		G2L["a"].CanvasSize = UDim2.new(0, 0, 0, totalHeight)
-		
-		local canvasPos = G2L["a"].CanvasPosition.Y
-		
-		local firstVisibleLogIndex = math.max(1, math.floor(canvasPos / LINE_HEIGHT) + 1)
-		
-		for i = 1, VISIBLE_POOL_SIZE do
-			local logIndex = firstVisibleLogIndex + i - 1
-			local outputText = OutputPool[i]
-			
-			if logIndex <= totalLogCount then
-				local logEntry = LogData[logIndex]
-				outputText.Text = logEntry.FormattedText
-				
-				outputText.TextSize = G2L["d"].Value
-				
-				outputText.Visible = true
-				outputText.LayoutOrder = i
-			else
-				outputText.Visible = false
-			end
-		end
-	end
-	
 	local function updateScrollbar()
 		local scrollMax = math.max(1, G2L["a"].AbsoluteCanvasSize.Y - G2L["a"].AbsoluteWindowSize.Y)
 		local scrollRatio = G2L["a"].CanvasPosition.Y / scrollMax
@@ -724,7 +677,7 @@ local function main()
 			AutoScroll = not AutoScroll
 			if AutoScroll == true then
 				Console.AutoScroll.BackgroundColor3 = Color3.fromRGB(11, 90, 175)
-				local scrollToPos = math.max(0, #LogData * LINE_HEIGHT - G2L["a"].AbsoluteWindowSize.Y)
+				local scrollToPos = G2L["a"].AbsoluteCanvasSize.Y
 				G2L["a"].CanvasPosition = Vector2.new(0, scrollToPos)
 			elseif AutoScroll == false then
 				Console.AutoScroll.BackgroundColor3 = Color3.fromRGB(56, 56, 56)
@@ -769,7 +722,6 @@ local function main()
 
 		Console.Clear.MouseButton1Click:Connect(function()
 			LogData = {}
-			UpdateVisibleLogs()
 		end)
 
 		LogService.MessageOut:Connect(function(msg, msgtype)
@@ -795,11 +747,9 @@ local function main()
 			if #LogData > OutputLimitValue.Value then
 				table.remove(LogData, 1)
 			end
-			
-			UpdateVisibleLogs()
 
 			if AutoScroll then
-				local scrollToPos = math.max(0, #LogData * LINE_HEIGHT - G2L["a"].AbsoluteWindowSize.Y)
+				local scrollToPos = G2L["a"].AbsoluteCanvasSize.Y
 				
 				Tween(G2L["a"], TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
 					CanvasPosition = Vector2.new(0, scrollToPos)
@@ -813,7 +763,6 @@ local function main()
 		scrollbar.Scrolled:Connect(updateCanvasPosition) 
 		
 		-- Initial update calls
-		UpdateVisibleLogs()
 		updateScrollbar()
 
 		Console.CommandLine.ScrollingFrame.TextBox:GetPropertyChangedSignal("Text"):Connect(function()
