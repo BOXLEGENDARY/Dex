@@ -53,8 +53,7 @@ local function main()
 		ZoomMultiplier = 2,
 		AutoRotate = true,
 		RotationSpeed = 0.01,
-		RefreshRate = 30, -- hertz
-		CurrentPartMap = {}
+		RefreshRate = 30 -- hertz
 	}
 	
 	local window, viewportFrame, pathLabel, settingsButton
@@ -63,15 +62,11 @@ local function main()
 	
 	ModelViewer.StopViewModel = function(updating)
 		if updating then
-			local currentModel = viewportFrame:FindFirstChildOfClass("Model")
-			if currentModel then
-				currentModel:Destroy()
-			end
+			viewportFrame:FindFirstChildOfClass("Model"):Destroy()
 		else
 			if camera then camera = nil end
 			if model then model = nil end
 			viewportFrame:ClearAllChildren()
-			ModelViewer.CurrentPartMap = {}
 			
 			ModelViewer.IsViewing = false
 			window:SetTitle("Model Viewer")
@@ -81,30 +76,10 @@ local function main()
 
 	ModelViewer.ViewModel = function(item, updating)
 		if not item then return end
-
-		if updating then
-			if not model or not ModelViewer.CurrentPartMap or item ~= originalModel then
-				ModelViewer.ViewModel(item, false) 
-				return
-			end
-			
-			for originalPart, clonedPart in pairs(ModelViewer.CurrentPartMap) do
-				if originalPart and originalPart.Parent and clonedPart and clonedPart.Parent then
-					clonedPart.CFrame = originalPart.CFrame
-					
-					-- clonedPart.Color = originalPart.Color
-					-- clonedPart.Transparency = originalPart.Transparency
-				else
-					ModelViewer.CurrentPartMap[originalPart] = nil
-				end
-			end
-			
-			return
-		end
-		
-		ModelViewer.StopViewModel(false)
+		ModelViewer.StopViewModel(updating)
 		
 		if item ~= workspace and not item:IsA("Terrain") then
+			-- why Model == workspace
 			
 			if item:IsA("BasePart") and not item:IsA("Model") then			
 				model = Instance.new("Model")
@@ -114,16 +89,19 @@ local function main()
 				clone.Parent = model
 				model.PrimaryPart = clone
 				model:SetPrimaryPartCFrame(CFrame.new(0, 0, 0))
-				
-				ModelViewer.CurrentPartMap[item] = clone
-				
 			elseif item:IsA("Model") then
 				item.Archivable = true
+
+			--[[if not item.PrimaryPart then
+				pathLabel.Gui.Text = "Failed to view model: No PrimaryPart is found."
+				return
+			end]]
 				if #item:GetChildren() == 0 then return end
 				
 				model = item:Clone()
 				model.Parent = viewportFrame
 
+				-- fallback
 				if not model.PrimaryPart then
 					local found = false
 					for _, child in model:GetDescendants() do
@@ -140,48 +118,34 @@ local function main()
 						return
 					end
 				end
-				
-				ModelViewer.CurrentPartMap = {}
-				local originalDescendants = item:GetDescendants()
-				local clonedDescendants = model:GetDescendants()
-				
-				if #originalDescendants == #clonedDescendants then
-					for i = 1, #originalDescendants do
-						local originalPart = originalDescendants[i]
-						if originalPart:IsA("BasePart") then
-							ModelViewer.CurrentPartMap[originalPart] = clonedDescendants[i]
-						end
-					end
-				end
-				if item:IsA("BasePart") then
-					ModelViewer.CurrentPartMap[item] = model
-				end
-				
 			else
 				return
 			end
 		end
 		
 		originalModel = item
-
-		camera = Instance.new("Camera")
-		viewportFrame.CurrentCamera = camera
-
-		camera.Parent = viewportFrame
-		camera.FieldOfView = 60
 		
-		window:SetTitle(item.Name.." - Model Viewer")
-		pathLabel.Gui.Text = "path: " .. getPath(originalModel)
-		window:Show()
-		ModelViewer.IsViewing = true
-		
-		if ModelViewer.AutoRefresh then
+		if ModelViewer.AutoRefresh and not updating then
 			task.spawn(function()
 				while model and ModelViewer.AutoRefresh do
+					
 					ModelViewer.ViewModel(originalModel, true)
 					task.wait(1 / ModelViewer.RefreshRate)
 				end
 			end)
+		end
+		
+		if not updating then
+			camera = Instance.new("Camera")
+			viewportFrame.CurrentCamera = camera
+
+			camera.Parent = viewportFrame
+			camera.FieldOfView = 60
+			
+			window:SetTitle(item.Name.." - Model Viewer")
+			pathLabel.Gui.Text = "path: " .. getPath(originalModel)
+			window:Show()
+			ModelViewer.IsViewing = true
 		end
 	end
 
@@ -308,18 +272,19 @@ local function main()
 		end})
 		context:Register("REFRESH",{Name = "Refresh", OnClick = function()
 			if originalModel then
-				ModelViewer.ViewModel(originalModel, false)
+				ModelViewer.ViewModel(originalModel)
 			end
 		end})
 		context:Register("ENABLE_AUTO_REFRESH",{Name = "Enable Auto Refresh", OnClick = function()
 			if originalModel then
 				ModelViewer.AutoRefresh = true
-				ModelViewer.ViewModel(originalModel, false)
+				ModelViewer.ViewModel(originalModel)
 			end
 		end})
 		context:Register("DISABLE_AUTO_REFRESH",{Name = "Disable Auto Refresh", OnClick = function()
 			if originalModel then
 				ModelViewer.AutoRefresh = false
+				ModelViewer.ViewModel(originalModel)
 			end
 		end})
 		context:Register("SAVE_INST",{Name = "Save to File", OnClick = function()
