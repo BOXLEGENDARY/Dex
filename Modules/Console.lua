@@ -1,4 +1,3 @@
-["Console"] = function()
 --[[
 	Console App Module
 	
