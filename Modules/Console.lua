@@ -1,4 +1,3 @@
-["Console"] = function()
 --[[
 	Console App Module
 	
@@ -39,19 +38,13 @@ local function main()
 
 	local window,ConsoleFrame
 
-	local LINE_HEIGHT = 20
-	local VISIBLE_POOL_SIZE = 50
+	local OutputLimit = 500 -- Same as Roblox Console.
 
-	local LogData = {}
-	
-	local OutputPool = {}
-
-	local OutputLimit = 500 -- Same as Roblox Console. (Now limits the LogData table size)
 
 	-- Instances: 29 | Scripts: 1 | Modules: 1 | Tags: 0
 	local G2L = {};
 
-	-- StarterGui.ScreenGui.Console
+	-- StarterGui.ScreenGui
 	window = Lib.Window.new()
 	window:SetTitle("Console")
 	window:Resize(500,400)
@@ -176,8 +169,7 @@ local function main()
 	G2L["a"] = Instance.new("ScrollingFrame", ConsoleFrame);
 	G2L["a"]["Active"] = true;
 	G2L["a"]["BorderSizePixel"] = 0;
-	G2L["a"]["CanvasSize"] = UDim2.new(0, 0, 0, 0); 
-	G2L["a"].AutomaticCanvasSize = Enum.AutomaticSize.None
+	G2L["a"]["CanvasSize"] = UDim2.new(0, 0, 0, 0);
 	G2L["a"]["TopImage"] = '';
 	G2L["a"]["BackgroundColor3"] = Color3.fromRGB(36, 36, 36);
 	G2L["a"].BackgroundTransparency = 1
@@ -185,6 +177,7 @@ local function main()
 	G2L["a"]["ScrollBarImageTransparency"] = 0;
 	G2L["a"]["BottomImage"] = '';
 	G2L["a"]["AnchorPoint"] = Vector2.new(0, 0);
+	G2L["a"]["AutomaticCanvasSize"] = Enum.AutomaticSize.Y;
 	G2L["a"]["Size"] = UDim2.new(1, -8, 1, -55);
 	G2L["a"]["Position"] = UDim2.new(0, 4, 0, 23);
 	G2L["a"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
@@ -192,10 +185,17 @@ local function main()
 	G2L["a"]["ScrollBarThickness"] = 16;
 	G2L["a"]["ZIndex"] = 1;
 
+	G2L["a"]:GetPropertyChangedSignal("AbsoluteWindowSize"):Connect(function()
+		if G2L["a"].AbsoluteCanvasSize ~= G2L["a"].AbsoluteWindowSize then
+			scrollbar.Gui.Visible = true
+		else
+			scrollbar.Gui.Visible = false
+		end
+	end)
+
 	-- StarterGui.ScreenGui.Console.Output.UIListLayout
 	G2L["b"] = Instance.new("UIListLayout", G2L["a"]);
 	G2L["b"]["SortOrder"] = Enum.SortOrder.LayoutOrder;
-	G2L["b"].FillDirection = Enum.FillDirection.Vertical
 
 
 	-- StarterGui.ScreenGui.Console.Output.UIStroke
@@ -297,7 +297,6 @@ local function main()
 
 
 	-- StarterGui.ScreenGui.Console.OutputTemplate
-	-- G2L["17"] is used as a template to create the pool elements
 	G2L["17"] = Instance.new("TextBox", ConsoleFrame);
 	G2L["17"]["Visible"] = false;
 	G2L["17"]["Active"] = false;
@@ -326,21 +325,6 @@ local function main()
 	G2L["18"]["PaddingRight"] = UDim.new(0, 6);
 	G2L["18"]["PaddingLeft"] = UDim.new(0, 6);
 
-	do
-		local template = G2L["17"]
-		for i = 1, VISIBLE_POOL_SIZE do
-			local outputText = template:Clone()
-			outputText.Name = "LogEntry_" .. i
-			outputText.Text = ""
-			outputText.Size = UDim2.new(1, 0, 0, LINE_HEIGHT)
-			outputText.AutomaticSize = Enum.AutomaticSize.None
-			outputText.Visible = true
-			outputText.Parent = G2L["a"]
-			table.insert(OutputPool, outputText)
-		end
-		template:Destroy()
-		G2L["17"] = nil
-	end
 
 	-- StarterGui.ScreenGui.Console.CtrlScroll
 	G2L["19"] = Instance.new("ImageButton", ConsoleFrame);
@@ -613,52 +597,6 @@ local function main()
 			return highlighter
 		end;
 	};
-	
-	local function UpdateVisibleLogs()
-		local totalLogCount = #LogData
-		
-		local totalHeight = totalLogCount * LINE_HEIGHT
-		G2L["a"].CanvasSize = UDim2.new(0, 0, 0, totalHeight)
-		
-		local canvasPos = G2L["a"].CanvasPosition.Y
-		
-		local firstVisibleLogIndex = math.max(1, math.floor(canvasPos / LINE_HEIGHT) + 1)
-		
-		for i = 1, VISIBLE_POOL_SIZE do
-			local logIndex = firstVisibleLogIndex + i - 1
-			local outputText = OutputPool[i]
-			
-			if logIndex <= totalLogCount then
-				local logEntry = LogData[logIndex]
-				outputText.Text = logEntry.FormattedText
-				
-				outputText.TextSize = G2L["d"].Value
-				
-				outputText.Visible = true
-				outputText.LayoutOrder = i
-			else
-				outputText.Visible = false
-			end
-		end
-	end
-	
-	local function updateScrollbar()
-		local scrollMax = math.max(1, G2L["a"].AbsoluteCanvasSize.Y - G2L["a"].AbsoluteWindowSize.Y)
-		local scrollRatio = G2L["a"].CanvasPosition.Y / scrollMax
-		
-		scrollbar:SetProgress(scrollRatio)
-		
-		if G2L["a"].AbsoluteCanvasSize.Y > G2L["a"].AbsoluteWindowSize.Y then
-			scrollbar.Gui.Visible = true
-		else
-			scrollbar.Gui.Visible = false
-		end
-	end
-	
-	local function updateCanvasPosition(progress)
-		local scrollMax = math.max(0, G2L["a"].AbsoluteCanvasSize.Y - G2L["a"].AbsoluteWindowSize.Y)
-		G2L["a"].CanvasPosition = Vector2.new(0, progress * scrollMax)
-	end
 
 	Console.Init = function()
 		-- StarterGui.ScreenGui.ConsoleHandler
@@ -725,14 +663,15 @@ local function main()
 			AutoScroll = not AutoScroll
 			if AutoScroll == true then
 				Console.AutoScroll.BackgroundColor3 = Color3.fromRGB(11, 90, 175)
-				local scrollToPos = math.max(0, #LogData * LINE_HEIGHT - G2L["a"].AbsoluteWindowSize.Y)
-				G2L["a"].CanvasPosition = Vector2.new(0, scrollToPos)
+				Console.Output.CanvasPosition = Vector2.new(0, 9e9)
 			elseif AutoScroll == false then
 				Console.AutoScroll.BackgroundColor3 = Color3.fromRGB(56, 56, 56)
 			end
 		end)
 
-		local OutputLimitValue = Console.Output.OutputLimit
+		-- Console part
+		local displayedOutput = {}
+		local OutputLimit = Console.Output.OutputLimit
 
 		Console.TextSizeBox.TextBox.Text = tostring(OutputTextSize.Value)
 
@@ -744,7 +683,6 @@ local function main()
 		end)
 		OutputTextSize:GetPropertyChangedSignal("Value"):Connect(function()
 			Console.TextSizeBox.TextBox.Text = tostring(OutputTextSize.Value)
-			UpdateVisibleLogs() 
 		end)
 
 		local scrollConsoleInput
@@ -769,53 +707,70 @@ local function main()
 		end)
 
 		Console.Clear.MouseButton1Click:Connect(function()
-			LogData = {}
-			UpdateVisibleLogs()
+			for _, log in pairs(Console.Output:GetChildren()) do
+				if log:IsA("TextBox") then
+					log:Destroy()
+				end
+			end
 		end)
+
+		local focussedOutput
 
 		LogService.MessageOut:Connect(function(msg, msgtype)
 			local formattedText = ""
 			local unformattedText = ""
-			
+			local newOutputText = Console.OutputTemplate:Clone()
+			table.insert(displayedOutput, newOutputText)
+
+			if #displayedOutput > OutputLimit.Value then
+				local oldest = table.remove(displayedOutput, 1)
+				if oldest and typeof(oldest) == "Instance" then
+					oldest:Destroy()
+				end
+			end
+
 			unformattedText = os.date("%H:%M:%S")..'   '..msg
 			if msgtype == Enum.MessageType.MessageOutput then
 				formattedText = os.date("%H:%M:%S")..'   <font color="rgb(204, 204, 204)">'..msg..'</font>'
+				newOutputText.Text = formattedText
 			elseif msgtype == Enum.MessageType.MessageWarning then
 				formattedText = os.date("%H:%M:%S")..'   <b><font color="rgb(255, 142, 60)">'..msg..'</font></b>'
+				newOutputText.Text = formattedText
 			elseif msgtype == Enum.MessageType.MessageError then
 				formattedText = os.date("%H:%M:%S")..'   <b><font color="rgb(255, 68, 68)">'..msg..'</font></b>'
+				newOutputText.Text = formattedText
 			elseif msgtype == Enum.MessageType.MessageInfo then
 				formattedText = os.date("%H:%M:%S")..'   <font color="rgb(128, 215, 255)">'..msg..'</font>'
+				newOutputText.Text = formattedText
 			end
 
-			table.insert(LogData, {
-				FormattedText = formattedText,
-				UnformattedText = unformattedText,
-			})
-			
-			if #LogData > OutputLimitValue.Value then
-				table.remove(LogData, 1)
-			end
-			
-			UpdateVisibleLogs()
+			newOutputText.TextSize = OutputTextSize.Value
+			OutputTextSize:GetPropertyChangedSignal("Value"):Connect(function()
+				newOutputText.TextSize = OutputTextSize.Value
+			end)
+
+			newOutputText.Focused:Connect(function()
+				focussedOutput = newOutputText
+				newOutputText.Text = unformattedText
+			end)
+			newOutputText.FocusLost:Connect(function()
+				focussedOutput = nil
+				newOutputText.Text = formattedText
+			end)
+
+			newOutputText.Parent = Console.Output
+			newOutputText.Visible = true
 
 			if AutoScroll then
-				local scrollToPos = math.max(0, #LogData * LINE_HEIGHT - G2L["a"].AbsoluteWindowSize.Y)
-				
-				Tween(G2L["a"], TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-					CanvasPosition = Vector2.new(0, scrollToPos)
-				})
+				Console.Output.CanvasPosition = Vector2.new(0, 9e9)
 			end
 		end)
 
-		G2L["a"]:GetPropertyChangedSignal("CanvasPosition"):Connect(UpdateVisibleLogs)
-		G2L["a"]:GetPropertyChangedSignal("CanvasPosition"):Connect(updateScrollbar)
-		G2L["a"]:GetPropertyChangedSignal("AbsoluteWindowSize"):Connect(updateScrollbar) 
-		scrollbar.Scroll:Connect(updateCanvasPosition)
-		
-		-- Initial update calls
-		UpdateVisibleLogs()
-		updateScrollbar()
+		Console.Output.MouseLeave:Connect(function()
+			if focussedOutput then
+				focussedOutput:ReleaseFocus()
+			end
+		end)
 
 		Console.CommandLine.ScrollingFrame.TextBox:GetPropertyChangedSignal("Text"):Connect(function()
 
