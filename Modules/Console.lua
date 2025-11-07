@@ -1,3 +1,4 @@
+["Console"] = function()
 --[[
 	Console App Module
 	
@@ -810,7 +811,7 @@ local function main()
 		G2L["a"]:GetPropertyChangedSignal("CanvasPosition"):Connect(UpdateVisibleLogs)
 		G2L["a"]:GetPropertyChangedSignal("CanvasPosition"):Connect(updateScrollbar)
 		G2L["a"]:GetPropertyChangedSignal("AbsoluteWindowSize"):Connect(updateScrollbar) 
-		scrollbar.ScrollChanged:Connect(updateCanvasPosition)
+		scrollbar.Scroll:Connect(updateCanvasPosition)
 		
 		-- Initial update calls
 		UpdateVisibleLogs()
