@@ -163,16 +163,7 @@ local function main()
 		end
 		
 		originalModel = item
-		
-		if ModelViewer.AutoRefresh then
-			task.spawn(function()
-				while model and ModelViewer.AutoRefresh do
-					ModelViewer.ViewModel(originalModel, true)
-					task.wait(1 / ModelViewer.RefreshRate)
-				end
-			end)
-		end
-		
+
 		camera = Instance.new("Camera")
 		viewportFrame.CurrentCamera = camera
 
@@ -183,6 +174,15 @@ local function main()
 		pathLabel.Gui.Text = "path: " .. getPath(originalModel)
 		window:Show()
 		ModelViewer.IsViewing = true
+		
+		if ModelViewer.AutoRefresh then
+			task.spawn(function()
+				while model and ModelViewer.AutoRefresh do
+					ModelViewer.ViewModel(originalModel, true)
+					task.wait(1 / ModelViewer.RefreshRate)
+				end
+			end)
+		end
 	end
 
 	ModelViewer.Init = function()
