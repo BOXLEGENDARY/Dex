@@ -163,7 +163,7 @@ Main = (function()
 	Main.ModuleList = {"Explorer","Properties","ScriptViewer","ModelViewer","Console","SaveInstance"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
-	Main.Version = "0.1.5"
+	Main.Version = "0.1.6"
 	Main.Mouse = plr:GetMouse()
 	Main.AppControls = {}
 	Main.Apps = Apps
@@ -320,7 +320,6 @@ Main = (function()
 		env.movefileas = movefileas
 		env.saveinstance = saveinstance or (function()
 			warn("No built-in saveinstance exists, using SynSaveInstance and wrapper...")
-			if game:GetService("RunService"):IsStudio() then return function() error("Cannot run in Roblox Studio!") end end
 			local Params = {
 				RepoURL = "https://raw.githubusercontent.com/BOXLEGENDARY/UniversalSynSaveInstance/main/",
 				SSI = "saveinstance",
