@@ -319,7 +319,7 @@ Main = (function()
 		env.loadfile = loadfile
 		env.movefileas = movefileas
 		env.saveinstance = saveinstance or (function()
-			warn("-- DEX - No built-in saveinstance exists, using SynSaveInstance and wrapper...")
+			--warn("No built-in saveinstance exists, using SynSaveInstance and wrapper...")
 			local Params = {
 				RepoURL = "https://raw.githubusercontent.com/BOXLEGENDARY/UniversalSynSaveInstance/main/",
 				SSI = "saveinstance",
@@ -356,7 +356,7 @@ Main = (function()
 	
 		-- other
 		env.decompile = decompile or (function()	
-			warn("-- DEX - No built-in decompiler exists, using Advanced Luau Decompiler...")
+			--warn("No built-in decompiler exists, using Advanced Luau Decompiler...")
 			pcall(Main.LoadAdvancedLuauDecompiler)
 		end)()
 		env.getscriptbytecode = getscriptbytecode
@@ -475,7 +475,7 @@ Main = (function()
 				end
 
 			else
-				warn("-- DEX - failed to decode settings json")
+				warn("failed to decode settings json")
 			end
 		else
 			Main.ResetSettings()
