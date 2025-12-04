@@ -2901,48 +2901,67 @@ local function main()
 			
 		end
 
-		local function renderSide(side,noTween) -- TODO: Use existing resizers
+		local function renderSide(side, noTween)
 			local currentPos = 0
 			local sideFramePos = getSideFramePos(side)
-			local template = side.WindowResizer:Clone()
-			for i,v in pairs(side.ResizeCons) do v:Disconnect() end
-			for i,v in pairs(side.Frame:GetChildren()) do if v.Name == "WindowResizer" then v:Destroy() end end
+			
+			for _, v in pairs(side.ResizeCons) do v:Disconnect() end
 			side.ResizeCons = {}
 			side.Resizing = nil
 
-			for i,v in pairs(side.Windows) do
+			local existingResizers = {}
+			for _, v in ipairs(side.Frame:GetChildren()) do
+				if v.Name == "WindowResizer" then
+					table.insert(existingResizers, v)
+				end
+			end
+
+			local resizerIndex = 1
+
+			for i, v in ipairs(side.Windows) do
 				v.SidePos = i
 				local isEnd = i == #side.Windows
-				local size = UDim2.new(0,side.Width,0,v.SizeY)
-				local pos = UDim2.new(sideFramePos.X.Scale,sideFramePos.X.Offset,0,currentPos)
+				local size = UDim2.new(0, side.Width, 0, v.SizeY)
+				local pos = UDim2.new(sideFramePos.X.Scale, sideFramePos.X.Offset, 0, currentPos)
+				
 				Lib.ShowGui(v.Gui)
-				--v.GuiElems.Main:TweenSizeAndPosition(size,pos,Enum.EasingDirection.Out,Enum.EasingStyle.Quad,0.3,true)
+				
 				if noTween then
 					v.GuiElems.Main.Size = size
 					v.GuiElems.Main.Position = pos
 				else
-					local tween = service.TweenService:Create(v.GuiElems.Main,sideTweenInfo,{Size = size, Position = pos})
+					local tween = service.TweenService:Create(v.GuiElems.Main, sideTweenInfo, {Size = size, Position = pos})
 					tweens[#tweens+1] = tween
 					tween:Play()
 				end
-				currentPos = currentPos + v.SizeY+4
+				
+				currentPos = currentPos + v.SizeY + 4
 
 				if not isEnd then
-					local newTemplate = template:Clone()
-					newTemplate.Position = UDim2.new(1,-side.Width,0,currentPos-4)
+					local newTemplate = existingResizers[resizerIndex]
+					if not newTemplate then
+						newTemplate = side.WindowResizer:Clone()
+						newTemplate.Parent = side.Frame
+					end
+					newTemplate.Visible = true
+					resizerIndex = resizerIndex + 1
+
+					newTemplate.Position = UDim2.new(1, -side.Width, 0, currentPos - 4)
+					
 					side.ResizeCons[#side.ResizeCons+1] = v.Gui.Main:GetPropertyChangedSignal("Size"):Connect(function()
-						newTemplate.Position = UDim2.new(1,-side.Width,0, v.GuiElems.Main.Position.Y.Offset + v.GuiElems.Main.Size.Y.Offset)
+						newTemplate.Position = UDim2.new(1, -side.Width, 0, v.GuiElems.Main.Position.Y.Offset + v.GuiElems.Main.Size.Y.Offset)
 					end)
 					side.ResizeCons[#side.ResizeCons+1] = v.Gui.Main:GetPropertyChangedSignal("Position"):Connect(function()
-						newTemplate.Position = UDim2.new(1,-side.Width,0, v.GuiElems.Main.Position.Y.Offset + v.GuiElems.Main.Size.Y.Offset)
+						newTemplate.Position = UDim2.new(1, -side.Width, 0, v.GuiElems.Main.Position.Y.Offset + v.GuiElems.Main.Size.Y.Offset)
 					end)
-					sideResizerHook(newTemplate,"V",side,i)
-					newTemplate.Parent = side.Frame
+					
+					sideResizerHook(newTemplate, "V", side, i)
 				end
 			end
 
-			--side.Frame.Back.Position = UDim2.new(0,0,0,0)
-			--side.Frame.Back.Size = UDim2.new(0,side.Width,1,0)
+			for i = resizerIndex, #existingResizers do
+				existingResizers[i].Visible = false
+			end
 		end
 
 		local function updateSide(side,noTween)
@@ -5478,46 +5497,16 @@ local function main()
 		return {new = new}
 	end)()
 
-	Lib.ColorPicker = (function()
+	Lib.ColorPicker = (function() -- TODO: Convert to newer class model
 		local funcs = {}
-		local user = service.UserInputService
-		local mouse = service.Players.LocalPlayer:GetMouse()
-		
-		local function hookButtons(frame, func)
-			local function handleInput(input, direction)
-				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-					local releaseEvent
-					local startTime = tick()
-					local pressing = true
-					local startNum = tonumber(frame.Text)
 
-					if not startNum then return end
+		local function new()
+			local newMt = setmetatable({},{})
 
-					releaseEvent = user.InputEnded:Connect(function(endInput)
-						if endInput.UserInputType == Enum.UserInputType.MouseButton1 or endInput.UserInputType == Enum.UserInputType.Touch then
-							releaseEvent:Disconnect()
-							pressing = false
-						end
-					end)
+			newMt.OnSelect = Lib.Signal.new()
+			newMt.OnCancel = Lib.Signal.new()
+			newMt.OnPreview = Lib.Signal.new()
 
-					startNum = startNum + direction
-					func(startNum)
-					while pressing do
-						if tick() - startTime > 0.3 then
-							startNum = startNum + direction
-							func(startNum)
-							startTime = tick()
-						end
-						task.wait(0.1)
-					end
-				end
-			end
-
-			frame.ArrowFrame.Up.InputBegan:Connect(function(input) handleInput(input, 1) end)
-			frame.ArrowFrame.Down.InputBegan:Connect(function(input) handleInput(input, -1) end)
-		end
-
-		local function createGui(self)
 			local guiContents = create({
 				{1,"Frame",{BackgroundColor3=Color3.new(0.17647059261799,0.17647059261799,0.17647059261799),BorderSizePixel=0,ClipsDescendants=true,Name="Content",Position=UDim2.new(0,0,0,20),Size=UDim2.new(1,0,1,-20),}},
 				{2,"Frame",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Name="BasicColors",Parent={1},Position=UDim2.new(0,5,0,5),Size=UDim2.new(0,180,0,200),}},
@@ -5625,7 +5614,6 @@ local function main()
 				{104,"Frame",{BackgroundColor3=Color3.new(0,0,0),BorderSizePixel=0,Parent={100},Position=UDim2.new(0,5,0,5),Size=UDim2.new(0,1,0,7),}},
 				{105,"Frame",{BackgroundColor3=Color3.new(0,0,0),BorderSizePixel=0,Parent={100},Position=UDim2.new(0,6,0,4),Size=UDim2.new(0,1,0,9),}},
 			})
-			
 			local window = Lib.Window.new()
 			window.Resizable = false
 			window.Alignable = false
@@ -5634,33 +5622,248 @@ local function main()
 			for i,v in pairs(guiContents:GetChildren()) do
 				v.Parent = window.GuiElems.Content
 			end
-			
-			self.Window = window
-			self.Gui = window.Gui
-			
+			newMt.Window = window
+			newMt.Gui = window.Gui
 			local pickerGui = window.Gui.Main
+			local pickerTopBar = pickerGui.TopBar
 			local pickerFrame = pickerGui.Content
+			local colorSpace = pickerFrame.ColorSpaceFrame.ColorSpace
+			local colorStrip = pickerFrame.ColorStrip
+			local previewFrame = pickerFrame.Preview
+			local basicColorsFrame = pickerFrame.BasicColors
+			local customColorsFrame = pickerFrame.CustomColors
+			local okButton = pickerFrame.Ok
+			local cancelButton = pickerFrame.Cancel
+			local closeButton = pickerTopBar.Close
 			
-			self.GuiElems = {
-				ColorSpace = pickerFrame.ColorSpaceFrame.ColorSpace,
-				ColorStrip = pickerFrame.ColorStrip,
-				Preview = pickerFrame.Preview,
-				BasicColors = pickerFrame.BasicColors,
-				CustomColors = pickerFrame.CustomColors,
-				OkButton = pickerFrame.Ok,
-				CancelButton = pickerFrame.Cancel,
-				HueInput = pickerFrame.Hue.Input,
-				SatInput = pickerFrame.Sat.Input,
-				ValInput = pickerFrame.Val.Input,
-				RedInput = pickerFrame.Red.Input,
-				GreenInput = pickerFrame.Green.Input,
-				BlueInput = pickerFrame.Blue.Input,
-				ColorScope = pickerFrame.ColorSpaceFrame.ColorSpace.Scope,
-				ColorArrow = pickerFrame.ArrowFrame.Arrow
-			}
+			local colorScope = colorSpace.Scope
+			local colorArrow = pickerFrame.ArrowFrame.Arrow
+
+			local hueInput = pickerFrame.Hue.Input
+			local satInput = pickerFrame.Sat.Input
+			local valInput = pickerFrame.Val.Input
+
+			local redInput = pickerFrame.Red.Input
+			local greenInput = pickerFrame.Green.Input
+			local blueInput = pickerFrame.Blue.Input
+
+			local user = service.UserInputService
+			local mouse = service.Players.LocalPlayer:GetMouse()
+
+			local hue,sat,val = 0,0,1
+			local red,green,blue = 1,1,1
+			local chosenColor = Color3.new(0,0,0)
 
 			local basicColors = {Color3.new(0,0,0),Color3.new(0.66666668653488,0,0),Color3.new(0,0.33333334326744,0),Color3.new(0.66666668653488,0.33333334326744,0),Color3.new(0,0.66666668653488,0),Color3.new(0.66666668653488,0.66666668653488,0),Color3.new(0,1,0),Color3.new(0.66666668653488,1,0),Color3.new(0,0,0.49803924560547),Color3.new(0.66666668653488,0,0.49803924560547),Color3.new(0,0.33333334326744,0.49803924560547),Color3.new(0.66666668653488,0.33333334326744,0.49803924560547),Color3.new(0,0.66666668653488,0.49803924560547),Color3.new(0.66666668653488,0.66666668653488,0.49803924560547),Color3.new(0,1,0.49803924560547),Color3.new(0.66666668653488,1,0.49803924560547),Color3.new(0,0,1),Color3.new(0.66666668653488,0,1),Color3.new(0,0.33333334326744,1),Color3.new(0.66666668653488,0.33333334326744,1),Color3.new(0,0.66666668653488,1),Color3.new(0.66666668653488,0.66666668653488,1),Color3.new(0,1,1),Color3.new(0.66666668653488,1,1),Color3.new(0.33333334326744,0,0),Color3.new(1,0,0),Color3.new(0.33333334326744,0.33333334326744,0),Color3.new(1,0.33333334326744,0),Color3.new(0.33333334326744,0.66666668653488,0),Color3.new(1,0.66666668653488,0),Color3.new(0.33333334326744,1,0),Color3.new(1,1,0),Color3.new(0.33333334326744,0,0.49803924560547),Color3.new(1,0,0.49803924560547),Color3.new(0.33333334326744,0.33333334326744,0.49803924560547),Color3.new(1,0.33333334326744,0.49803924560547),Color3.new(0.33333334326744,0.66666668653488,0.49803924560547),Color3.new(1,0.66666668653488,0.49803924560547),Color3.new(0.33333334326744,1,0.49803924560547),Color3.new(1,1,0.49803924560547),Color3.new(0.33333334326744,0,1),Color3.new(1,0,1),Color3.new(0.33333334326744,0.33333334326744,1),Color3.new(1,0.33333334326744,1),Color3.new(0.33333334326744,0.66666668653488,1),Color3.new(1,0.66666668653488,1),Color3.new(0.33333334326744,1,1),Color3.new(1,1,1)}
 			local customColors = {}
+			
+			local function updateColor(noupdate)
+				local relativeX, relativeY, relativeStripY = 219 - hue * 219, 199 - sat * 199, 199 - val * 199
+				local hsvColor = Color3.fromHSV(hue, sat, val)
+				
+				if noupdate == 2 or not noupdate then
+					hueInput.Text = tostring(math.ceil(359 * hue))
+					satInput.Text = tostring(math.ceil(255 * sat))
+					valInput.Text = tostring(math.floor(255 * val))
+				end
+				if noupdate == 1 or not noupdate then
+					redInput.Text = tostring(math.floor(255 * red))
+					greenInput.Text = tostring(math.floor(255 * green))
+					blueInput.Text = tostring(math.floor(255 * blue))
+				end
+				
+				chosenColor = Color3.new(red, green, blue)
+				colorScope.Position = UDim2.new(0, (relativeX - 9), 0, (relativeY - 9))
+				colorStrip.ImageColor3 = Color3.fromHSV(hue, sat, 1)
+				colorArrow.Position = UDim2.new(0, -2, 0, (relativeStripY - 4))
+				previewFrame.BackgroundColor3 = chosenColor
+				
+				newMt.Color = chosenColor
+				newMt.OnPreview:Fire(chosenColor)
+			end
+			
+			local function handleInputBegan(input, updateFunc)
+				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+					while user:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
+						updateFunc()task.wait()
+					end
+				end
+			end
+			
+			local function colorSpaceInput()
+				local relativeX = mouse.X - colorSpace.AbsolutePosition.X
+				local relativeY = mouse.Y - colorSpace.AbsolutePosition.Y
+				
+				if relativeX < 0 then relativeX = 0 elseif relativeX > 219 then relativeX = 219 end
+				if relativeY < 0 then relativeY = 0 elseif relativeY > 199 then relativeY = 199 end
+				
+				hue = (219 - relativeX) / 219
+				sat = (199 - relativeY) / 199
+				
+				local hsvColor = Color3.fromHSV(hue, sat, val)
+				red, green, blue = hsvColor.R, hsvColor.G, hsvColor.B
+				updateColor()
+			end
+			
+			local function colorStripInput()
+				local relativeY = mouse.Y - colorStrip.AbsolutePosition.Y
+				
+				if relativeY < 0 then relativeY = 0 elseif relativeY > 199 then relativeY = 199 end	
+				
+				val = (199 - relativeY) / 199
+				
+				local hsvColor = Color3.fromHSV(hue, sat, val)
+				red, green, blue = hsvColor.R, hsvColor.G, hsvColor.B
+				updateColor()
+			end
+			
+			colorSpace.InputBegan:Connect(function(input) handleInputBegan(input, colorSpaceInput) end)
+			colorStrip.InputBegan:Connect(function(input) handleInputBegan(input, colorStripInput) end)
+			
+			local function hookButtons(frame, func)
+				frame.ArrowFrame.Up.InputBegan:Connect(function(input)
+					if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+						local releaseEvent, runEvent
+						local startTime = tick()
+						local pressing = true
+						local startNum = tonumber(frame.Text)
+						
+						if not startNum then return end
+						
+						releaseEvent = user.InputEnded:Connect(function(endInput)
+							if endInput.UserInputType == Enum.UserInputType.MouseButton1 or endInput.UserInputType == Enum.UserInputType.Touch then
+								releaseEvent:Disconnect()
+								pressing = false
+							end
+						end)
+						
+						startNum = startNum + 1
+						func(startNum)
+						while pressing do
+							if tick() - startTime > 0.3 then
+								startNum = startNum + 1
+								func(startNum)
+								startTime = tick()
+							end
+							task.wait(0.1)
+						end
+					end
+				end)
+				
+				frame.ArrowFrame.Down.InputBegan:Connect(function(input)
+					if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+						local releaseEvent, runEvent
+						local startTime = tick()
+						local pressing = true
+						local startNum = tonumber(frame.Text)
+						
+						if not startNum then return end
+						
+						releaseEvent = user.InputEnded:Connect(function(endInput)
+							if endInput.UserInputType == Enum.UserInputType.MouseButton1 or endInput.UserInputType == Enum.UserInputType.Touch then
+								releaseEvent:Disconnect()
+								pressing = false
+							end
+						end)
+						
+						startNum = startNum - 1
+						func(startNum)
+						while pressing do
+							if tick() - startTime > 0.3 then
+								startNum = startNum - 1
+								func(startNum)
+								startTime = tick()
+							end
+							task.wait(0.1)
+						end
+					end
+				end)
+			end
+			
+			--[[local function UpdateBox(TextBox, Value, IsHSV, ...)
+				local number = tonumber(TextBox.Text)
+				if number then
+					number = math.clamp(math.floor(number), 0, Value) / Value
+					local HSV = Color3.fromHSV(func(number))
+					red, green, blue = HSV.R, HSV.G, HSV.B
+					
+					TextBox.Text = tostring(number):sub(4)
+					updateColor(IsHSV)
+				end
+			end]]
+			
+			local function updateHue(str)
+				local num = tonumber(str)
+				if num then
+					hue = math.clamp(math.floor(num),0,359)/359
+					local hsvColor = Color3.fromHSV(hue,sat,val)
+					red,green,blue = hsvColor.r,hsvColor.g,hsvColor.b
+					
+					hueInput.Text = tostring(hue*359)
+					updateColor(1)
+				end
+			end
+			hueInput.FocusLost:Connect(function() updateHue(hueInput.Text) end) hookButtons(hueInput, hueInput)
+			
+			local function updateSat(str)
+				local num = tonumber(str)
+				if num then
+					sat = math.clamp(math.floor(num),0,255)/255
+					local hsvColor = Color3.fromHSV(hue,sat,val)
+					red,green,blue = hsvColor.r,hsvColor.g,hsvColor.b
+					satInput.Text = tostring(sat*255)
+					updateColor(1)
+				end
+			end
+			satInput.FocusLost:Connect(function() updateSat(satInput.Text) end) hookButtons(satInput,updateSat)
+
+			local function updateVal(str)
+				local num = tonumber(str)
+				if num then
+					val = math.clamp(math.floor(num),0,255)/255
+					local hsvColor = Color3.fromHSV(hue,sat,val)
+					red,green,blue = hsvColor.r,hsvColor.g,hsvColor.b
+					valInput.Text = tostring(val*255)
+					updateColor(1)
+				end
+			end
+			valInput.FocusLost:Connect(function() updateVal(valInput.Text) end) hookButtons(valInput,updateVal)
+
+			local function updateRed(str)
+				local num = tonumber(str)
+				if num then
+					red = math.clamp(math.floor(num),0,255)/255
+					local newColor = Color3.new(red,green,blue)
+					hue,sat,val = Color3.toHSV(newColor)
+					redInput.Text = tostring(red*255)
+					updateColor(2)
+				end
+			end
+			redInput.FocusLost:Connect(function() updateRed(redInput.Text) end) hookButtons(redInput,updateRed)
+
+			local function updateGreen(str)
+				local num = tonumber(str)
+				if num then
+					green = math.clamp(math.floor(num),0,255)/255
+					local newColor = Color3.new(red,green,blue)
+					hue,sat,val = Color3.toHSV(newColor)
+					greenInput.Text = tostring(green*255)
+					updateColor(2)
+				end
+			end
+			greenInput.FocusLost:Connect(function() updateGreen(greenInput.Text) end) hookButtons(greenInput,updateGreen)
+			
+			local function updateBlue(str)
+				local num = tonumber(str)
+				if num then
+					blue = math.clamp(math.floor(num),0,255)/255
+					local newColor = Color3.new(red,green,blue)
+					hue,sat,val = Color3.toHSV(newColor)
+					blueInput.Text = tostring(blue*255)
+					updateColor(2)
+				end
+			end
+			blueInput.FocusLost:Connect(function() updateBlue(blueInput.Text) end) hookButtons(blueInput,updateBlue)
 			
 			local colorChoice = Instance.new("TextButton")
 			colorChoice.Name = "Choice"
@@ -5677,10 +5880,13 @@ local function main()
 				newColor.Position = UDim2.new(0,1 + 30*column,0,21 + 23*row)
 				
 				newColor.MouseButton1Click:Connect(function()
-					self:SetColor(v)
+					red,green,blue = v.r,v.g,v.b
+					local newColor = Color3.new(red,green,blue)
+					hue,sat,val = Color3.toHSV(newColor)
+					updateColor()
 				end)
 				
-				newColor.Parent = self.GuiElems.BasicColors
+				newColor.Parent = basicColorsFrame
 				column = column + 1
 				if column == 6 then row = row + 1 column = 0 end
 			end
@@ -5695,302 +5901,54 @@ local function main()
 
 				newColor.MouseButton1Click:Connect(function()
 					local curColor = customColors[i] or Color3.new(0,0,0)
-					self:SetColor(curColor)
+					red,green,blue = curColor.r,curColor.g,curColor.b
+					hue,sat,val = Color3.toHSV(curColor)
+					updateColor()
 				end)
 
 				newColor.MouseButton2Click:Connect(function()
-					customColors[i] = self.Color
-					newColor.BackgroundColor3 = self.Color
+					customColors[i] = chosenColor
+					newColor.BackgroundColor3 = chosenColor
 				end)
 
-				newColor.Parent = self.GuiElems.CustomColors
+				newColor.Parent = customColorsFrame
 				column = column + 1
 				if column == 6 then row = row + 1 column = 0 end
 			end
-			
-			local function handleInputBegan(input, updateFunc)
-				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-					while user:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
-						updateFunc()
-						task.wait()
-					end
-				end
-			end
-			
-			self.GuiElems.ColorSpace.InputBegan:Connect(function(input) 
-				handleInputBegan(input, function()
-					local relativeX = mouse.X - self.GuiElems.ColorSpace.AbsolutePosition.X
-					local relativeY = mouse.Y - self.GuiElems.ColorSpace.AbsolutePosition.Y
-					
-					if relativeX < 0 then relativeX = 0 elseif relativeX > 219 then relativeX = 219 end
-					if relativeY < 0 then relativeY = 0 elseif relativeY > 199 then relativeY = 199 end
-					
-					self.Hue = (219 - relativeX) / 219
-					self.Sat = (199 - relativeY) / 199
-					
-					local hsvColor = Color3.fromHSV(self.Hue, self.Sat, self.Val)
-					self.R, self.G, self.B = hsvColor.R, hsvColor.G, hsvColor.B
-					self:UpdateColor()
-				end) 
-			end)
-			
-			self.GuiElems.ColorStrip.InputBegan:Connect(function(input) 
-				handleInputBegan(input, function()
-					local relativeY = mouse.Y - self.GuiElems.ColorStrip.AbsolutePosition.Y
-					if relativeY < 0 then relativeY = 0 elseif relativeY > 199 then relativeY = 199 end	
-					self.Val = (199 - relativeY) / 199
-					
-					local hsvColor = Color3.fromHSV(self.Hue, self.Sat, self.Val)
-					self.R, self.G, self.B = hsvColor.R, hsvColor.G, hsvColor.B
-					self:UpdateColor()
-				end) 
-			end)
-			
-			local function updateHue(str)
-				local num = tonumber(str)
-				if num then
-					self.Hue = math.clamp(math.floor(num),0,359)/359
-					local hsvColor = Color3.fromHSV(self.Hue,self.Sat,self.Val)
-					self.R, self.G, self.B = hsvColor.r,hsvColor.g,hsvColor.b
-					self.GuiElems.HueInput.Text = tostring(self.Hue*359)
-					self:UpdateColor(1)
-				end
-			end
-			self.GuiElems.HueInput.FocusLost:Connect(function() updateHue(self.GuiElems.HueInput.Text) end) hookButtons(self.GuiElems.HueInput, updateHue)
-			
-			local function updateSat(str)
-				local num = tonumber(str)
-				if num then
-					self.Sat = math.clamp(math.floor(num),0,255)/255
-					local hsvColor = Color3.fromHSV(self.Hue,self.Sat,self.Val)
-					self.R, self.G, self.B = hsvColor.r,hsvColor.g,hsvColor.b
-					self.GuiElems.SatInput.Text = tostring(self.Sat*255)
-					self:UpdateColor(1)
-				end
-			end
-			self.GuiElems.SatInput.FocusLost:Connect(function() updateSat(self.GuiElems.SatInput.Text) end) hookButtons(self.GuiElems.SatInput, updateSat)
 
-			local function updateVal(str)
-				local num = tonumber(str)
-				if num then
-					self.Val = math.clamp(math.floor(num),0,255)/255
-					local hsvColor = Color3.fromHSV(self.Hue,self.Sat,self.Val)
-					self.R, self.G, self.B = hsvColor.r,hsvColor.g,hsvColor.b
-					self.GuiElems.ValInput.Text = tostring(self.Val*255)
-					self:UpdateColor(1)
-				end
-			end
-			self.GuiElems.ValInput.FocusLost:Connect(function() updateVal(self.GuiElems.ValInput.Text) end) hookButtons(self.GuiElems.ValInput, updateVal)
+			okButton.MouseButton1Click:Connect(function() newMt.OnSelect:Fire(chosenColor) window:Close() end)
+			okButton.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then okButton.BackgroundTransparency = 0.4 end end)
+			okButton.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then okButton.BackgroundTransparency = 0 end end)
+			
 
-			local function updateRed(str)
-				local num = tonumber(str)
-				if num then
-					self.R = math.clamp(math.floor(num),0,255)/255
-					local newColor = Color3.new(self.R,self.G,self.B)
-					self.Hue, self.Sat, self.Val = Color3.toHSV(newColor)
-					self.GuiElems.RedInput.Text = tostring(self.R*255)
-					self:UpdateColor(2)
-				end
-			end
-			self.GuiElems.RedInput.FocusLost:Connect(function() updateRed(self.GuiElems.RedInput.Text) end) hookButtons(self.GuiElems.RedInput, updateRed)
+			cancelButton.MouseButton1Click:Connect(function() newMt.OnCancel:Fire() window:Close() end)
+			cancelButton.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then cancelButton.BackgroundTransparency = 0.4 end end)
+			cancelButton.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then cancelButton.BackgroundTransparency = 0 end end)
 
-			local function updateGreen(str)
-				local num = tonumber(str)
-				if num then
-					self.G = math.clamp(math.floor(num),0,255)/255
-					local newColor = Color3.new(self.R,self.G,self.B)
-					self.Hue, self.Sat, self.Val = Color3.toHSV(newColor)
-					self.GuiElems.GreenInput.Text = tostring(self.G*255)
-					self:UpdateColor(2)
-				end
-			end
-			self.GuiElems.GreenInput.FocusLost:Connect(function() updateGreen(self.GuiElems.GreenInput.Text) end) hookButtons(self.GuiElems.GreenInput, updateGreen)
-			
-			local function updateBlue(str)
-				local num = tonumber(str)
-				if num then
-					self.B = math.clamp(math.floor(num),0,255)/255
-					local newColor = Color3.new(self.R,self.G,self.B)
-					self.Hue, self.Sat, self.Val = Color3.toHSV(newColor)
-					self.GuiElems.BlueInput.Text = tostring(self.B*255)
-					self:UpdateColor(2)
-				end
-			end
-			self.GuiElems.BlueInput.FocusLost:Connect(function() updateBlue(self.GuiElems.BlueInput.Text) end) hookButtons(self.GuiElems.BlueInput, updateBlue)
-			
-			self.GuiElems.OkButton.MouseButton1Click:Connect(function() self.OnSelect:Fire(self.Color) self.Window:Close() end)
-			Lib.ButtonAnim(self.GuiElems.OkButton)
-			
-			self.GuiElems.CancelButton.MouseButton1Click:Connect(function() self.OnCancel:Fire() self.Window:Close() end)
-			Lib.ButtonAnim(self.GuiElems.CancelButton)
-		end
-		
-		funcs.UpdateColor = function(self, noupdate)
-			local relativeX, relativeY, relativeStripY = 219 - self.Hue * 219, 199 - self.Sat * 199, 199 - self.Val * 199
-			local hsvColor = Color3.fromHSV(self.Hue, self.Sat, self.Val)
-			
-			if noupdate == 2 or not noupdate then
-				self.GuiElems.HueInput.Text = tostring(math.ceil(359 * self.Hue))
-				self.GuiElems.SatInput.Text = tostring(math.ceil(255 * self.Sat))
-				self.GuiElems.ValInput.Text = tostring(math.floor(255 * self.Val))
-			end
-			if noupdate == 1 or not noupdate then
-				self.GuiElems.RedInput.Text = tostring(math.floor(255 * self.R))
-				self.GuiElems.GreenInput.Text = tostring(math.floor(255 * self.G))
-				self.GuiElems.BlueInput.Text = tostring(math.floor(255 * self.B))
-			end
-			
-			self.Color = Color3.new(self.R, self.G, self.B)
-			self.GuiElems.ColorScope.Position = UDim2.new(0, (relativeX - 9), 0, (relativeY - 9))
-			self.GuiElems.ColorStrip.ImageColor3 = Color3.fromHSV(self.Hue, self.Sat, 1)
-			self.GuiElems.ColorArrow.Position = UDim2.new(0, -2, 0, (relativeStripY - 4))
-			self.GuiElems.Preview.BackgroundColor3 = self.Color
-			
-			self.OnPreview:Fire(self.Color)
-		end
+			updateColor()
 
-		funcs.SetColor = function(self,color)
-			self.R,self.G,self.B = color.r,color.g,color.b
-			self.Hue,self.Sat,self.Val = Color3.toHSV(color)
-			self:UpdateColor()
-		end
+			newMt.SetColor = function(self,color)
+				red,green,blue = color.r,color.g,color.b
+				hue,sat,val = Color3.toHSV(color)
+				updateColor()
+			end
 
-		funcs.Show = function(self)
-			self.Window:Show()
-		end
+			newMt.Show = function(self)
+				self.Window:Show()
+			end
 
-		local mt = {__index = funcs}
-
-		local function new()
-			local obj = setmetatable({
-				OnSelect = Lib.Signal.new(),
-				OnCancel = Lib.Signal.new(),
-				OnPreview = Lib.Signal.new(),
-				Hue = 0, Sat = 0, Val = 1,
-				R = 1, G = 1, B = 1,
-				Color = Color3.new(1,1,1),
-				GuiElems = {}
-			}, mt)
-			
-			createGui(obj)
-			obj:UpdateColor()
-			
-			return obj
+			return newMt
 		end
 
 		return {new = new}
 	end)()
 
 	Lib.NumberSequenceEditor = (function()
-		local funcs = {}
-		
-		local function round(num,places)
-			local multi = 10^places
-			return math.floor(num*multi + 0.5)/multi
-		end
-
-		funcs.UpdateInputs = function(self, point)
-			if point then
-				self.CurrentPoint = point
-				local rawT,rawV,rawE = point[2],point[1],point[3]
-				
-				local elems = self.GuiElems
-				elems.TimeBox.Text = round(rawT,(rawT < 0.01 and 5) or (rawT < 0.1 and 4) or 3)
-				elems.ValueBox.Text = round(rawV,(rawV < 0.01 and 5) or (rawV < 0.1 and 4) or (rawV < 1 and 3) or 2)
-				elems.EnvelopeBox.Text = round(rawE,(rawE < 0.01 and 5) or (rawE < 0.1 and 4) or (rawV < 1 and 3) or 2)
-
-				local envelopeDistance = elems.NumberLine.AbsoluteSize.Y*(point[3]/10)
-				self.EnvelopeDragTop.Position = UDim2.new(0,point[4].Position.X.Offset-1,0,point[4].Position.Y.Offset-envelopeDistance-17)
-				self.EnvelopeDragTop.Visible = true
-				self.EnvelopeDragBottom.Position = UDim2.new(0,point[4].Position.X.Offset-1,0,point[4].Position.Y.Offset+envelopeDistance+2)
-				self.EnvelopeDragBottom.Visible = true
-			end
-		end
-
-		funcs.BuildSequence = function(self)
-			local newPoints = {}
-			for i,v in pairs(self.Points) do
-				table.insert(newPoints,NumberSequenceKeypoint.new(v[2],v[1],v[3]))
-			end
-			self.Sequence = NumberSequence.new(newPoints)
-			self.OnSelect:Fire(self.Sequence)
-		end
-
-		funcs.Redraw = function(self)
-			local points = self.Points
-			local lines = self.Lines
-			local eLines = self.ELines
-			local numberLineSize = self.GuiElems.NumberLine.AbsoluteSize
-			
-			table.sort(points,function(a,b) return a[2] < b[2] end)
-			
-			for i,v in pairs(points) do
-				v[4].Position = UDim2.new(0,math.floor((numberLineSize.X-1) * v[2])-2,0,(numberLineSize.Y-1)*(10-v[1])/10-2)
-			end
-			
-			lines[1].Size = UDim2.new(0,1,0,0)
-			
-			for i = 1,#points-1 do
-				local fromPoint = points[i]
-				local toPoint = points[i+1]
-				local deltaY = toPoint[4].Position.Y.Offset-fromPoint[4].Position.Y.Offset
-				local deltaX = toPoint[4].Position.X.Offset-fromPoint[4].Position.X.Offset
-				local slope = deltaY/deltaX
-
-				local fromEnvelope = fromPoint[3]
-				local nextEnvelope = toPoint[3]
-
-				local currentRise = math.abs(slope)
-				local totalRise = 0
-				local maxRise = math.abs(toPoint[4].Position.Y.Offset-fromPoint[4].Position.Y.Offset)
-
-				for lineCount = math.min(fromPoint[4].Position.X.Offset+1,toPoint[4].Position.X.Offset),toPoint[4].Position.X.Offset do
-					if deltaX == 0 and deltaY == 0 then return end
-					local riseNow = math.floor(currentRise)
-					local line = lines[lineCount+3]
-					if line then
-						if totalRise+riseNow > maxRise then riseNow = maxRise-totalRise end
-						if math.sign(slope) == -1 then
-							line.Position = UDim2.new(0,lineCount+2,0,fromPoint[4].Position.Y.Offset + -(totalRise+riseNow)+2)
-						else
-							line.Position = UDim2.new(0,lineCount+2,0,fromPoint[4].Position.Y.Offset + totalRise+2)
-						end
-						line.Size = UDim2.new(0,1,0,math.max(riseNow,1))
-					end
-					totalRise = totalRise + riseNow
-					currentRise = currentRise - riseNow + math.abs(slope)
-
-					local envPercent = (lineCount-fromPoint[4].Position.X.Offset)/(toPoint[4].Position.X.Offset-fromPoint[4].Position.X.Offset)
-					local envLerp = fromEnvelope+(nextEnvelope-fromEnvelope)*envPercent
-					local relativeSize = (envLerp/10)*numberLineSize.Y						
-
-					local line = eLines[lineCount + 3]
-					if line then
-						line.Position = UDim2.new(0,lineCount+2,0,lines[lineCount+3].Position.Y.Offset-math.floor(relativeSize))
-						line.Size = UDim2.new(0,1,0,math.floor(relativeSize*2))
-					end
-				end
-			end
-		end
-
-		funcs.Show = function(self)
-			self.Window:Show()
-		end
-
-		local mt = {__index = funcs}
-
-		local function new()
-			local newMt = setmetatable({
-				OnSelect = Lib.Signal.new(),
-				OnCancel = Lib.Signal.new(),
-				OnPreview = Lib.Signal.new(),
-				Points = {},
-				Lines = {},
-				ELines = {},
-				CurrentPoint = nil,
-				CurrentlySelected = nil,
-				ResetSequence = nil
-			}, mt)
+		local function new() -- TODO: Convert to newer class model
+			local newMt = setmetatable({},{})
+			newMt.OnSelect = Lib.Signal.new()
+			newMt.OnCancel = Lib.Signal.new()
+			newMt.OnPreview = Lib.Signal.new()
 
 			local guiContents = create({
 				{1,"Frame",{BackgroundColor3=Color3.new(0.17647059261799,0.17647059261799,0.17647059261799),BorderSizePixel=0,ClipsDescendants=true,Name="Content",Position=UDim2.new(0,0,0,20),Size=UDim2.new(1,0,1,-20),}},
@@ -6009,37 +5967,41 @@ local function main()
 				{14,"TextBox",{BackgroundColor3=Color3.new(0.25098040699959,0.25098040699959,0.25098040699959),BackgroundTransparency=1,BorderColor3=Color3.new(0.37647062540054,0.37647062540054,0.37647062540054),ClipsDescendants=true,Font=3,Name="Input",Parent={13},Position=UDim2.new(0,2,0,0),Size=UDim2.new(0,58,0,20),Text="0",TextColor3=Color3.new(0.86274516582489,0.86274516582489,0.86274516582489),TextSize=14,TextXAlignment=0,}},
 				{15,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=3,Name="Title",Parent={13},Position=UDim2.new(0,-40,0,0),Size=UDim2.new(0,34,1,0),Text="Envelope",TextColor3=Color3.new(0.86274516582489,0.86274516582489,0.86274516582489),TextSize=14,TextXAlignment=1,}},
 			})
-			
 			local window = Lib.Window.new()
 			window.Resizable = false
 			window:Resize(680,265)
 			window:SetTitle("NumberSequence Editor")
-			
 			newMt.Window = window
 			newMt.Gui = window.Gui
 			for i,v in pairs(guiContents:GetChildren()) do
 				v.Parent = window.GuiElems.Content
 			end
-			
 			local gui = window.Gui
 			local pickerGui = gui.Main
+			local pickerTopBar = pickerGui.TopBar
 			local pickerFrame = pickerGui.Content
-			
-			newMt.GuiElems = {
-				NumberLine = pickerFrame.NumberLine,
-				NumberLineOutlines = pickerFrame.NumberLineOutlines,
-				TimeBox = pickerFrame.Time.Input,
-				ValueBox = pickerFrame.Value.Input,
-				EnvelopeBox = pickerFrame.Envelope.Input,
-				DeleteButton = pickerFrame.Delete,
-				ResetButton = pickerFrame.Reset,
-				CloseButton = pickerFrame.Close,
-				TopClose = pickerGui.TopBar.Close
-			}
-			
+			local numberLine = pickerFrame.NumberLine
+			local numberLineOutlines = pickerFrame.NumberLineOutlines
+			local timeBox = pickerFrame.Time.Input
+			local valueBox = pickerFrame.Value.Input
+			local envelopeBox = pickerFrame.Envelope.Input
+			local deleteButton = pickerFrame.Delete
+			local resetButton = pickerFrame.Reset
+			local closeButton = pickerFrame.Close
+			local topClose = pickerTopBar.Close
+
+			local points = {{1,0,3},{8,0.05,1},{5,0.6,2},{4,0.7,4},{6,1,4}}
+			local lines = {}
+			local eLines = {}
+			local beginPoint = points[1]
+			local endPoint = points[#points]
+			local currentlySelected = nil
+			local currentPoint = nil
+			local resetSequence = nil
+
 			local user = service.UserInputService
 			local mouse = service.Players.LocalPlayer:GetMouse()
-			
+
 			for i = 2,10 do
 				local newLine = Instance.new("Frame")
 				newLine.BackgroundTransparency = 0.5
@@ -6047,7 +6009,7 @@ local function main()
 				newLine.BorderSizePixel = 0
 				newLine.Size = UDim2.new(0,1,1,0)
 				newLine.Position = UDim2.new((i-1)/(11-1),0,0,0)
-				newLine.Parent = newMt.GuiElems.NumberLineOutlines
+				newLine.Parent = numberLineOutlines
 			end
 
 			for i = 2,4 do
@@ -6057,30 +6019,35 @@ local function main()
 				newLine.BorderSizePixel = 0
 				newLine.Size = UDim2.new(1,0,0,1)
 				newLine.Position = UDim2.new(0,0,(i-1)/(5-1),0)
-				newLine.Parent = newMt.GuiElems.NumberLineOutlines
+				newLine.Parent = numberLineOutlines
 			end
+
+			local lineTemp = Instance.new("Frame")
+			lineTemp.BackgroundColor3 = Color3.new(0,0,0)
+			lineTemp.BorderSizePixel = 0
+			lineTemp.Size = UDim2.new(0,1,0,1)
 
 			local sequenceLine = Instance.new("Frame")
 			sequenceLine.BackgroundColor3 = Color3.new(0,0,0)
 			sequenceLine.BorderSizePixel = 0
 			sequenceLine.Size = UDim2.new(0,1,0,0)
 
-			for i = 1,newMt.GuiElems.NumberLine.AbsoluteSize.X do
+			for i = 1,numberLine.AbsoluteSize.X do
 				local line = sequenceLine:Clone()
-				newMt.ELines[i] = line
+				eLines[i] = line
 				line.Name = "E"..tostring(i)
 				line.BackgroundTransparency = 0.5
 				line.BackgroundColor3 = Color3.new(199/255,44/255,28/255)
 				line.Position = UDim2.new(0,i-1,0,0)
-				line.Parent = newMt.GuiElems.NumberLine
+				line.Parent = numberLine
 			end
 
-			for i = 1,newMt.GuiElems.NumberLine.AbsoluteSize.X do
+			for i = 1,numberLine.AbsoluteSize.X do
 				local line = sequenceLine:Clone()
-				newMt.Lines[i] = line
+				lines[i] = line
 				line.Name = tostring(i)
 				line.Position = UDim2.new(0,i-1,0,0)
-				line.Parent = newMt.GuiElems.NumberLine
+				line.Parent = numberLine
 			end
 
 			local envelopeDrag = Instance.new("Frame")
@@ -6098,22 +6065,108 @@ local function main()
 			envelopeDragLine.Size = UDim2.new(0,1,0,20)
 			envelopeDragLine.ZIndex = 2
 
-			newMt.EnvelopeDragTop = envelopeDrag:Clone()
-			newMt.EnvelopeDragBottom = envelopeDrag:Clone()
-			newMt.EnvelopeDragTop.Parent = newMt.GuiElems.NumberLine
-			newMt.EnvelopeDragBottom.Parent = newMt.GuiElems.NumberLine
-			 
-			local function buttonAnimations(button,inverse)
-				button.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then button.BackgroundTransparency = (inverse and 0.5 or 0.4) end end)
-				button.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then button.BackgroundTransparency = (inverse and 1 or 0) end end)
+			local envelopeDragTop,envelopeDragBottom = envelopeDrag:Clone(),envelopeDrag:Clone()
+			envelopeDragTop.Parent = numberLine
+			envelopeDragBottom.Parent = numberLine
+
+			local function buildSequence()
+				local newPoints = {}
+				for i,v in pairs(points) do
+					table.insert(newPoints,NumberSequenceKeypoint.new(v[2],v[1],v[3]))
+				end
+				newMt.Sequence = NumberSequence.new(newPoints)
+				newMt.OnSelect:Fire(newMt.Sequence)
 			end
+
+			local function round(num,places)
+				local multi = 10^places
+				return math.floor(num*multi + 0.5)/multi
+			end
+
+			local function updateInputs(point)
+				if point then
+					currentPoint = point
+					local rawT,rawV,rawE = point[2],point[1],point[3]
+					timeBox.Text = round(rawT,(rawT < 0.01 and 5) or (rawT < 0.1 and 4) or 3)
+					valueBox.Text = round(rawV,(rawV < 0.01 and 5) or (rawV < 0.1 and 4) or (rawV < 1 and 3) or 2)
+					envelopeBox.Text = round(rawE,(rawE < 0.01 and 5) or (rawE < 0.1 and 4) or (rawV < 1 and 3) or 2)
+
+					local envelopeDistance = numberLine.AbsoluteSize.Y*(point[3]/10)
+					envelopeDragTop.Position = UDim2.new(0,point[4].Position.X.Offset-1,0,point[4].Position.Y.Offset-envelopeDistance-17)
+					envelopeDragTop.Visible = true
+					envelopeDragBottom.Position = UDim2.new(0,point[4].Position.X.Offset-1,0,point[4].Position.Y.Offset+envelopeDistance+2)
+					envelopeDragBottom.Visible = true
+				end
+			end
+
+			envelopeDragTop.InputBegan:Connect(function(input)
+				if (input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch) or not currentPoint or Lib.CheckMouseInGui(currentPoint[4].Select) then return end
+				
+				local mouseEvent, releaseEvent
+				local maxSize = numberLine.AbsoluteSize.Y
+				local mouseDelta = math.abs(envelopeDragTop.AbsolutePosition.Y - mouse.Y)
+				
+				envelopeDragTop.Line.Position = UDim2.new(0, 2, 0, 0)
+				envelopeDragTop.Line.Size = UDim2.new(0, 3, 0, 20)
+				
+				releaseEvent = user.InputEnded:Connect(function(input)
+					if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch then return end
+					mouseEvent:Disconnect()
+					releaseEvent:Disconnect()
+					envelopeDragTop.Line.Position = UDim2.new(0, 3, 0, 0)
+					envelopeDragTop.Line.Size = UDim2.new(0, 1, 0, 20)
+				end)
+				
+				mouseEvent = user.InputChanged:Connect(function(input)
+					if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+						local topDiff = (currentPoint[4].AbsolutePosition.Y + 2) - (mouse.Y - mouseDelta) - 19
+						local newEnvelope = 10 * (math.max(topDiff, 0) / maxSize)
+						local maxEnvelope = math.min(currentPoint[1], 10 - currentPoint[1])
+						currentPoint[3] = math.min(newEnvelope, maxEnvelope)
+						newMt:Redraw()
+						buildSequence()
+						updateInputs(currentPoint)
+					end
+				end)
+			end)
+			
+			envelopeDragBottom.InputBegan:Connect(function(input)
+				if (input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch) or not currentPoint or Lib.CheckMouseInGui(currentPoint[4].Select) then return end
+				
+				local mouseEvent, releaseEvent
+				local maxSize = numberLine.AbsoluteSize.Y
+				local mouseDelta = math.abs(envelopeDragBottom.AbsolutePosition.Y - mouse.Y)
+				
+				envelopeDragBottom.Line.Position = UDim2.new(0, 2, 0, 0)
+				envelopeDragBottom.Line.Size = UDim2.new(0, 3, 0, 20)
+				
+				releaseEvent = user.InputEnded:Connect(function(input)
+					if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch then return end
+					mouseEvent:Disconnect()
+					releaseEvent:Disconnect()
+					envelopeDragBottom.Line.Position = UDim2.new(0, 3, 0, 0)
+					envelopeDragBottom.Line.Size = UDim2.new(0, 1, 0, 20)
+				end)
+				
+				mouseEvent = user.InputChanged:Connect(function(input)
+					if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+						local bottomDiff = (mouse.Y + (20 - mouseDelta)) - (currentPoint[4].AbsolutePosition.Y + 2) - 19
+						local newEnvelope = 10 * (math.max(bottomDiff, 0) / maxSize)
+						local maxEnvelope = math.min(currentPoint[1], 10 - currentPoint[1])
+						currentPoint[3] = math.min(newEnvelope, maxEnvelope)
+						newMt:Redraw()
+						buildSequence()
+						updateInputs(currentPoint)
+					end
+				end)
+			end)
 			
 			local function placePoint(point)
 				local newPoint = Instance.new("Frame")
 				newPoint.Name = "Point"
 				newPoint.BorderSizePixel = 0
 				newPoint.Size = UDim2.new(0,5,0,5)
-				newPoint.Position = UDim2.new(0,math.floor((newMt.GuiElems.NumberLine.AbsoluteSize.X-1) * point[2])-2,0,newMt.GuiElems.NumberLine.AbsoluteSize.Y*(10-point[1])/10-2)
+				newPoint.Position = UDim2.new(0,math.floor((numberLine.AbsoluteSize.X-1) * point[2])-2,0,numberLine.AbsoluteSize.Y*(10-point[1])/10-2)
 				newPoint.BackgroundColor3 = Color3.new(0,0,0)
 
 				local newSelect = Instance.new("Frame")
@@ -6124,47 +6177,49 @@ local function main()
 				newSelect.Size = UDim2.new(0,9,0,9)
 				newSelect.Parent = newPoint
 
-				newPoint.Parent = newMt.GuiElems.NumberLine
+				newPoint.Parent = numberLine
 
+				
 				newSelect.InputBegan:Connect(function(input)
 					if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-						for i, v in pairs(newMt.Points) do 
+						for i, v in pairs(points) do 
 							v[4].Select.BackgroundTransparency = 1 
 						end
 						
 						newSelect.BackgroundTransparency = 0
-						newMt:UpdateInputs(point)
+						updateInputs(point)
 					end
 					
-					if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and not newMt.CurrentlySelected then
-						newMt.CurrentPoint = point
+					if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and not currentlySelected then
+						currentPoint = point
 						local mouseEvent, releaseEvent
-						newMt.CurrentlySelected = true
+						currentlySelected = true
 						newSelect.BackgroundColor3 = Color3.new(249/255, 191/255, 59/255)
 						
 						local oldEnvelope = point[3]
 						
 						releaseEvent = user.InputEnded:Connect(function(input)
 							if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch then	return end
+							
 							mouseEvent:Disconnect()
 							releaseEvent:Disconnect()
-							newMt.CurrentlySelected = nil
+							currentlySelected = nil
 							newSelect.BackgroundColor3 = Color3.new(199/255, 44/255, 28/255)
 						end)
 						
 						mouseEvent = user.InputChanged:Connect(function(input)
 							if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-								local maxX = newMt.GuiElems.NumberLine.AbsoluteSize.X - 1
-								local relativeX = (input.Position.X - newMt.GuiElems.NumberLine.AbsolutePosition.X)
+								local maxX = numberLine.AbsoluteSize.X - 1
+								local relativeX = (input.Position.X - numberLine.AbsolutePosition.X)
 								if relativeX < 0 then relativeX = 0 end
 								if relativeX > maxX then relativeX = maxX end
 								
-								local maxY = newMt.GuiElems.NumberLine.AbsoluteSize.Y - 1
-								local relativeY = (input.Position.Y - newMt.GuiElems.NumberLine.AbsolutePosition.Y)
+								local maxY = numberLine.AbsoluteSize.Y - 1
+								local relativeY = (input.Position.Y - numberLine.AbsolutePosition.Y)
 								if relativeY < 0 then relativeY = 0 end
 								if relativeY > maxY then relativeY = maxY end
 								
-								if point ~= newMt.BeginPoint and point ~= newMt.EndPoint then
+								if point ~= beginPoint and point ~= endPoint then
 									point[2] = relativeX / maxX
 								end
 								
@@ -6172,14 +6227,14 @@ local function main()
 								local maxEnvelope = math.min(point[1], 10 - point[1])
 								point[3] = math.min(oldEnvelope, maxEnvelope)
 								newMt:Redraw()
-								newMt:UpdateInputs(point)
+								updateInputs(point)
 								
-								for i, v in pairs(newMt.Points) do 
+								for i, v in pairs(points) do 
 									v[4].Select.BackgroundTransparency = 1 
 								end
 								
 								newSelect.BackgroundTransparency = 0
-								newMt:BuildSequence()
+								buildSequence()
 							end
 						end)
 					end
@@ -6187,189 +6242,197 @@ local function main()
 
 				return newPoint
 			end
-			
-			newMt.SetSequence = function(self, seq)
-				self.ResetSequence = seq
-				for i,v in pairs(self.Points) do if v[4] then v[4]:Destroy() end end
-				self.Points = {}
+
+			local function placePoints()
+				for i,v in pairs(points) do
+					v[4] = placePoint(v)
+				end
+			end
+
+			local function redraw(self)
+				local numberLineSize = numberLine.AbsoluteSize
+				table.sort(points,function(a,b) return a[2] < b[2] end)
+				for i,v in pairs(points) do
+					v[4].Position = UDim2.new(0,math.floor((numberLineSize.X-1) * v[2])-2,0,(numberLineSize.Y-1)*(10-v[1])/10-2)
+				end
+				lines[1].Size = UDim2.new(0,1,0,0)
+				for i = 1,#points-1 do
+					local fromPoint = points[i]
+					local toPoint = points[i+1]
+					local deltaY = toPoint[4].Position.Y.Offset-fromPoint[4].Position.Y.Offset
+					local deltaX = toPoint[4].Position.X.Offset-fromPoint[4].Position.X.Offset
+					local slope = deltaY/deltaX
+
+					local fromEnvelope = fromPoint[3]
+					local nextEnvelope = toPoint[3]
+
+					local currentRise = math.abs(slope)
+					local totalRise = 0
+					local maxRise = math.abs(toPoint[4].Position.Y.Offset-fromPoint[4].Position.Y.Offset)
+
+					for lineCount = math.min(fromPoint[4].Position.X.Offset+1,toPoint[4].Position.X.Offset),toPoint[4].Position.X.Offset do
+						if deltaX == 0 and deltaY == 0 then return end
+						local riseNow = math.floor(currentRise)
+						local line = lines[lineCount+3]
+						if line then
+							if totalRise+riseNow > maxRise then riseNow = maxRise-totalRise end
+							if math.sign(slope) == -1 then
+								line.Position = UDim2.new(0,lineCount+2,0,fromPoint[4].Position.Y.Offset + -(totalRise+riseNow)+2)
+							else
+								line.Position = UDim2.new(0,lineCount+2,0,fromPoint[4].Position.Y.Offset + totalRise+2)
+							end
+							line.Size = UDim2.new(0,1,0,math.max(riseNow,1))
+						end
+						totalRise = totalRise + riseNow
+						currentRise = currentRise - riseNow + math.abs(slope)
+
+						local envPercent = (lineCount-fromPoint[4].Position.X.Offset)/(toPoint[4].Position.X.Offset-fromPoint[4].Position.X.Offset)
+						local envLerp = fromEnvelope+(nextEnvelope-fromEnvelope)*envPercent
+						local relativeSize = (envLerp/10)*numberLineSize.Y						
+
+						local line = eLines[lineCount + 3]
+						if line then
+							line.Position = UDim2.new(0,lineCount+2,0,lines[lineCount+3].Position.Y.Offset-math.floor(relativeSize))
+							line.Size = UDim2.new(0,1,0,math.floor(relativeSize*2))
+						end
+					end
+				end
+			end
+			newMt.Redraw = redraw
+
+
+
+			local function loadSequence(self,seq)
+				resetSequence = seq
+				for i,v in pairs(points) do if v[4] then v[4]:Destroy() end end
+				points = {}
 				for i,v in pairs(seq.Keypoints) do
 					local maxEnvelope = math.min(v.Value,10-v.Value)
 					local newPoint = {v.Value,v.Time,math.min(v.Envelope,maxEnvelope)}
 					newPoint[4] = placePoint(newPoint)
-					table.insert(self.Points,newPoint)
+					table.insert(points,newPoint)
 				end
-				self.BeginPoint = self.Points[1]
-				self.EndPoint = self.Points[#self.Points]
-				self.CurrentlySelected = nil
-				self:Redraw()
-				self.EnvelopeDragTop.Visible = false
-				self.EnvelopeDragBottom.Visible = false
+				beginPoint = points[1]
+				endPoint = points[#points]
+				currentlySelected = nil
+				redraw()
+				envelopeDragTop.Visible = false
+				envelopeDragBottom.Visible = false
 			end
-			
-			newMt.EnvelopeDragTop.InputBegan:Connect(function(input)
-				if (input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch) or not newMt.CurrentPoint or Lib.CheckMouseInGui(newMt.CurrentPoint[4].Select) then return end
-				local mouseEvent, releaseEvent
-				local maxSize = newMt.GuiElems.NumberLine.AbsoluteSize.Y
-				local mouseDelta = math.abs(newMt.EnvelopeDragTop.AbsolutePosition.Y - mouse.Y)
-				
-				newMt.EnvelopeDragTop.Line.Position = UDim2.new(0, 2, 0, 0)
-				newMt.EnvelopeDragTop.Line.Size = UDim2.new(0, 3, 0, 20)
-				
-				releaseEvent = user.InputEnded:Connect(function(input)
-					if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch then return end
-					mouseEvent:Disconnect()
-					releaseEvent:Disconnect()
-					newMt.EnvelopeDragTop.Line.Position = UDim2.new(0, 3, 0, 0)
-					newMt.EnvelopeDragTop.Line.Size = UDim2.new(0, 1, 0, 20)
-				end)
-				
-				mouseEvent = user.InputChanged:Connect(function(input)
-					if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-						local topDiff = (newMt.CurrentPoint[4].AbsolutePosition.Y + 2) - (mouse.Y - mouseDelta) - 19
-						local newEnvelope = 10 * (math.max(topDiff, 0) / maxSize)
-						local maxEnvelope = math.min(newMt.CurrentPoint[1], 10 - newMt.CurrentPoint[1])
-						newMt.CurrentPoint[3] = math.min(newEnvelope, maxEnvelope)
-						newMt:Redraw()
-						newMt:BuildSequence()
-						newMt:UpdateInputs(newMt.CurrentPoint)
-					end
-				end)
-			end)
-			
-			newMt.EnvelopeDragBottom.InputBegan:Connect(function(input)
-				if (input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch) or not newMt.CurrentPoint or Lib.CheckMouseInGui(newMt.CurrentPoint[4].Select) then return end
-				local mouseEvent, releaseEvent
-				local maxSize = newMt.GuiElems.NumberLine.AbsoluteSize.Y
-				local mouseDelta = math.abs(newMt.EnvelopeDragBottom.AbsolutePosition.Y - mouse.Y)
-				
-				newMt.EnvelopeDragBottom.Line.Position = UDim2.new(0, 2, 0, 0)
-				newMt.EnvelopeDragBottom.Line.Size = UDim2.new(0, 3, 0, 20)
-				
-				releaseEvent = user.InputEnded:Connect(function(input)
-					if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch then return end
-					mouseEvent:Disconnect()
-					releaseEvent:Disconnect()
-					newMt.EnvelopeDragBottom.Line.Position = UDim2.new(0, 3, 0, 0)
-					newMt.EnvelopeDragBottom.Line.Size = UDim2.new(0, 1, 0, 20)
-				end)
-				
-				mouseEvent = user.InputChanged:Connect(function(input)
-					if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-						local bottomDiff = (mouse.Y + (20 - mouseDelta)) - (newMt.CurrentPoint[4].AbsolutePosition.Y + 2) - 19
-						local newEnvelope = 10 * (math.max(bottomDiff, 0) / maxSize)
-						local maxEnvelope = math.min(newMt.CurrentPoint[1], 10 - newMt.CurrentPoint[1])
-						newMt.CurrentPoint[3] = math.min(newEnvelope, maxEnvelope)
-						newMt:Redraw()
-						newMt:BuildSequence()
-						newMt:UpdateInputs(newMt.CurrentPoint)
-					end
-				end)
-			end)
-			
-			newMt.GuiElems.NumberLine.InputBegan:Connect(function(input)
-				if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and #newMt.Points < 20 then
-					if Lib.CheckMouseInGui(newMt.EnvelopeDragTop) or Lib.CheckMouseInGui(newMt.EnvelopeDragBottom) then return end
-					for i, v in pairs(newMt.Points) do
-						if Lib.CheckMouseInGui(v[4].Select) then return end
-					end
-					
-					local maxX = newMt.GuiElems.NumberLine.AbsoluteSize.X - 1
-					local relativeX = (input.Position.X - newMt.GuiElems.NumberLine.AbsolutePosition.X)
-					if relativeX < 0 then relativeX = 0 end
-					if relativeX > maxX then relativeX = maxX end
-					
-					local maxY = newMt.GuiElems.NumberLine.AbsoluteSize.Y - 1
-					local relativeY = (input.Position.Y - newMt.GuiElems.NumberLine.AbsolutePosition.Y)
-					if relativeY < 0 then relativeY = 0 end
-					if relativeY > maxY then relativeY = maxY end
-					
-					local raw = relativeX / maxX
-					local newPoint = {10 - (relativeY / maxY) * 10, raw, 0}
-					newPoint[4] = placePoint(newPoint)
-					table.insert(newMt.Points, newPoint)
-					newMt:Redraw()
-					newMt:BuildSequence()
-				end
-			end)
-			
-			newMt.GuiElems.TimeBox.FocusLost:Connect(function()
-				local point = newMt.CurrentPoint
-				local num = tonumber(newMt.GuiElems.TimeBox.Text)
-				if point and num and point ~= newMt.BeginPoint and point ~= newMt.EndPoint then
+			newMt.SetSequence = loadSequence
+
+			timeBox.FocusLost:Connect(function()
+				local point = currentPoint
+				local num = tonumber(timeBox.Text)
+				if point and num and point ~= beginPoint and point ~= endPoint then
 					num = math.clamp(num,0,1)
 					point[2] = num
-					newMt:Redraw()
-					newMt:BuildSequence()
-					newMt:UpdateInputs(point)
+					redraw()
+					buildSequence()
+					updateInputs(point)
 				end
 			end)
 
-			newMt.GuiElems.ValueBox.FocusLost:Connect(function()
-				local point = newMt.CurrentPoint
-				local num = tonumber(newMt.GuiElems.ValueBox.Text)
+			valueBox.FocusLost:Connect(function()
+				local point = currentPoint
+				local num = tonumber(valueBox.Text)
 				if point and num then
 					local oldEnvelope = point[3]
 					num = math.clamp(num,0,10)
 					point[1] = num
 					local maxEnvelope = math.min(point[1],10-point[1])
 					point[3] = math.min(oldEnvelope,maxEnvelope)
-					newMt:Redraw()
-					newMt:BuildSequence()
-					newMt:UpdateInputs(point)
+					redraw()
+					buildSequence()
+					updateInputs(point)
 				end
 			end)
 
-			newMt.GuiElems.EnvelopeBox.FocusLost:Connect(function()
-				local point = newMt.CurrentPoint
-				local num = tonumber(newMt.GuiElems.EnvelopeBox.Text)
+			envelopeBox.FocusLost:Connect(function()
+				local point = currentPoint
+				local num = tonumber(envelopeBox.Text)
 				if point and num then
 					num = math.clamp(num,0,5)
 					local maxEnvelope = math.min(point[1],10-point[1])
 					point[3] = math.min(num,maxEnvelope)
-					newMt:Redraw()
-					newMt:BuildSequence()
-					newMt:UpdateInputs(point)
+					redraw()
+					buildSequence()
+					updateInputs(point)
 				end
 			end)
+
+			local function buttonAnimations(button,inverse)
+				button.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then button.BackgroundTransparency = (inverse and 0.5 or 0.4) end end)
+				button.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then button.BackgroundTransparency = (inverse and 1 or 0) end end)
+			end
 			
-			newMt.GuiElems.DeleteButton.MouseButton1Click:Connect(function()
-				if newMt.CurrentPoint and newMt.CurrentPoint ~= newMt.BeginPoint and newMt.CurrentPoint ~= newMt.EndPoint then
-					for i,v in pairs(newMt.Points) do
-						if v == newMt.CurrentPoint then
+			numberLine.InputBegan:Connect(function(input)
+				if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and #points < 20 then
+					
+					if Lib.CheckMouseInGui(envelopeDragTop) or Lib.CheckMouseInGui(envelopeDragBottom) then return end
+					
+					for i, v in pairs(points) do
+						if Lib.CheckMouseInGui(v[4].Select) then
+							return
+						end
+					end
+					
+					local maxX = numberLine.AbsoluteSize.X - 1
+					local relativeX = (input.Position.X - numberLine.AbsolutePosition.X)
+					if relativeX < 0 then relativeX = 0 end
+					if relativeX > maxX then relativeX = maxX end
+					
+					local maxY = numberLine.AbsoluteSize.Y - 1
+					local relativeY = (input.Position.Y - numberLine.AbsolutePosition.Y)
+					if relativeY < 0 then relativeY = 0 end
+					if relativeY > maxY then relativeY = maxY end
+					
+					local raw = relativeX / maxX
+					local newPoint = {10 - (relativeY / maxY) * 10, raw, 0}
+					newPoint[4] = placePoint(newPoint)
+					table.insert(points, newPoint)
+					redraw()
+					buildSequence()
+				end
+			end)
+		
+			deleteButton.MouseButton1Click:Connect(function()
+				if currentPoint and currentPoint ~= beginPoint and currentPoint ~= endPoint then
+					for i,v in pairs(points) do
+						if v == currentPoint then
 							v[4]:Destroy()
-							table.remove(newMt.Points,i)
+							table.remove(points,i)
 							break
 						end
 					end
-					newMt.CurrentlySelected = nil
-					newMt:Redraw()
-					newMt:BuildSequence()
-					newMt:UpdateInputs(newMt.Points[1])
+					currentlySelected = nil
+					redraw()
+					buildSequence()
+					updateInputs(points[1])
 				end
 			end)
 
-			newMt.GuiElems.ResetButton.MouseButton1Click:Connect(function()
-				if newMt.ResetSequence then
-					newMt:SetSequence(newMt.ResetSequence)
-					newMt:BuildSequence()
+			resetButton.MouseButton1Click:Connect(function()
+				if resetSequence then
+					newMt:SetSequence(resetSequence)
+					buildSequence()
 				end
 			end)
 
-			newMt.GuiElems.CloseButton.MouseButton1Click:Connect(function() window:Close() end)
-			newMt.GuiElems.TopClose.MouseButton1Click:Connect(function() window:Close() end)
-			
-			buttonAnimations(newMt.GuiElems.DeleteButton)
-			buttonAnimations(newMt.GuiElems.ResetButton)
-			buttonAnimations(newMt.GuiElems.CloseButton)
-			
-			local defaultPoints = {{1,0,3},{8,0.05,1},{5,0.6,2},{4,0.7,4},{6,1,4}}
-			for i,v in pairs(defaultPoints) do
-				v[4] = placePoint(v)
-				table.insert(newMt.Points, v)
+			closeButton.MouseButton1Click:Connect(function()
+				window:Close()
+			end)
+
+			buttonAnimations(deleteButton)
+			buttonAnimations(resetButton)
+			buttonAnimations(closeButton)
+
+			placePoints()
+			redraw()
+
+			newMt.Show = function(self)
+				window:Show()
 			end
-			newMt.BeginPoint = newMt.Points[1]
-			newMt.EndPoint = newMt.Points[#newMt.Points]
-			newMt:Redraw()
 
 			return newMt
 		end
@@ -6377,81 +6440,13 @@ local function main()
 		return {new = new}
 	end)()
 
-	Lib.ColorSequenceEditor = (function()
-		local funcs = {}
-		
-		local function round(num,places)
-			local multi = 10^places
-			return math.floor(num*multi + 0.5)/multi
-		end
-
-		funcs.UpdateInputs = function(self, point)
-			if point then
-				self.CurrentPoint = point
-				local raw = point[2]
-				self.GuiElems.TimeBox.Text = round(raw,(raw < 0.01 and 5) or (raw < 0.1 and 4) or 3)
-				self.GuiElems.ColorBox.BackgroundColor3 = point[1]
-			end
-		end
-
-		funcs.BuildSequence = function(self, noupdate)
-			local newPoints = {}
-			table.sort(self.Colors,function(a,b) return a[2] < b[2] end)
-			for i,v in pairs(self.Colors) do
-				table.insert(newPoints,ColorSequenceKeypoint.new(v[2],v[1]))
-			end
-			self.Sequence = ColorSequence.new(newPoints)
-			if not noupdate then self.OnSelect:Fire(self.Sequence) end
-		end
-
-		funcs.Redraw = function(self)
-			self.GuiElems.Gradient.Color = self.Sequence or ColorSequence.new(Color3.new(1,1,1))
-			local sizeX = self.GuiElems.ColorLine.AbsoluteSize.X
-			
-			for i = 2,#self.Colors do
-				local nextColor = self.Colors[i]
-				local endPos = math.floor((sizeX-1) * nextColor[2]) + 1
-				nextColor[3].Position = UDim2.new(0,endPos,0,0)
-			end		
-		end
-
-		funcs.SetSequence = function(self, seq)
-			self.ResetSequence = seq
-			for i,v in pairs(self.Colors) do if v[3] then v[3]:Destroy() end end
-			self.Colors = {}
-			self.CurrentlySelected = nil
-			for i,v in pairs(seq.Keypoints) do
-				local newPoint = {v.Value,v.Time}
-				newPoint[3] = self:PlaceArrow(v.Time, newPoint)
-				table.insert(self.Colors,newPoint)
-			end
-			self.BeginPoint = self.Colors[1]
-			self.EndPoint = self.Colors[#self.Colors]
-			self.CurrentlySelected = nil
-			self:UpdateInputs(self.Colors[1])
-			self:BuildSequence(true)
-			self:Redraw()
-		end
-
-		funcs.Show = function(self)
-			self.Window:Show()
-		end
-
-		local mt = {__index = funcs}
-
+	Lib.ColorSequenceEditor = (function() -- TODO: Convert to newer class model
 		local function new()
-			local newMt = setmetatable({
-				OnSelect = Lib.Signal.new(),
-				OnCancel = Lib.Signal.new(),
-				OnPreview = Lib.Signal.new(),
-				OnPickColor = Lib.Signal.new(),
-				Colors = {},
-				Sequence = nil,
-				CurrentlySelected = nil,
-				CurrentPoint = nil,
-				ResetSequence = nil,
-				ColorPicker = nil
-			}, mt)
+			local newMt = setmetatable({},{})
+			newMt.OnSelect = Lib.Signal.new()
+			newMt.OnCancel = Lib.Signal.new()
+			newMt.OnPreview = Lib.Signal.new()
+			newMt.OnPickColor = Lib.Signal.new()
 
 			local guiContents = create({
 				{1,"Frame",{BackgroundColor3=Color3.new(0.17647059261799,0.17647059261799,0.17647059261799),BorderSizePixel=0,ClipsDescendants=true,Name="Content",Position=UDim2.new(0,0,0,20),Size=UDim2.new(1,0,1,-20),}},
@@ -6475,81 +6470,112 @@ local function main()
 				{19,"Frame",{BackgroundColor3=Color3.new(0.86274510622025,0.86274510622025,0.86274510622025),BorderSizePixel=0,Parent={15},Position=UDim2.new(0,5,0,9),Size=UDim2.new(0,7,0,2),}},
 				{20,"Frame",{BackgroundColor3=Color3.new(0.86274510622025,0.86274510622025,0.86274510622025),BorderSizePixel=0,Parent={15},Position=UDim2.new(0,4,0,11),Size=UDim2.new(0,9,0,2),}},
 			})
-			
 			local window = Lib.Window.new()
 			window.Resizable = false
 			window:Resize(650,150)
 			window:SetTitle("ColorSequence Editor")
-			
 			newMt.Window = window
 			newMt.Gui = window.Gui
 			for i,v in pairs(guiContents:GetChildren()) do
 				v.Parent = window.GuiElems.Content
 			end
-
 			local gui = window.Gui
 			local pickerGui = gui.Main
+			local pickerTopBar = pickerGui.TopBar
 			local pickerFrame = pickerGui.Content
-			
-			newMt.GuiElems = {
-				ColorLine = pickerFrame.ColorLine,
-				Gradient = pickerFrame.ColorLine.Gradient.UIGradient,
-				ArrowFrame = pickerFrame.Arrows,
-				Arrow = pickerFrame.Arrow,
-				Cursor = pickerFrame.Cursor,
-				TimeBox = pickerFrame.Time.Input,
-				ColorBox = pickerFrame.ColorBox,
-				DeleteButton = pickerFrame.Delete,
-				ResetButton = pickerFrame.Reset,
-				CloseButton = pickerFrame.Close,
-				TopClose = pickerGui.TopBar.Close
-			}
-			
+			local colorLine = pickerFrame.ColorLine
+			local gradient = colorLine.Gradient.UIGradient
+			local arrowFrame = pickerFrame.Arrows
+			local arrow = pickerFrame.Arrow
+			local cursor = pickerFrame.Cursor
+			local timeBox = pickerFrame.Time.Input
+			local colorBox = pickerFrame.ColorBox
+			local deleteButton = pickerFrame.Delete
+			local resetButton = pickerFrame.Reset
+			local closeButton = pickerFrame.Close
+			local topClose = pickerTopBar.Close
+
 			local user = service.UserInputService
 			local mouse = service.Players.LocalPlayer:GetMouse()
-			
+
+			local colors = {{Color3.new(1,0,1),0},{Color3.new(0.2,0.9,0.2),0.2},{Color3.new(0.4,0.5,0.9),0.7},{Color3.new(0.6,1,1),1}}
+			local resetSequence = nil
+
+			local beginPoint = colors[1]
+			local endPoint = colors[#colors]
+
+			local currentlySelected = nil
+			local currentPoint = nil
+
+			local sequenceLine = Instance.new("Frame")
+			sequenceLine.BorderSizePixel = 0
+			sequenceLine.Size = UDim2.new(0,1,1,0)
+
 			newMt.Sequence = ColorSequence.new(Color3.new(1,1,1))
-			
-			newMt.PlaceArrow = function(self, ind, point)
-				local newArrow = self.GuiElems.Arrow:Clone()
+			local function buildSequence(noupdate)
+				local newPoints = {}
+				table.sort(colors,function(a,b) return a[2] < b[2] end)
+				for i,v in pairs(colors) do
+					table.insert(newPoints,ColorSequenceKeypoint.new(v[2],v[1]))
+				end
+				newMt.Sequence = ColorSequence.new(newPoints)
+				if not noupdate then newMt.OnSelect:Fire(newMt.Sequence) end
+			end
+
+			local function round(num,places)
+				local multi = 10^places
+				return math.floor(num*multi + 0.5)/multi
+			end
+
+			local function updateInputs(point)
+				if point then
+					currentPoint = point
+					local raw = point[2]
+					timeBox.Text = round(raw,(raw < 0.01 and 5) or (raw < 0.1 and 4) or 3)
+					colorBox.BackgroundColor3 = point[1]
+				end
+			end
+
+			local function placeArrow(ind,point)
+				local newArrow = arrow:Clone()
 				newArrow.Position = UDim2.new(0,ind-1,0,0)
 				newArrow.Visible = true
-				newArrow.Parent = self.GuiElems.ArrowFrame
+				newArrow.Parent = arrowFrame
 
 				newArrow.InputBegan:Connect(function(input)
 					if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-						self.GuiElems.Cursor.Visible = true
-						self.GuiElems.Cursor.Position = UDim2.new(0, 9 + newArrow.Position.X.Offset, 0, 0)
+						cursor.Visible = true
+						cursor.Position = UDim2.new(0, 9 + newArrow.Position.X.Offset, 0, 0)
 					end
 					
 					if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-						self:UpdateInputs(point)
-						if point == self.BeginPoint or point == self.EndPoint or self.CurrentlySelected then return end
+						updateInputs(point)
+						if point == beginPoint or point == endPoint or currentlySelected then return end
 						
 						local mouseEvent, releaseEvent
-						self.CurrentlySelected = true
+						currentlySelected = true
 						
 						releaseEvent = user.InputEnded:Connect(function(input)
 							if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch then return end
 							mouseEvent:Disconnect()
 							releaseEvent:Disconnect()
-							self.CurrentlySelected = nil
-							self.GuiElems.Cursor.Visible = false
+							currentlySelected = nil
+							cursor.Visible = false
 						end)
 						
 						mouseEvent = user.InputChanged:Connect(function(input)
 							if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-								local maxSize = self.GuiElems.ColorLine.AbsoluteSize.X - 1
-								local relativeX = (input.Position.X - self.GuiElems.ColorLine.AbsolutePosition.X)
+								local maxSize = colorLine.AbsoluteSize.X - 1
+								local relativeX = (input.Position.X - colorLine.AbsolutePosition.X)
 								if relativeX < 0 then relativeX = 0 end
 								if relativeX > maxSize then relativeX = maxSize end
 								local raw = relativeX / maxSize
 								point[2] = relativeX / maxSize
-								self:UpdateInputs(point)
-								self.GuiElems.Cursor.Visible = true
-								self.GuiElems.Cursor.Position = UDim2.new(0, 9 + newArrow.Position.X.Offset, 0, 0)
-								self:BuildSequence()
-								self:Redraw()
+								updateInputs(point)
+								cursor.Visible = true
+								cursor.Position = UDim2.new(0, 9 + newArrow.Position.X.Offset, 0, 0)
+								buildSequence()
+								newMt:Redraw()
 							end
 						end)
 					end
@@ -6557,81 +6583,119 @@ local function main()
 				
 				newArrow.InputEnded:Connect(function(input)
 					if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-						self.GuiElems.Cursor.Visible = false
+						cursor.Visible = false
 					end
 				end)
 				
+				
+
 				return newArrow
 			end
-			
+
+			local function placeArrows()
+				for i,v in pairs(colors) do
+					v[3] = placeArrow(math.floor((colorLine.AbsoluteSize.X-1) * v[2]) + 1,v)
+				end
+			end
+
+			local function redraw(self)
+				gradient.Color = newMt.Sequence or ColorSequence.new(Color3.new(1,1,1))
+
+				for i = 2,#colors do
+					local nextColor = colors[i]
+					local endPos = math.floor((colorLine.AbsoluteSize.X-1) * nextColor[2]) + 1
+					nextColor[3].Position = UDim2.new(0,endPos,0,0)
+				end		
+			end
+			newMt.Redraw = redraw
+
+			local function loadSequence(self,seq)
+				resetSequence = seq
+				for i,v in pairs(colors) do if v[3] then v[3]:Destroy() end end
+				colors = {}
+				currentlySelected = nil
+				for i,v in pairs(seq.Keypoints) do
+					local newPoint = {v.Value,v.Time}
+					newPoint[3] = placeArrow(v.Time,newPoint)
+					table.insert(colors,newPoint)
+				end
+				beginPoint = colors[1]
+				endPoint = colors[#colors]
+				currentlySelected = nil
+				updateInputs(colors[1])
+				buildSequence(true)
+				redraw()
+			end
+			newMt.SetSequence = loadSequence
+
 			local function buttonAnimations(button,inverse)
 				button.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then button.BackgroundTransparency = (inverse and 0.5 or 0.4) end end)
 				button.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then button.BackgroundTransparency = (inverse and 1 or 0) end end)
 			end
 			
-			newMt.GuiElems.ColorLine.InputBegan:Connect(function(input)
-				if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and #newMt.Colors < 20 then
-					local maxSize = newMt.GuiElems.ColorLine.AbsoluteSize.X - 1
-					local relativeX = (input.Position.X - newMt.GuiElems.ColorLine.AbsolutePosition.X)
+			colorLine.InputBegan:Connect(function(input)
+				if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) and #colors < 20 then
+					local maxSize = colorLine.AbsoluteSize.X - 1
+					local relativeX = (input.Position.X - colorLine.AbsolutePosition.X)
 					if relativeX < 0 then relativeX = 0 end
 					if relativeX > maxSize then relativeX = maxSize end
 					
 					local raw = relativeX / maxSize
 					local fromColor = nil
 					local toColor = nil
-					for i, col in pairs(newMt.Colors) do
+					for i, col in pairs(colors) do
 						if col[2] >= raw then
-							fromColor = newMt.Colors[math.max(i - 1, 1)]
-							toColor = newMt.Colors[i]
+							fromColor = colors[math.max(i - 1, 1)]
+							toColor = colors[i]
 							break
 						end
 					end
 					local lerpColor = fromColor[1]:lerp(toColor[1], (raw - fromColor[2]) / (toColor[2] - fromColor[2]))
 					local newPoint = {lerpColor, raw}
-					newPoint[3] = newMt:PlaceArrow(newPoint[2], newPoint)
-					table.insert(newMt.Colors, newPoint)
-					newMt:UpdateInputs(newPoint)
-					newMt:BuildSequence()
-					newMt:Redraw()
+					newPoint[3] = placeArrow(newPoint[2], newPoint)
+					table.insert(colors, newPoint)
+					updateInputs(newPoint)
+					buildSequence()
+					redraw()
 				end
 			end)
 			
-			newMt.GuiElems.ColorLine.InputChanged:Connect(function(input)
+			colorLine.InputChanged:Connect(function(input)
 				if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-					local maxSize = newMt.GuiElems.ColorLine.AbsoluteSize.X - 1
-					local relativeX = (input.Position.X - newMt.GuiElems.ColorLine.AbsolutePosition.X)
+					local maxSize = colorLine.AbsoluteSize.X - 1
+					local relativeX = (input.Position.X - colorLine.AbsolutePosition.X)
 					if relativeX < 0 then relativeX = 0 end
 					if relativeX > maxSize then relativeX = maxSize end
-					newMt.GuiElems.Cursor.Visible = true
-					newMt.GuiElems.Cursor.Position = UDim2.new(0, 10 + relativeX, 0, 0)
+					cursor.Visible = true
+					cursor.Position = UDim2.new(0, 10 + relativeX, 0, 0)
 				end
 			end)
 			
-			newMt.GuiElems.ColorLine.InputEnded:Connect(function(input)
+			colorLine.InputEnded:Connect(function(input)
 				if (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
 					local inArrow = false
-					for i, v in pairs(newMt.Colors) do
+					for i, v in pairs(colors) do
 						if Lib.CheckMouseInGui(v[3]) then
 							inArrow = v[3]
 						end
 					end
-					newMt.GuiElems.Cursor.Visible = inArrow and true or false
-					if inArrow then newMt.GuiElems.Cursor.Position = UDim2.new(0, 9 + inArrow.Position.X.Offset, 0, 0) end
+					cursor.Visible = inArrow and true or false
+					if inArrow then cursor.Position = UDim2.new(0, 9 + inArrow.Position.X.Offset, 0, 0) end
 				end
 			end)
 			
-			newMt.GuiElems.TimeBox:GetPropertyChangedSignal("Text"):Connect(function()
-				local point = newMt.CurrentPoint
-				local num = tonumber(newMt.GuiElems.TimeBox.Text)
-				if point and num and point ~= newMt.BeginPoint and point ~= newMt.EndPoint then
+			timeBox:GetPropertyChangedSignal("Text"):Connect(function()
+				local point = currentPoint
+				local num = tonumber(timeBox.Text)
+				if point and num and point ~= beginPoint and point ~= endPoint then
 					num = math.clamp(num,0,1)
 					point[2] = num
-					newMt:BuildSequence()
-					newMt:Redraw()
+					buildSequence()
+					redraw()
 				end
 			end)
 			
-			newMt.GuiElems.ColorBox.InputBegan:Connect(function(input)
+			colorBox.InputBegan:Connect(function(input)
 				if (input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch) then
 					local editor = newMt.ColorPicker
 					if not editor then
@@ -6639,11 +6703,11 @@ local function main()
 						editor.Window:SetTitle("ColorSequence Color Picker")
 						
 						editor.OnSelect:Connect(function(col)
-							if newMt.CurrentPoint then
-								newMt.CurrentPoint[1] = col
+							if currentPoint then
+								currentPoint[1] = col
 							end
-							newMt:BuildSequence()
-							newMt:Redraw()
+							buildSequence()
+							redraw()
 						end)
 						
 						newMt.ColorPicker = editor
@@ -6653,43 +6717,46 @@ local function main()
 				end
 			end)
 			
-			newMt.GuiElems.DeleteButton.MouseButton1Click:Connect(function()
-				if newMt.CurrentPoint and newMt.CurrentPoint ~= newMt.BeginPoint and newMt.CurrentPoint ~= newMt.EndPoint then
-					for i,v in pairs(newMt.Colors) do
-						if v == newMt.CurrentPoint then
+			deleteButton.MouseButton1Click:Connect(function()
+				if currentPoint and currentPoint ~= beginPoint and currentPoint ~= endPoint then
+					for i,v in pairs(colors) do
+						if v == currentPoint then
 							v[3]:Destroy()
-							table.remove(newMt.Colors,i)
+							table.remove(colors,i)
 							break
 						end
 					end
-					newMt.CurrentlySelected = nil
-					newMt:UpdateInputs(newMt.Colors[1])
-					newMt:BuildSequence()
-					newMt:Redraw()
+					currentlySelected = nil
+					updateInputs(colors[1])
+					buildSequence()
+					redraw()
 				end
 			end)
 			
-			newMt.GuiElems.ResetButton.MouseButton1Click:Connect(function()
-				if newMt.ResetSequence then
-					newMt:SetSequence(newMt.ResetSequence)
+			resetButton.MouseButton1Click:Connect(function()
+				if resetSequence then
+					newMt:SetSequence(resetSequence)
 				end
 			end)
 			
-			newMt.GuiElems.CloseButton.MouseButton1Click:Connect(function() window:Close() end)
-			newMt.GuiElems.TopClose.MouseButton1Click:Connect(function() window:Close() end)
+			closeButton.MouseButton1Click:Connect(function()
+				window:Close()
+			end)
 
-			buttonAnimations(newMt.GuiElems.DeleteButton)
-			buttonAnimations(newMt.GuiElems.ResetButton)
-			buttonAnimations(newMt.GuiElems.CloseButton)
-			
-			local defaultColors = {{Color3.new(1,0,1),0},{Color3.new(0.2,0.9,0.2),0.2},{Color3.new(0.4,0.5,0.9),0.7},{Color3.new(0.6,1,1),1}}
-			for i,v in pairs(defaultColors) do
-				v[3] = newMt:PlaceArrow(math.floor((newMt.GuiElems.ColorLine.AbsoluteSize.X-1) * v[2]) + 1,v)
-				table.insert(newMt.Colors, v)
+			topClose.MouseButton1Click:Connect(function()
+				window:Close()
+			end)
+
+			buttonAnimations(deleteButton)
+			buttonAnimations(resetButton)
+			buttonAnimations(closeButton)
+
+			placeArrows()
+			redraw()
+
+			newMt.Show = function(self)
+				window:Show()
 			end
-			newMt.BeginPoint = newMt.Colors[1]
-			newMt.EndPoint = newMt.Colors[#newMt.Colors]
-			newMt:Redraw()
 
 			return newMt
 		end
