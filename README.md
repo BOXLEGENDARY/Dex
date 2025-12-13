@@ -18,6 +18,8 @@ loadstring(game:HttpGet("https://github.com/BOXLEGENDARY/Dex/releases/latest/dow
 
 [chillz](https://github.com/AZYsGithub/DexPlusPlus) - DexPlusPlus
 
+[Moon](https://github.com/LorekeeperZinnia/Dex) – Original Dex Explorer
+
 ---
 
 ## Third Party Components
