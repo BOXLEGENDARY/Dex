@@ -774,7 +774,6 @@ Main = (function()
 			COLD_REMARK = false,
 			INLINE_REMARK = false -- currently unused
 		}
-		------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 		local DECOMPILER_TIMEOUT = 2 -- seconds
 		local READER_FLOAT_PRECISION = 7 -- up to 99
 		local DECOMPILER_MODE = "disasm" -- disasm/optdec
@@ -787,8 +786,7 @@ Main = (function()
 		local LIST_USED_GLOBALS = true -- list all (non-Roblox!!) globals used in the script as a top comment
 		local RETURN_ELAPSED_TIME = true -- return time it took to finish processing the bytecode
 		local DECODE_AS_BASE64 = false -- Decodes the bytecode as base64 if it's returned as such.
-		local USE_IN_STUDIO = false -- Toggles Roblox Studio mode, which allows for this to be used in
-		------------------------------------------------------------------------------------------------------------------------------------------------------------------------]]
+		local USE_IN_STUDIO = false -- Toggles Roblox Studio mode, which allows for this to be used in]]
 				
 				xpcall(function()
 					return loadstring(
