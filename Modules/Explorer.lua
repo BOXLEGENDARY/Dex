@@ -1480,7 +1480,7 @@ local function main()
 		context:Register("SAVE_SCRIPT",{Name = "Save Script", IconMap = Explorer.MiscIcons, Icon = "Save", DisabledIcon = "Empty", OnClick = function()
 			for _, v in next, selection.List do
 				if v.Obj:IsA("LuaSourceContainer") and env.isViableDecompileScript(v.Obj) then
-					local success, source, time = pcall(decompile or env.decompile, v.Obj)
+					local success, source, time = pcall(decompile or getgenv().decompile, v.Obj)
 					if not success or not source then source = ("-- DEX - %s failed to decompile %s"):format(env.executor, v.Obj.ClassName) end
 					if time then source = "-- Decompiled in: " .. tostring(time) .. "s\n" .. source end
 					local fileName = ("%s_%s_%i_Source.txt"):format(env.parsefile(v.Obj.Name), v.Obj.ClassName, game.PlaceId)

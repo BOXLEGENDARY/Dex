@@ -40,7 +40,7 @@ local function main()
 	local PreviousScr = nil
 	
 	ScriptViewer.ViewScript = function(scr)
-		local success, source, time = pcall(decompile or env.decompile or function() end, scr)
+		local success, source, time = pcall(decompile or getgenv().decompile or function() end, scr)
 		if not success or not source then source, PreviousScr = "-- DEX - Source failed to decompile", nil else PreviousScr = scr end
 		if time then source = "-- Decompiled in: " .. tostring(time) .. "s\n" .. source end
 		codeFrame:SetText(source:gsub("\0", "\\0"))
