@@ -1,4 +1,4 @@
-`If you can't use this menu, it means your executor ( tools ) are not supported.`
+`If you can't use the menu function in explorer, it means your executor (tools) are not supported.`
 ## Loadstring
 ```lua
 loadstring(game:HttpGet("https://github.com/BOXLEGENDARY/Dex/releases/latest/download/out.lua"))()
