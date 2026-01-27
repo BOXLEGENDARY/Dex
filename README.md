@@ -1,5 +1,9 @@
 ## Warning
 `If you can't use the menu function in explorer, it means your executor (tools) are not supported, or the function is locked by itself.`
+
+## Log
+the console will be removed soon since it’s basically useless and just causes lag. We all know what Dex is for anyway. If you really need it, just type /console—that’s it.
+
 ## Loadstring
 ```lua
 loadstring(game:HttpGet("https://github.com/BOXLEGENDARY/Dex/releases/latest/download/out.lua"))()
