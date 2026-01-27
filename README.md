@@ -1,8 +1,8 @@
 ## Warning
 `If you can't use the menu function in explorer, it means your executor (tools) are not supported, or the function is locked by itself.`
 
-## Log
-the console will be removed soon since it’s basically useless and just causes lag. we all know what Dex is for anyway. if you really need it, just type /console in chat—that’s it.
+## Developer Note
+> the console will be removed soon since it’s basically useless and just causes lag. we all know what Dex is for anyway. if you really need it, just type /console in chat—that’s it.
 
 ## Loadstring
 ```lua
