@@ -7040,93 +7040,120 @@ local function main()
 			ComboTime = 0.5,
 			Items = {},
 			ItemCons = {},
+			ItemsSet = {},
 			ClickId = -1,
 			LastButton = ""
 		}
+	
 		local funcs = {}
-		local tostring = tostring
-		
-		local disconnect = function(con)
-			local pos = table.find(con.Signal.Connections,con)
-			if pos then table.remove(con.Signal.Connections,pos) end
+		local table_insert = table.insert
+		local table_remove = table.remove
+		local table_find = table.find
+		local task_spawn = task.spawn
+		local task_wait = task.wait
+		local tick_fn = tick
+		local Vector2_new = Vector2.new
+		local UIS = service.UserInputService
+		local BTN_ENUM = {
+			[1] = Enum.UserInputType.MouseButton1,
+			[2] = Enum.UserInputType.MouseButton2
+		}
+	
+		local function disconnect(con)
+			local pos = table_find(con.Signal.Connections, con)
+			if pos then
+				table_remove(con.Signal.Connections, pos)
+			end
 		end
-		
+	
 		funcs.Trigger = function(self, item, button, X, Y)
-			if table.find(self.AllowedButtons, button) then
-				if self.LastButton ~= button or self.LastItem ~= item or self.Combo == self.MaxCombo or tick() - self.ClickId > self.ComboTime then
+			if table_find(self.AllowedButtons, button) then
+				if self.LastButton ~= button or self.LastItem ~= item or self.Combo == self.MaxCombo or tick_fn() - self.ClickId > self.ComboTime then
 					self.Combo = 0
 					self.LastButton = button
 					self.LastItem = item
 				end
-				
+	
 				self.Combo = self.Combo + 1
-				self.ClickId = tick()
-				
-				task.spawn(function()
+				self.ClickId = tick_fn()
+	
+				task_spawn(function()
 					if self.InputDown then
 						self.InputDown = false
 					else
-						self.InputDown = tick()
-						
+						self.InputDown = tick_fn()
+	
 						local Connection = item.MouseButton1Up:Once(function()
 							self.InputDown = false
 						end)
-						
+	
 						while self.InputDown and not Explorer.Dragging do
-							if (tick() - self.InputDown) >= 0.4 then
+							if (tick_fn() - self.InputDown) >= 0.4 then
 								self.InputDown = false
-								self["OnRelease"]:Fire(item, self.Combo, 2, Vector2.new(X, Y))
+								self["OnRelease"]:Fire(item, self.Combo, 2, Vector2_new(X, Y))
 								break
-							end;task.wait()
+							end
+							task_wait()
 						end
 					end
 				end)
-				
+	
 				local release
-				release = service.UserInputService.InputEnded:Connect(function(input)
-					if input.UserInputType == Enum.UserInputType["MouseButton" .. button] then
+				release = UIS.InputEnded:Connect(function(input)
+					if input.UserInputType == BTN_ENUM[button] then
 						release:Disconnect()
 						if Lib.CheckMouseInGui(item) and self.LastButton == button and self.LastItem == item then
-							self["OnRelease"]:Fire(item,self.Combo,button)
+							self["OnRelease"]:Fire(item, self.Combo, button)
 						end
 					end
 				end)
-				
-				self["OnDown"]:Fire(item,self.Combo,button)
+	
+				self["OnDown"]:Fire(item, self.Combo, button)
 			end
 		end
-		
-		funcs.Add = function(self,item)
-			if table.find(self.Items,item) then return end
-
+	
+		funcs.Add = function(self, item)
+			if self.ItemsSet[item] then return end
+	
 			local cons = {}
 			cons[1] = item.MouseButton1Down:Connect(function(X, Y) self:Trigger(item, 1, X, Y) end)
 			cons[2] = item.MouseButton2Down:Connect(function(X, Y) self:Trigger(item, 2, X, Y) end)
-			
+	
 			self.ItemCons[item] = cons
-			self.Items[#self.Items+1] = item
+			self.ItemsSet[item] = true
+			table_insert(self.Items, item)
 		end
-		
-		funcs.Remove = function(self,item)
-			local ind = table.find(self.Items,item)
-			if not ind then return end
-
-			for i,v in pairs(self.ItemCons[item]) do
-				v:Disconnect()
+	
+		funcs.Remove = function(self, item)
+			if not self.ItemsSet[item] then return end
+	
+			local itemCons = self.ItemCons[item]
+			if itemCons then
+				for _, v in pairs(itemCons) do
+					if v and v.Disconnect then
+						v:Disconnect()
+					end
+				end
 			end
 			self.ItemCons[item] = nil
-			table.remove(self.Items,ind)
+			self.ItemsSet[item] = nil
+	
+			for i = #self.Items, 1, -1 do
+				if self.Items[i] == item then
+					table_remove(self.Items, i)
+					break
+				end
+			end
 		end
-		
-		local mt = {__index = funcs}
-
+	
+		local mt = { __index = funcs }
+	
 		local function new()
-			local obj = initObj(props,mt)
-
+			local obj = initObj(props, mt)
 			return obj
 		end
-
-		return {new = new}
+	
+		return { new = new }
 	end)()
 
 	return Lib
