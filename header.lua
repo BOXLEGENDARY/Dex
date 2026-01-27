@@ -2,6 +2,9 @@
 
 
 
+if _G.LOADED then return end
+_G.LOADED = true
+
 local selection
 local nodes = {}
 
