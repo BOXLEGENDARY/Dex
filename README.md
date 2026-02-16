@@ -1,4 +1,4 @@
-> [!WARNING]
+> [!IMPORTANT]
 > If you can't use the menu function in explorer, it means your executor (tools) are not supported, or the function is locked by itself.
 
 > [!NOTE]
