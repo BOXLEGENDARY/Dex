@@ -1,7 +1,7 @@
 > [!WARNING]
 > If you can't use the menu function in explorer, it means your executor (tools) are not supported, or the function is locked by itself.
 
-## Developer Notes
+> [!NOTE]
 > 1. ​The console will be removed soon since it’s basically useless and just causes lag. We all know what Dex is for anyway. If you really need to access it, just type `/console` in chat or press `F9` —that’s it.
 > 2. Dex is too advanced to be updated frequently.
 
