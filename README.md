@@ -13,7 +13,7 @@ loadstring(game:HttpGet("https://github.com/BOXLEGENDARY/Dex/releases/latest/dow
 > 2. Dex is too advanced to be updated frequently.
 > 3. What's different between Dex 2021 and Dex 2026?
 >    - Just keeping it fresh.
->    - Built with internal third-party components only. No external APIs are used to ensure stability and avoid issues if external repositories are deleted.
+>    - All third-party components are pre-bundled to ensure everything keeps working even if the original repositories are deleted.
 
 ---
 
