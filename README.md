@@ -6,14 +6,14 @@ loadstring(game:HttpGet("https://github.com/BOXLEGENDARY/Dex/releases/latest/dow
 ---
 ## Dex
 > [!IMPORTANT]
-> If you can't use the menu function in explorer, it means your executor (tools) are not supported, or the function is locked by itself.
+> If you can't use the menu function in explorer, it means your executor (tools) are not supported, or the functions is locked by itself.
 
 > [!NOTE]
 > 1. ​The console will be removed soon since it’s basically useless and just causes lag. We all know what Dex is for anyway. If you really need to access it, just type `/console` in chat or press `F9` — that’s it.
 > 2. Dex is too advanced to be updated frequently.
 > 3. Assets are not downloaded. If the original assets get deleted... good luck.
 > 4. What's different between Dex 2021 and Dex 2026?
->    - Just keeping it fresh.
+>    - Just keeping it fresh and more functions.
 >    - Uses stable third-party components.
 
 ---
