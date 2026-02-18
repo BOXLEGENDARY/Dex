@@ -1,4 +1,4 @@
-## Loadstring
+## Loadstring ![v](https://img.shields.io/github/v/release/BOXLEGENDARY/Dex?color=34D058&label=release&style=flat-square&logo=github)
 ```lua
 loadstring(game:HttpGet("https://github.com/BOXLEGENDARY/Dex/releases/latest/download/out.lua"))()
 ```
