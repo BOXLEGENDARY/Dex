@@ -1,9 +1,10 @@
-## Loadstring ![v](https://img.shields.io/github/v/release/BOXLEGENDARY/Dex?color=34D058&label=release&style=flat-square&logo=github)
+## Loadstring
 ```lua
 loadstring(game:HttpGet("https://github.com/BOXLEGENDARY/Dex/releases/latest/download/out.lua"))()
 ```
 
 ---
+
 ## Dex
 > [!IMPORTANT]
 > If you can't use the menu functions in explorer, it means your executor (tools) are not supported, or the functions is locked by itself.
