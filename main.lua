@@ -177,6 +177,8 @@ Main = (function()
 		Core = 101000
 	}
 	
+	Main.Plugins = {}
+	
 	Main.GetRandomString = function()
 		local output = ""
 		for i = 2, 25 do
