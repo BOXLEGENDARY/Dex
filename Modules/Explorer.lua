@@ -6,7 +6,7 @@
 
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, ModelViewer, Console, SaveInstance, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, ModelViewer, Console, SaveInstance, SettingsWindow, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -31,6 +31,7 @@ local function initAfterMain()
 	ModelViewer = Apps.ModelViewer
 	Console = Apps.Console
 	SaveInstance = Apps.SaveInstance
+	SettingsWindow = Apps.SettingsWindow
 	Notebook = Apps.Notebook
 end
 
@@ -1832,7 +1833,7 @@ local function main()
 			["remotes"] = function(argString)
 				return {
 					Headers = {"local isa = game.IsA"},
-					Predicate = "isa(obj,'RemoteEvent') or isa(obj,'RemoteFunction') or isa(obj,'UnreliableRemoteFunction')"
+					Predicate = "isa(obj,'RemoteEvent') or isa(obj,'RemoteFunction') or isa(obj,'UnreliableRemoteEvent')"
 				}
 			end,
 			["bindables"] = function(argString)
