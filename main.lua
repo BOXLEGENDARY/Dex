@@ -34,7 +34,7 @@ cloneref = cloneref or function(ref)
 end
 
 -- Main vars
-local Main, Explorer, Properties, ScriptViewer, ModelViewer, Console, SaveInstance, DefaultSettings, Notebook, Serializer, Lib
+local Main, Explorer, Properties, ScriptViewer, ModelViewer, Console, SaveInstance, SettingsWindow, DefaultSettings, Notebook, Serializer, Lib
 local API, RM
 
 -- Default Settings
@@ -160,10 +160,10 @@ end
 Main = (function()
 	local Main = {}
 	
-	Main.ModuleList = {"Explorer","Properties","ScriptViewer","ModelViewer","Console","SaveInstance"}
+	Main.ModuleList = {"Explorer","Properties","ScriptViewer","ModelViewer","Console","SaveInstance","SettingsWindow"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
-	Main.Version = "1.2.11"
+	Main.Version = "2.2.11"
 	Main.Mouse = plr:GetMouse()
 	Main.AppControls = {}
 	Main.Apps = Apps
@@ -186,9 +186,17 @@ Main = (function()
 		return output
 	end
 	
+	Main.GetSecureContainer = function()
+		return
+			syn and syn.protect_gui or
+			gethui and gethui() or
+			service.CoreGui or
+			service.Players.LocalPlayer:WaitForChild("PlayerGui")
+	end
+	
 	Main.SecureGui = function(gui)
 		--warn("Secured: "..gui.Name)
-		gui.Name = Main.GetRandomString()
+		gui.Name = "_Dex_".. Main.GetRandomString()
 		-- service already using cloneref
 		if gethui then
 			gui.Parent = gethui()
@@ -266,6 +274,28 @@ Main = (function()
 		end
 	end
 	
+	Main.LoadPluginFile = function(pluginDir)
+		if env.readfile then
+			if env.isfile(pluginDir) then
+				local preloadedPlugin = loadfile and loadfile(pluginDir) or loadstring(env.readfile(pluginDir))
+				local loadedPlugin = preloadedPlugin()
+				
+				local control = loadedPlugin
+				control.InitDeps(Main.GetInitDeps())
+
+				local moduleData = control.Main()
+				Apps[pluginDir] = moduleData
+				Main.AppControls[pluginDir] = control
+				
+				moduleData.PluginData = control.PluginData
+				
+				return moduleData
+			else
+				Main.Error("CANNOT FIND FILE MODULE "..pluginDir)
+			end
+		end
+	end
+	
 	Main.LoadModules = function()
 		for i,v in pairs(Main.ModuleList) do
 			local s,e = pcall(Main.LoadModule,v)
@@ -281,6 +311,7 @@ Main = (function()
 		ModelViewer = Apps.ModelViewer
 		Console = Apps.Console
 		SaveInstance = Apps.SaveInstance
+		SettingsWindow = Apps.SettingsWindow
 		Notebook = Apps.Notebook
 		local appTable = {
 			Explorer = Explorer,
@@ -289,6 +320,7 @@ Main = (function()
 			ModelViewer = ModelViewer,
 			Console = Console,
 			SaveInstance = SaveInstance,
+			SettingsWindow = SettingsWindow,
 			Notebook = Notebook
 		}
 		
@@ -1086,6 +1118,14 @@ Main = (function()
 			end
 		end)
 		
+		openButton.MainFrame.BottomFrame.Settings.MouseButton1Click:Connect(function()
+			if not SettingsWindow.Window.Closed then
+				SettingsWindow.Window:Hide()
+			else
+				SettingsWindow.Window:Show()
+			end		
+		end)
+		
 		-- Create Main Apps
 		Main.CreateApp({Name = "Explorer", IconMap = Main.LargeIcons, Icon = "Explorer", Open = true, Window = Explorer.Window})
 		
@@ -1115,6 +1155,10 @@ Main = (function()
 			else if cptsOnMouseClick ~= nil then cptsOnMouseClick:Disconnect() cptsOnMouseClick = nil end end
 		end})
 		
+		for _, loadedplugin in pairs(Main.Plugins) do
+			Main.CreateApp({Name = loadedplugin.PluginData.FriendlyName, IconMap = Explorer.ClassIcons, Icon = "Attachment", Window = loadedplugin.Window})
+		end
+		
 		Lib.ShowGui(gui)
 	end
 	
@@ -1128,6 +1172,12 @@ Main = (function()
 		makefolder("dex/ModuleCache")
 	end
 	
+	Main.SaveCurrentSettings = function()
+		if env.writefile then
+			env.writefile("DexSettings.json", Main.ExportSettings())
+		end
+	end
+	
 	Main.LocalDepsUpToDate = function()
 		return Main.DepsVersionData and Main.ClientVersion == Main.DepsVersionData[1]
 	end
@@ -1137,7 +1187,7 @@ Main = (function()
 		Main.InitEnv()
 		Main.SetupFilesystem()
 		if env.writefile and env.isfile and not env.isfile("dex/DexSettings.json") then
-			env.writefile("dex/DexSettings.json", Main.ExportSettings())
+			Main.SaveCurrentSettings()
 		end
 		Main.LoadSettings()
 		
@@ -1241,6 +1291,30 @@ Main = (function()
 		ModelViewer.Init()
 		Console.Init()
 		SaveInstance.Init()
+		SettingsWindow.Init()
+
+		if env.readfile and env.listfiles then
+			if #listfiles("dex/plugins") > 0 then
+				intro.SetProgress("Loading Plugin Files",0.8)
+				for _, pluginDir in pairs(listfiles("dex/plugins")) do
+					local moduleData = Main.LoadPluginFile(pluginDir)
+					moduleData.PluginData = moduleData.PluginData or {}
+
+					moduleData.Init()
+
+					local pluginFriendlyName = moduleData.PluginData.FriendlyName or moduleData.Window.GuiElems.Title.Text or "Unnamed Plugin"
+					local pluginName = moduleData.PluginData.Name or moduleData.Window.GuiElems.Title.Text:gsub(" ", "") or "unnamedPlugin"
+
+					intro.SetProgress("Initializing Plugin: ".. pluginFriendlyName,0.9)
+
+					moduleData.PluginData.Name = pluginName
+					moduleData.PluginData.FriendlyName = pluginFriendlyName
+
+					table.insert(Main.Plugins, moduleData)
+				end
+			end	
+		end
+		
 		Lib.FastWait()
 		
 		-- Done
@@ -1258,6 +1332,23 @@ Main = (function()
 		Lib.DeferFunc(function() Lib.Window.ToggleSide("right") end)
 	end
 	
+	Main.Uninit = function()
+		Main.MenuApps = {}
+		Main.AppControls = {}
+		Main.Plugins = {}
+		for _, gui in pairs(Main.GetSecureContainer():GetChildren()) do
+			if string.sub(gui.Name,1,5) == "_Dex_" then
+				gui:Destroy()
+			end
+		end
+	end
+
+	Main.Reinit = function()
+		Main.Uninit()
+		task.wait()
+		Main.Init()
+	end
+
 	return Main
 end)()
 
