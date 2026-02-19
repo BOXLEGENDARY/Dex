@@ -110,14 +110,14 @@ local function main()
 		            table.insert(dump_buffer, string.rep("    ", indent or 0) .. tostring(str))
 		        end
 		
-				local function get_func_details(f)
-				    local info = getinfo(f)
-				    local name = (info.name ~= "" and info.name) or "Anonymous"
-				    local what = info.what or "Lua"
-				    local type_label = (what == "C") and " [C]" or ""
-				    return ("%s%s"):format(name, type_label)
-				end
-				
+		        local function get_func_details(f)
+		            local info = getinfo(f)
+		            local name = (info.name ~= "" and info.name) or "Anonymous"
+		            local what = info.what or "Lua"
+		            local type_label = (what == "C") and " [C]" or ""
+		            return ("%s%s"):format(name, type_label)
+		        end
+		
 				local function process_value(val, name, indent)
 				    local v_type = typeof(val)
 				    local label = ("[%s] %s"):format(tostring(name), v_type)
@@ -130,12 +130,28 @@ local function main()
 				        else
 				            data_base[val] = true
 				            add_to(label .. ":", indent)
+				            
 				            for k, v in pairs(val) do
 				                process_value(v, k, indent + 1)
 				            end
+				            
+				            local mt = getmetatable(val)
+				            if mt then
+				                add_to("[Metatable]:", indent + 1)
+				                for k, v in pairs(mt) do
+				                    local m_v_type = typeof(v)
+				                    if m_v_type == "function" then
+				                        add_to(("[%s] function = %s"):format(tostring(k), get_func_details(v)), indent + 2)
+				                    elseif m_v_type == "table" then
+				                        add_to(("[%s] table (Sub-table)"):format(tostring(k)), indent + 2)
+				                    else
+				                        add_to(("[%s] %s = %s"):format(tostring(k), m_v_type, tostring(v)), indent + 2)
+				                    end
+				                end
+				            end
 				        end
 				    elseif v_type == "Instance" then
-				        add_to(label .. " = " .. val:GetFullName(), indent)
+				        add_to(label .. " = " .. (val.ClassName == "DataModel" and "game" or val:GetFullName()), indent)
 				    elseif v_type == "string" then
 				        add_to(label .. ' = "' .. val .. '"', indent)
 				    else
@@ -147,13 +163,11 @@ local function main()
 		            if type(obj) == "function" and getfenv(obj).script == PreviousScr then
 		                add_to("\nFUNCTION: " .. get_func_details(obj), 0)
 		                
-		                -- Upvalues
 		                add_to("[Upvalues]", 1)
 		                for i, v in pairs(getupvalues(obj)) do
 		                    process_value(v, i, 2)
 		                end
 		
-		                -- Constants
 		                add_to("[Constants]", 1)
 		                for i, v in pairs(getconstants(obj)) do
 		                    process_value(v, i, 2)
@@ -164,10 +178,7 @@ local function main()
 		        end
 		
 		        table.insert(dump_buffer, "]]")
-		        
-		        if #dump_buffer > 2 then
-		            codeFrame:SetText(codeFrame:GetText() .. table.concat(dump_buffer, "\n"))
-		        end
+		        codeFrame:SetText(codeFrame:GetText() .. table.concat(dump_buffer, "\n"))
 		    end)
 		end)
 	 end
