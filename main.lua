@@ -1176,7 +1176,7 @@ Main = (function()
 	
 	Main.SaveCurrentSettings = function()
 		if env.writefile then
-			env.writefile("DexSettings.json", Main.ExportSettings())
+			env.writefile("dex/DexSettings.json", Main.ExportSettings())
 		end
 	end
 	
