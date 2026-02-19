@@ -110,47 +110,42 @@ local function main()
 		            table.insert(dump_buffer, string.rep("    ", indent or 0) .. tostring(str))
 		        end
 		
-		        local function get_func_details(f)
-		            local info = getinfo(f)
-		            local name = (info.name ~= "" and info.name) or "Anonymous"
-		            local line = info.linedefined or -1
-		            local what = info.what or "Lua"
-		            return ("%s [%s] (Line: %d)"):format(name, what, line)
-		        end
-		
-		        local function process_value(val, name, indent)
-		            local v_type = typeof(val)
-		            local label = ("[%s] %s"):format(tostring(name), v_type)
-		
-		            if v_type == "function" then
-		                add_to(label .. " = " .. get_func_details(val), indent)
-		            elseif v_type == "table" then
-		                if data_base[val] then
-		                    add_to(label .. " (Circular Reference / Already Dumped)", indent)
-		                else
-		                    data_base[val] = true
-		                    add_to(label .. ":", indent)
-		                    for k, v in pairs(val) do
-		                        process_value(v, k, indent + 1)
-		                    end
-		                    local mt = getmetatable(val)
-		                    if mt then
-		                        add_to("└─ [Metatable]:", indent + 1)
-		                        process_value(mt, "mt", indent + 2)
-		                    end
-		                end
-		            elseif v_type == "Instance" then
-		                add_to(label .. " = " .. val:GetFullName(), indent)
-		            elseif v_type == "string" then
-		                add_to(label .. ' = "' .. val .. '"', indent)
-		            else
-		                add_to(label .. " = " .. tostring(val), indent)
-		            end
-		        end
+				local function get_func_details(f)
+				    local info = getinfo(f)
+				    local name = (info.name ~= "" and info.name) or "Anonymous"
+				    local what = info.what or "Lua"
+				    local type_label = (what == "C") and " [C]" or ""
+				    return ("%s%s"):format(name, type_label)
+				end
+				
+				local function process_value(val, name, indent)
+				    local v_type = typeof(val)
+				    local label = ("[%s] %s"):format(tostring(name), v_type)
+				
+				    if v_type == "function" then
+				        add_to(label .. " = " .. get_func_details(val), indent)
+				    elseif v_type == "table" then
+				        if data_base[val] then
+				            add_to(label .. " (Circular Reference / Already Dumped)", indent)
+				        else
+				            data_base[val] = true
+				            add_to(label .. ":", indent)
+				            for k, v in pairs(val) do
+				                process_value(v, k, indent + 1)
+				            end
+				        end
+				    elseif v_type == "Instance" then
+				        add_to(label .. " = " .. val:GetFullName(), indent)
+				    elseif v_type == "string" then
+				        add_to(label .. ' = "' .. val .. '"', indent)
+				    else
+				        add_to(label .. " = " .. tostring(val), indent)
+				    end
+				end
 		
 		        for _, obj in pairs(getgc()) do
 		            if type(obj) == "function" and getfenv(obj).script == PreviousScr then
-		                add_to("\n● FUNCTION: " .. get_func_details(obj), 0)
+		                add_to("\nFUNCTION: " .. get_func_details(obj), 0)
 		                
 		                -- Upvalues
 		                add_to("[Upvalues]", 1)
