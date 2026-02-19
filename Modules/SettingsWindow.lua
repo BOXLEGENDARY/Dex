@@ -289,16 +289,6 @@ local function main()
 		
 		AddSeperator("UI")
 		
-		local titleonmiddle = AddCheckbox("Window Title On Middle", Settings.Window.TitleOnMiddle)
-		titleonmiddle.OnInput:Connect(function()
-			Settings.Window.TitleOnMiddle = titleonmiddle.Toggled
-		end)
-		
-		local bgTransparency = AddTextbox("Background Transparency", tostring(Settings.Window.Transparency), 15)
-		bgTransparency.FocusLost:Connect(function()
-			Settings.Window.Transparency = tonumber(bgTransparency.Text)
-		end)
-		
 		local classIcon = AddDropdown("Class Icons", {"Old", "NewDark", "Vanilla3"}, Settings.ClassIcon, false, 100)
 		classIcon.OnSelect:Connect(function()
 			Settings.ClassIcon = classIcon.Selected
@@ -343,11 +333,6 @@ local function main()
 		end)
 		
 		AddSeperator("Script Viewer")
-		
-		local showMoreInfo = AddCheckbox("Show Decompiled Script Info", Settings.ScriptViewer.ShowMoreInfo)
-		showMoreInfo.OnInput:Connect(function()
-			Settings.ScriptViewer.ShowMoreInfo = showMoreInfo.Toggled
-		end)
 		
 		-- Save buttons below
 		local BackgroundreloadButton = Lib.Frame.new()
