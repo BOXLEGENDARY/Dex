@@ -332,8 +332,6 @@ local function main()
 			Settings.Properties.ClearOnFocus = clearOnFocus.Toggled
 		end)
 		
-		AddSeperator("Script Viewer")
-		
 		-- Save buttons below
 		local BackgroundreloadButton = Lib.Frame.new()
 		BackgroundreloadButton.Gui.Parent = window.GuiElems.Content
