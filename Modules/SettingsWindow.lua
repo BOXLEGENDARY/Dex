@@ -384,5 +384,4 @@ local function main()
 	return SettingsWindow
 end
 
-	return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
-end
+return {InitDeps = initDeps, InitAfterMain = initAfterMain, Main = main}
