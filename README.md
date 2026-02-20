@@ -17,6 +17,7 @@ loadstring(game:HttpGet("https://github.com/BOXLEGENDARY/Dex/releases/latest/dow
 >    - Just keeping it fresh and more features.
 >    - Uses stable third-party components.
 > 5. I didn’t add any overkill functions.
+> 6. do not use env.decompile just use decompile
 
 ---
 
