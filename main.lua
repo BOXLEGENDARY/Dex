@@ -163,7 +163,7 @@ Main = (function()
 	Main.ModuleList = {"Explorer","Properties","ScriptViewer","ModelViewer","Console","SaveInstance","SettingsWindow"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
-	Main.Version = "2.2.11"
+	Main.Version = "2.3.11"
 	Main.Mouse = plr:GetMouse()
 	Main.AppControls = {}
 	Main.Apps = Apps
@@ -342,6 +342,8 @@ Main = (function()
 		end})
 	
 		env.isonmobile = game:GetService("UserInputService").TouchEnabled
+		
+		env.loadstring = (pcall(loadstring,"local a = 1") and loadstring) or (game:GetService("RunService"):IsStudio() and script.Modules:FindFirstChild("Loadstring") and require(script.Modules:FindFirstChild("Loadstring")))
 	
 		-- file
 		env.isfile = isfile
@@ -1133,16 +1135,16 @@ Main = (function()
 		
 		Main.CreateApp({Name = "Properties", IconMap = Main.LargeIcons, Icon = "Properties", Open = true, Window = Properties.Window})
 		
-		Main.CreateApp({Name = "Script Viewer", IconMap = Main.LargeIcons, Icon = "Script_Viewer", Window = ScriptViewer.Window})
+		Main.CreateApp({Name = "Notepad", IconMap = Main.LargeIcons, Icon = "Script_Viewer", Window = ScriptViewer.Window})
 
-		Main.CreateApp({Name = "3D Viewer", IconMap = Explorer.LegacyClassIcons, Icon = 54, Window = ModelViewer.Window})
+		Main.CreateApp({Name = "3D Viewer", IconMap = Main.LargeIcons, Icon = "Object", Window = ModelViewer.Window})
 
-		Main.CreateApp({Name = "Console", IconMap = Main.LargeIcons, Icon = "Console", Window = Console.Window})
+		Main.CreateApp({Name = "Console", IconMap = Main.LargeIcons, Icon = "Executor", Window = Console.Window})
 
-		Main.CreateApp({Name = "Save Instance", IconMap = Main.LargeIcons, Icon = "Script", Window = SaveInstance.Window})
+		Main.CreateApp({Name = "Save Instance", IconMap = Main.LargeIcons, Icon = "Book", Window = SaveInstance.Window})
 
 		local cptsOnMouseClick = nil
-		Main.CreateApp({Name = "Click part to select", IconMap = Main.LargeIcons, Icon = 6, OnClick = function(callback)
+		Main.CreateApp({Name = "Click part to select", IconMap = Explorer.ClassIcons, Icon = "SelectionBox", OnClick = function(callback)
 			if callback then
 				local mouse = Main.Mouse
 				cptsOnMouseClick = mouse.Button1Down:Connect(function()
@@ -1202,7 +1204,7 @@ Main = (function()
 		--Main.IncompatibleTest()
 		
 		-- Init icons
-		Main.MiscIcons = Lib.IconMap.new("http://www.roblox.com/asset/?id=6511490623",256,256,16,16) -- 6579106223
+		Main.MiscIcons = Lib.IconMap.new("rbxassetid://6511490623",256,256,16,16) -- 6579106223
 		
 		Main.MiscIcons:SetDict({
 			["Reference"] = 0;
@@ -1245,9 +1247,9 @@ Main = (function()
 			["Pause"] = 37;
 			["Rename_Disabled"] = 38;
 		})
-		Main.LargeIcons = Lib.IconMap.new("rbxassetid://6579106223",256,256,32,32)
+		Main.LargeIcons = Lib.IconMap.new("rbxassetid://129589545519436",256,256,32,32) -- 6579106223
 		Main.LargeIcons:SetDict({
-			Explorer = 0, Properties = 1, Script_Viewer = 2, Watcher = 3, Console = 4, Script = 5
+			Explorer = 0, Properties = 1, Script_Viewer = 2, Watcher = 3, Output = 4, ScriptEdit = 5, Book = 6, Executor = 7, Object = 8, Honey = 9
 		})
 
 		-- Fetch version if needed
