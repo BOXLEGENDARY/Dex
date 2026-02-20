@@ -168,7 +168,9 @@ Main = (function()
 	Main.AppControls = {}
 	Main.Apps = Apps
 	Main.MenuApps = {}
-	Main.GitRepoName = "BOXLEGENDARY/Dex"
+	Main.GitName = "BOXLEGENDARY"
+	Main.RepoName ="Dex"
+	Main.GitRepoName = Main.GitName.."/"..Main.RepoName
 	
 	Main.DisplayOrders = {
 		SideWindow = 8,
