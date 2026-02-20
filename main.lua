@@ -393,10 +393,10 @@ Main = (function()
 		env.hookmetamethod = hookmetamethod
 	
 		-- other
-		env.decompile = decompile or (function()	
-			--warn("No built-in decompiler exists, using Advanced Luau Decompiler...")
-			pcall(Main.LoadAdvancedLuauDecompiler)
-		end)()
+		if type(decompile) ~= "function" then
+		    --warn("No built-in decompiler exists, using Advanced Luau Decompiler...")
+		    pcall(Main.LoadAdvancedLuauDecompiler)
+		end
 		env.getscriptbytecode = getscriptbytecode
 		env.setfflag = setfflag
 		env.request = (syn and syn.request) or (http and http.request) or (http_request) or (request)
