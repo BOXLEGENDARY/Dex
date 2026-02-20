@@ -16,6 +16,7 @@ loadstring(game:HttpGet("https://github.com/BOXLEGENDARY/Dex/releases/latest/dow
 > 4. What's different between Dex 2021 and Dex 2026?
 >    - Just keeping it fresh and more features.
 >    - Uses stable third-party components.
+> 5. I didn’t add any overkill functions.
 
 ---
 
