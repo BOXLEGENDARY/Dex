@@ -892,6 +892,7 @@ local function main()
 		context:AddRegistered("PASTE", emptyClipboard)
 		context:AddRegistered("DUPLICATE")
 		context:AddRegistered("DELETE")
+		context:AddRegistered("DELETE_CHILDREN", #sList ~= 1)
 		context:AddRegistered("RENAME", #sList ~= 1)
 
 		context:AddDivider()
@@ -1053,6 +1054,14 @@ local function main()
 			local sList = selection.List
 			for i = 1,#sList do
 				pcall(destroy,sList[i].Obj)
+			end
+			selection:Clear()
+		end})
+		
+		context:Register("DELETE_CHILDREN",{Name = "Delete Children", IconMap = Explorer.MiscIcons, Icon = "Delete", DisabledIcon = "Delete_Disabled", Shortcut = "Shift+Del", OnClick = function()
+			local sList = selection.List
+			for i = 1,#sList do
+				pcall(sList[i].Obj.ClearAllChildren,sList[i].Obj)
 			end
 			selection:Clear()
 		end})

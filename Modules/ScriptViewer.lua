@@ -50,7 +50,7 @@ local function main()
 
 	ScriptViewer.Init = function()
 		window = Lib.Window.new()
-		window:SetTitle("Script Viewer")
+		window:SetTitle("Notepad")
 		window:Resize(500, 400)
 		ScriptViewer.Window = window
 		
@@ -85,6 +85,38 @@ local function main()
 			if env.movefileas then
 				env.movefileas(filename, ".txt")
 			end
+		end)
+		
+        local execute = Instance.new("TextButton", window.GuiElems.Content)
+		execute.BackgroundTransparency = 1
+		execute.Size = UDim2.new(0.5,0,0,20)
+		execute.Position = UDim2.new(0,0,1,-20)
+		execute.Text = "Execute"
+		execute.TextColor3 = Color3.new(1,1,1)
+		
+		if env.loadstring then
+			execute.TextColor3 = Color3.new(1,1,1)
+			execute.Interactable = true
+		else
+			execute.TextColor3 = Color3.new(0.5,0.5,0.5)
+			execute.Interactable = false
+		end
+
+		execute.MouseButton1Click:Connect(function()
+			local source = codeFrame:GetText()
+			env.loadstring(source)()
+		end)
+
+
+		local clear = Instance.new("TextButton", window.GuiElems.Content)
+		clear.BackgroundTransparency = 1
+		clear.Size = UDim2.new(0.5,0,0,20)
+		clear.Position = UDim2.new(0.5,0,1,-20)
+		clear.Text = "Clear"
+		clear.TextColor3 = Color3.new(1,1,1)
+
+		clear.MouseButton1Click:Connect(function()
+			codeFrame:SetText("")
 		end)
 		
 		local dumpbtn = Instance.new("TextButton",window.GuiElems.Content)

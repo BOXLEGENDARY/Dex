@@ -70,7 +70,7 @@ local function main()
 			viewportFrame:ClearAllChildren()
 			
 			ModelViewer.IsViewing = false
-			window:SetTitle("Model Viewer")
+			window:SetTitle("3D Preview")
 			pathLabel.Gui.Text = ""
 		end
 	end
@@ -143,7 +143,7 @@ local function main()
 			camera.Parent = viewportFrame
 			camera.FieldOfView = 60
 			
-			window:SetTitle(item.Name.." - Model Viewer")
+			window:SetTitle(item.Name.." - 3D Preview")
 			pathLabel.Gui.Text = "path: " .. getPath(originalModel)
 			window:Show()
 			ModelViewer.IsViewing = true
@@ -152,7 +152,7 @@ local function main()
 
 	ModelViewer.Init = function()
 		window = Lib.Window.new()
-		window:SetTitle("Model Viewer")
+		window:SetTitle("3D Preview")
 		window:Resize(350,200)
 		ModelViewer.Window =  window
 		
