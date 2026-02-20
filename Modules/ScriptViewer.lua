@@ -56,7 +56,7 @@ local function main()
 		
 		codeFrame = Lib.CodeFrame.new()
 		codeFrame.Frame.Position = UDim2.new(0,0,0,20)
-		codeFrame.Frame.Size = UDim2.new(1,0,1,-20)
+		codeFrame.Frame.Size = UDim2.new(1,0,1,-40)
 		codeFrame.Frame.Parent = window.GuiElems.Content
 		
 		local copy = Instance.new("TextButton", window.GuiElems.Content)
