@@ -18,6 +18,7 @@ If you really need it, just type `/console` in chat or press `F9`.
 >    - Mostly keeping it fresh and adding more features.
 >    - Uses stable third-party components.
 > 5. I didn’t add any unnecessary or overkill functions.
+> 6. open a gitHub issue to report any problems.
 
 ---
 
