@@ -6,7 +6,7 @@
 
 -- Common Locals
 local Main,Lib,Apps,Settings -- Main Containers
-local Explorer, Properties, ScriptViewer, ModelViewer, Console, SaveInstance, SettingsWindow, Notebook -- Major Apps
+local Explorer, Properties, ScriptViewer, ModelViewer, Notebook -- Major Apps
 local API,RMD,env,service,plr,create,createSimple -- Main Locals
 
 local function initDeps(data)
@@ -29,9 +29,6 @@ local function initAfterMain()
 	Properties = Apps.Properties
 	ScriptViewer = Apps.ScriptViewer
 	ModelViewer = Apps.ModelViewer
-	Console = Apps.Console
-	SaveInstance = Apps.SaveInstance
-	SettingsWindow = Apps.SettingsWindow
 	Notebook = Apps.Notebook
 end
 
