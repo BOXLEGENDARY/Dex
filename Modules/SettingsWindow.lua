@@ -31,220 +31,17 @@ local function initAfterMain()
 end
 
 local function main()
-	local SettingsWindow = {}
-	local window, ListFrame
-	local fileName = "Place_"..game.PlaceId.."_"..game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name.."_{TIMESTAMP}"
-	local Saving = false
-	
-	local function AddCheckbox(title, default)
-		local frame = Lib.Frame.new()
-		frame.Gui.Parent = ListFrame
-		frame.Gui.Transparency = 1
-		frame.Gui.Size = UDim2.new(1,0,0,20)
-		
-		local listlayout = Instance.new("UIListLayout")
-		listlayout.Parent = frame.Gui
-		listlayout.FillDirection = Enum.FillDirection.Horizontal
-		listlayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
-		listlayout.VerticalAlignment = Enum.VerticalAlignment.Center
-		listlayout.Padding = UDim.new(0, 10)
-		
-		-- Checkbox
-		local checkbox = Lib.Checkbox.new()
-		
-		checkbox.Gui.Parent = frame.Gui
-		checkbox.Gui.Size = UDim2.new(0,15,0,15)
-		
-		-- Label
-		local label = Lib.Label.new()
-		
-		label.Gui.Parent = frame.Gui
-		label.Gui.Size = UDim2.new(1, 0,1, -15)
-		label.Gui.Text = title
-		label.TextTruncate = Enum.TextTruncate.AtEnd
-		
-		checkbox:SetState(default or false)
-		
-		return checkbox
-	end
-	
-	local function AddTextbox(title, default, sizeX)
-		default = default and tostring(default) or ""
-		local frame = Lib.Frame.new()
-		frame.Gui.Parent = ListFrame
-		frame.Gui.Transparency = 1
-		frame.Gui.Size = UDim2.new(1,0,0,20)
-
-		local listlayout = Instance.new("UIListLayout")
-		listlayout.Parent = frame.Gui
-		listlayout.FillDirection = Enum.FillDirection.Horizontal
-		listlayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
-		listlayout.VerticalAlignment = Enum.VerticalAlignment.Center
-		listlayout.Padding = UDim.new(0, 10)
-
-		-- Textbox
-		local textbox = Instance.new("TextBox") -- replaced cuz why Moon make every inputs only work on mouse/pc users >:( 
-		textbox.BackgroundColor3 = Settings.Theme.TextBox
-		textbox.BorderColor3 = Settings.Theme.Outline3
-		textbox.ClearTextOnFocus = false
-		textbox.TextColor3 = Settings.Theme.Text
-		textbox.Font = Enum.Font.SourceSans
-		textbox.TextSize = 14
-		textbox.ZIndex = 2
-
-		textbox.Parent = frame.Gui
-		if sizeX and type(sizeX) == "number" then
-			textbox.Size = UDim2.new(0,sizeX,0,15)
-		else
-			textbox.Size = UDim2.new(0,45,0,15)
-		end
-		
-		frame.Gui.AutomaticSize = Enum.AutomaticSize.X
-		textbox.AutomaticSize = Enum.AutomaticSize.X
-
-		-- Label
-		local label = Lib.Label.new()
-
-		label.Parent = frame.Gui
-		label.Size = UDim2.new(1, 0,1, -15)
-		label.Text = title
-		label.TextTruncate = Enum.TextTruncate.AtEnd
-
-		textbox.Text = default
-
-		return textbox
-	end
-	
-	local function AddDropdown(title, options, default, allowEmpty, sizeX)
-		if allowEmpty == nil then allowEmpty = true end
-		
-		local frame = Lib.Frame.new()
-		frame.Gui.Parent = ListFrame
-		frame.Gui.Transparency = 1
-		frame.Gui.Size = UDim2.new(1,0,0,20)
-
-		local listlayout = Instance.new("UIListLayout")
-		listlayout.Parent = frame.Gui
-		listlayout.FillDirection = Enum.FillDirection.Horizontal
-		listlayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
-		listlayout.VerticalAlignment = Enum.VerticalAlignment.Center
-		listlayout.Padding = UDim.new(0, 10)
-
-		-- Textbox
-		local dropdown = Lib.DropDown.new()
-		dropdown.CanBeEmpty = allowEmpty
-		dropdown.Size = UDim2.new(0,sizeX or 75,0,15)
-		dropdown:SetOptions(options)
-		if default then dropdown:SetSelected(default) end
-		dropdown.Gui.Parent = frame.Gui
-
-		frame.Gui.AutomaticSize = Enum.AutomaticSize.X
-
-		-- Label
-		local label = Lib.Label.new()
-
-		label.Parent = frame.Gui
-		label.Size = UDim2.new(1, 0,1, -15)
-		label.Text = title
-		label.TextTruncate = Enum.TextTruncate.AtEnd
-		
-		return dropdown
-	end
-	
-	local function AddSeperator(title)
-
-		local frame = Lib.Frame.new()
-		frame.Gui.Parent = ListFrame
-		frame.Gui.Transparency = 1
-		frame.Gui.Size = UDim2.new(1,0,0,20)
-		
-		-- Label
-		local label = Lib.Label.new()
-
-		label.Parent = frame.Gui
-		--label.AnchorPoint = Vector2.new(0,1)
-		--label.Position = UDim2.new(0,0,0,0)
-		label.Size = UDim2.new(1, 0,1, 0)
-		label.Text = title
-		label.TextSize = 16
-		label.TextTruncate = Enum.TextTruncate.AtEnd
-
-		return label
-	end
-	
-	local function AddText(text)
-		local frame = Lib.Frame.new()
-		frame.Gui.Parent = ListFrame
-		frame.Gui.Transparency = 1
-		frame.Gui.Size = UDim2.new(1,0,0,15)
-
-		-- Label
-		local label = Lib.Label.new()
-
-		label.Parent = frame.Gui
-		--label.AnchorPoint = Vector2.new(0,1)
-		--label.Position = UDim2.new(0,0,0,0)
-		label.Size = UDim2.new(1, 0,1, 0)
-		label.TextColor3 = Color3.fromRGB(185,185,185)
-		label.Text = text
-		label.TextSize = 14
-		label.TextTruncate = Enum.TextTruncate.AtEnd
-
-		return label
-	end
-	
-	SettingsWindow.ReloadPrompt = function()		
-		local win = ScriptViewer.ReloadPromptWindow
-		if not win then
-			win = Lib.Window.new()
-			win.Alignable = false
-			win.Resizable = false
-			win:SetTitle("Apply Current Settings")
-			win:SetSize(300,115)
-
-			local reloadButton = Lib.Button.new()
-			local nameLabel = Lib.Label.new()
-			nameLabel.Text = "By applying current settings requires reload.\nAny unsaved progress will be lost.\nAre you sure?"
-			nameLabel.Position = UDim2.new(0,30,0,20)
-			nameLabel.Size = UDim2.new(0,40,0,20)
-			win:Add(nameLabel)
-
-			local cancelButton = Lib.Button.new()
-			cancelButton.AnchorPoint = Vector2.new(1,1)
-			cancelButton.Text = "Apply Later"
-			cancelButton.Position = UDim2.new(1,-5,1,-5)
-			cancelButton.Size = UDim2.new(0.5,-10,0,20)
-			cancelButton.OnClick:Connect(function()
-				win:Close()
-			end)
-			win:Add(cancelButton)
-
-			reloadButton.Text = "Apply Now"
-			reloadButton.AnchorPoint = Vector2.new(0,1)
-			reloadButton.Position = UDim2.new(0,5,1,-5)
-			reloadButton.Size = UDim2.new(0.5,-5,0,20)
-			reloadButton.OnClick:Connect(function()
-				Main.Reinit()
-			end)
-
-			win:Add(reloadButton,"reloadButton")
-
-			SettingsWindow.ReloadPromptWindow = win
-		end
-		win:Show()
-	end
-	
 	SettingsWindow.Init = function()
 		window = Lib.Window.new()
 		window:SetTitle("Settings")
-		window:Resize(250,375)
+		window:Resize(320, 500)
 		SettingsWindow.Window = window
 		
 		-- ListFrame
 		
 		ListFrame = Instance.new("ScrollingFrame")
 		ListFrame.Parent = window.GuiElems.Content
-		ListFrame.Size = UDim2.new(1, 0,1, -20)
+		ListFrame.Size = UDim2.new(1, 0,1, -30)
 		ListFrame.Position = UDim2.new(0, 0, 0, 0)
 		ListFrame.Transparency = 1
 		ListFrame.CanvasSize = UDim2.new(0,0,0,0)
@@ -282,64 +79,278 @@ local function main()
 		Padding.PaddingRight = UDim.new(0, 10)
 		Padding.PaddingTop = UDim.new(0, 5)
 		
-		-- Options
+		local function AddSeperator(title)
+			local frame = Lib.Frame.new()
+			frame.Gui.Parent = ListFrame
+			frame.Gui.Transparency = 1
+			frame.Gui.Size = UDim2.new(1,0,0,25)
+			
+			local label = Lib.Label.new()
+			label.Parent = frame.Gui
+			label.Size = UDim2.new(1, 0, 1, 0)
+			label.Text = title
+			label.TextSize = 16
+			label.TextColor3 = Color3.fromRGB(200,200,200)
+			label.Font = Enum.Font.SourceSansBold
+			label.TextTruncate = Enum.TextTruncate.AtEnd
+			return label
+		end
 		
-		AddSeperator("UI")
+		local function AddCheckbox(title, default)
+			local frame = Lib.Frame.new()
+			frame.Gui.Parent = ListFrame
+			frame.Gui.Transparency = 1
+			frame.Gui.Size = UDim2.new(1,0,0,20)
+			
+			local listlayout = Instance.new("UIListLayout")
+			listlayout.Parent = frame.Gui
+			listlayout.FillDirection = Enum.FillDirection.Horizontal
+			listlayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+			listlayout.VerticalAlignment = Enum.VerticalAlignment.Center
+			listlayout.Padding = UDim.new(0, 10)
+			
+			local checkbox = Lib.Checkbox.new()
+			checkbox.Gui.Parent = frame.Gui
+			checkbox.Gui.Size = UDim2.new(0,15,0,15)
+			
+			local label = Lib.Label.new()
+			label.Parent = frame.Gui
+			label.Size = UDim2.new(1, 0,1, -15)
+			label.Text = title
+			label.TextTruncate = Enum.TextTruncate.AtEnd
+			
+			checkbox:SetState(default or false)
+			return checkbox
+		end
 		
+		local function AddTextbox(title, default, sizeX)
+			default = default and tostring(default) or ""
+			local frame = Lib.Frame.new()
+			frame.Gui.Parent = ListFrame
+			frame.Gui.Transparency = 1
+			frame.Gui.Size = UDim2.new(1,0,0,20)
+
+			local listlayout = Instance.new("UIListLayout")
+			listlayout.Parent = frame.Gui
+			listlayout.FillDirection = Enum.FillDirection.Horizontal
+			listlayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+			listlayout.VerticalAlignment = Enum.VerticalAlignment.Center
+			listlayout.Padding = UDim.new(0, 10)
+
+			local textbox = Instance.new("TextBox")
+			textbox.BackgroundColor3 = Settings.Theme.TextBox
+			textbox.BorderColor3 = Settings.Theme.Outline3
+			textbox.ClearTextOnFocus = false
+			textbox.TextColor3 = Settings.Theme.Text
+			textbox.Font = Enum.Font.SourceSans
+			textbox.TextSize = 14
+			textbox.ZIndex = 2
+			textbox.Parent = frame.Gui
+			textbox.Size = UDim2.new(0, sizeX or 45, 0, 18)
+			
+			frame.Gui.AutomaticSize = Enum.AutomaticSize.X
+
+			local label = Lib.Label.new()
+			label.Parent = frame.Gui
+			label.Size = UDim2.new(1, 0,1, -15)
+			label.Text = title
+			label.TextTruncate = Enum.TextTruncate.AtEnd
+
+			textbox.Text = default
+			return textbox
+		end
+		
+		local function AddDropdown(title, options, default, allowEmpty, sizeX)
+			if allowEmpty == nil then allowEmpty = true end
+			local frame = Lib.Frame.new()
+			frame.Gui.Parent = ListFrame
+			frame.Gui.Transparency = 1
+			frame.Gui.Size = UDim2.new(1,0,0,20)
+
+			local listlayout = Instance.new("UIListLayout")
+			listlayout.Parent = frame.Gui
+			listlayout.FillDirection = Enum.FillDirection.Horizontal
+			listlayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+			listlayout.VerticalAlignment = Enum.VerticalAlignment.Center
+			listlayout.Padding = UDim.new(0, 10)
+
+			local dropdown = Lib.DropDown.new()
+			dropdown.CanBeEmpty = allowEmpty
+			dropdown.Size = UDim2.new(0, sizeX or 75, 0, 18)
+			dropdown:SetOptions(options)
+			if default then dropdown:SetSelected(default) end
+			dropdown.Gui.Parent = frame.Gui
+
+			frame.Gui.AutomaticSize = Enum.AutomaticSize.X
+
+			local label = Lib.Label.new()
+			label.Parent = frame.Gui
+			label.Size = UDim2.new(1, 0,1, -15)
+			label.Text = title
+			label.TextTruncate = Enum.TextTruncate.AtEnd
+			
+			return dropdown
+		end
+		
+		local function AddColorPicker(title, tableRef, key)
+			local frame = Lib.Frame.new()
+			frame.Gui.Parent = ListFrame
+			frame.Gui.Transparency = 1
+			frame.Gui.Size = UDim2.new(1,0,0,20)
+
+			local listlayout = Instance.new("UIListLayout")
+			listlayout.Parent = frame.Gui
+			listlayout.FillDirection = Enum.FillDirection.Horizontal
+			listlayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+			listlayout.VerticalAlignment = Enum.VerticalAlignment.Center
+			listlayout.Padding = UDim.new(0, 10)
+
+			local colorBtn = Instance.new("TextButton")
+			colorBtn.Size = UDim2.new(0, 50, 0, 18)
+			colorBtn.BackgroundColor3 = tableRef[key]
+			colorBtn.BorderColor3 = Color3.fromRGB(15,15,15)
+			colorBtn.Text = ""
+			colorBtn.Parent = frame.Gui
+
+			local label = Lib.Label.new()
+			label.Parent = frame.Gui
+			label.Size = UDim2.new(1, -65, 1, 0)
+			label.Text = title
+			label.TextTruncate = Enum.TextTruncate.AtEnd
+
+			colorBtn.MouseButton1Click:Connect(function()
+				local picker = Lib.ColorPicker.new()
+				picker.Window:SetTitle("Edit: " .. title)
+				picker:SetColor(tableRef[key])
+				picker.OnSelect:Connect(function(col)
+					tableRef[key] = col
+					colorBtn.BackgroundColor3 = col
+				end)
+				picker.Window:ShowAndFocus()
+			end)
+		end
+
+		AddSeperator("UI & General")
 		local classIcon = AddDropdown("Class Icons", {"Old", "NewDark", "Vanilla3"}, Settings.ClassIcon, false, 100)
-		classIcon.OnSelect:Connect(function()
-			Settings.ClassIcon = classIcon.Selected
-		end)
+		classIcon.OnSelect:Connect(function() Settings.ClassIcon = classIcon.Selected end)
+
+		local remoteBlockWrite = AddCheckbox("Remote Block Write Attribute", Settings.RemoteBlockWriteAttribute)
+		remoteBlockWrite.OnInput:Connect(function() Settings.RemoteBlockWriteAttribute = remoteBlockWrite.Toggled end)
 		
 		AddSeperator("Explorer")
-		
 		local clickRename = AddCheckbox("Click to Rename", Settings.Explorer.ClickToRename)
-		clickRename.OnInput:Connect(function()
-			Settings.Explorer.ClickToRename = clickRename.Toggled
-		end)
+		clickRename.OnInput:Connect(function() Settings.Explorer.ClickToRename = clickRename.Toggled end)
+
+		local explorerSorting = AddCheckbox("Enable Sorting", Settings.Explorer.Sorting)
+		explorerSorting.OnInput:Connect(function() Settings.Explorer.Sorting = explorerSorting.Toggled end)
+
+		local autoUpdateSearch = AddCheckbox("Auto Update Search", Settings.Explorer.AutoUpdateSearch)
+		autoUpdateSearch.OnInput:Connect(function() Settings.Explorer.AutoUpdateSearch = autoUpdateSearch.Toggled end)
+
+		local updateModeOpts = {"0: Default", "1: No Tree Update", "2: No Events", "3: Frozen"}
+		local currentUpdateMode = updateModeOpts[Settings.Explorer.AutoUpdateMode + 1] or updateModeOpts[1]
+		local updateModeDrop = AddDropdown("Auto Update Mode", updateModeOpts, currentUpdateMode, false, 110)
+		updateModeDrop.OnSelect:Connect(function() Settings.Explorer.AutoUpdateMode = tonumber(string.sub(updateModeDrop.Selected, 1, 1)) or 0 end)
 		
 		local partSelectionBox = AddCheckbox("Part Selection Box", Settings.Explorer.PartSelectionBox)
-		partSelectionBox.OnInput:Connect(function()
-			Settings.Explorer.PartSelectionBox = partSelectionBox.Toggled
-		end)
+		partSelectionBox.OnInput:Connect(function() Settings.Explorer.PartSelectionBox = partSelectionBox.Toggled end)
+
+		local guiSelectionBox = AddCheckbox("GUI Selection Box", Settings.Explorer.GuiSelectionBox)
+		guiSelectionBox.OnInput:Connect(function() Settings.Explorer.GuiSelectionBox = guiSelectionBox.Toggled end)
 		
-		local copypathUseChildren = AddCheckbox("Use GetChildren to Copy Path", Settings.Explorer.CopyPathUseGetChildren)
-		copypathUseChildren.OnInput:Connect(function()
-			Settings.Explorer.CopyPathUseGetChildren = copypathUseChildren.Toggled
-		end)
+		local copypathUseChildren = AddCheckbox("Use GetChildren for Copy Path", Settings.Explorer.CopyPathUseGetChildren)
+		copypathUseChildren.OnInput:Connect(function() Settings.Explorer.CopyPathUseGetChildren = copypathUseChildren.Toggled end)
 		
 		AddSeperator("Properties")
+		local scaleOpts = {"0: Full Name Shown", "1: Equal Halves"}
+		local currentScale = scaleOpts[Settings.Properties.ScaleType + 1] or scaleOpts[1]
+		local scaleTypeDrop = AddDropdown("Scale Type", scaleOpts, currentScale, false, 120)
+		scaleTypeDrop.OnSelect:Connect(function() Settings.Properties.ScaleType = tonumber(string.sub(scaleTypeDrop.Selected, 1, 1)) or 0 end)
 
 		local showDeprecated = AddCheckbox("Show Deprecated", Settings.Properties.ShowDeprecated)
-		showDeprecated.OnInput:Connect(function()
-			Settings.Properties.ShowDeprecated = showDeprecated.Toggled
-		end)
+		showDeprecated.OnInput:Connect(function() Settings.Properties.ShowDeprecated = showDeprecated.Toggled end)
 		
 		local showHidden = AddCheckbox("Show Hidden", Settings.Properties.ShowHidden)
-		showHidden.OnInput:Connect(function()
-			Settings.Properties.ShowHidden = showHidden.Toggled
-		end)
+		showHidden.OnInput:Connect(function() Settings.Properties.ShowHidden = showHidden.Toggled end)
 		
 		local showAttributes = AddCheckbox("Show Attributes", Settings.Properties.ShowAttributes)
-		showAttributes.OnInput:Connect(function()
-			Settings.Properties.ShowAttributes = showAttributes.Toggled
-		end)
+		showAttributes.OnInput:Connect(function() Settings.Properties.ShowAttributes = showAttributes.Toggled end)
+
 		local clearOnFocus = AddCheckbox("Clear On Focus", Settings.Properties.ClearOnFocus)
-		clearOnFocus.OnInput:Connect(function()
-			Settings.Properties.ClearOnFocus = clearOnFocus.Toggled
-		end)
+		clearOnFocus.OnInput:Connect(function() Settings.Properties.ClearOnFocus = clearOnFocus.Toggled end)
+
+		local loadstringInput = AddCheckbox("Enable Loadstring Input", Settings.Properties.LoadstringInput)
+		loadstringInput.OnInput:Connect(function() Settings.Properties.LoadstringInput = loadstringInput.Toggled end)
+
+		local maxConflictBox = AddTextbox("Max Conflict Check", Settings.Properties.MaxConflictCheck, 50)
+		maxConflictBox.FocusLost:Connect(function() local num = tonumber(maxConflictBox.Text) if num then Settings.Properties.MaxConflictCheck = num end end)
+
+		local maxAttrBox = AddTextbox("Max Attributes to Load", Settings.Properties.MaxAttributes, 50)
+		maxAttrBox.FocusLost:Connect(function() local num = tonumber(maxAttrBox.Text) if num then Settings.Properties.MaxAttributes = num end end)
+
+		local numRoundingBox = AddTextbox("Number Rounding (Decimals)", Settings.Properties.NumberRounding, 50)
+		numRoundingBox.FocusLost:Connect(function() local num = tonumber(numRoundingBox.Text) if num then Settings.Properties.NumberRounding = num end end)
 		
-		-- Save buttons below
+		AddSeperator("Theme - General Colors")
+		AddColorPicker("Main 1 (Backgrounds)", Settings.Theme, "Main1")
+		AddColorPicker("Main 2 (Secondary)", Settings.Theme, "Main2")
+		AddColorPicker("Outline 1 (Frames)", Settings.Theme, "Outline1")
+		AddColorPicker("Outline 2 (Buttons)", Settings.Theme, "Outline2")
+		AddColorPicker("Outline 3 (TextBoxes)", Settings.Theme, "Outline3")
+		AddColorPicker("TextBox BG", Settings.Theme, "TextBox")
+		AddColorPicker("Menu BG", Settings.Theme, "Menu")
+		AddColorPicker("List Selection", Settings.Theme, "ListSelection")
+		AddColorPicker("Button Regular", Settings.Theme, "Button")
+		AddColorPicker("Button Hover", Settings.Theme, "ButtonHover")
+		AddColorPicker("Button Press", Settings.Theme, "ButtonPress")
+		AddColorPicker("Highlight", Settings.Theme, "Highlight")
+		AddColorPicker("Text Default", Settings.Theme, "Text")
+		AddColorPicker("Placeholder Text", Settings.Theme, "PlaceholderText")
+		AddColorPicker("Important (Errors)", Settings.Theme, "Important")
+
+		local expIconMapBox = AddTextbox("Explorer Icon Map URL", Settings.Theme.ExplorerIconMap, 150)
+		expIconMapBox.FocusLost:Connect(function() Settings.Theme.ExplorerIconMap = expIconMapBox.Text end)
+		
+		local miscIconMapBox = AddTextbox("Misc Icon Map URL", Settings.Theme.MiscIconMap, 150)
+		miscIconMapBox.FocusLost:Connect(function() Settings.Theme.MiscIconMap = miscIconMapBox.Text end)
+
+		AddSeperator("Theme - Syntax Highlighting")
+		AddColorPicker("Text Default", Settings.Theme.Syntax, "Text")
+		AddColorPicker("Background", Settings.Theme.Syntax, "Background")
+		AddColorPicker("Selection Text", Settings.Theme.Syntax, "Selection")
+		AddColorPicker("Selection BG", Settings.Theme.Syntax, "SelectionBack")
+		AddColorPicker("Operator", Settings.Theme.Syntax, "Operator")
+		AddColorPicker("Number", Settings.Theme.Syntax, "Number")
+		AddColorPicker("String", Settings.Theme.Syntax, "String")
+		AddColorPicker("Comment", Settings.Theme.Syntax, "Comment")
+		AddColorPicker("Keyword", Settings.Theme.Syntax, "Keyword")
+		AddColorPicker("Error", Settings.Theme.Syntax, "Error")
+		AddColorPicker("Find Background", Settings.Theme.Syntax, "FindBackground")
+		AddColorPicker("Matching Word", Settings.Theme.Syntax, "MatchingWord")
+		AddColorPicker("Built-in Function", Settings.Theme.Syntax, "BuiltIn")
+		AddColorPicker("Current Line BG", Settings.Theme.Syntax, "CurrentLine")
+		AddColorPicker("Local Method", Settings.Theme.Syntax, "LocalMethod")
+		AddColorPicker("Local Property", Settings.Theme.Syntax, "LocalProperty")
+		AddColorPicker("Nil", Settings.Theme.Syntax, "Nil")
+		AddColorPicker("Boolean (true/false)", Settings.Theme.Syntax, "Bool")
+		AddColorPicker("Function Keyword", Settings.Theme.Syntax, "Function")
+		AddColorPicker("Local Keyword", Settings.Theme.Syntax, "Local")
+		AddColorPicker("Self Keyword", Settings.Theme.Syntax, "Self")
+		AddColorPicker("Function Name", Settings.Theme.Syntax, "FunctionName")
+		AddColorPicker("Bracket ()[]{}", Settings.Theme.Syntax, "Bracket")
+
 		local BackgroundreloadButton = Lib.Frame.new()
 		BackgroundreloadButton.Gui.Parent = window.GuiElems.Content
-		BackgroundreloadButton.Size = UDim2.new(1,0, 0,20)
-		BackgroundreloadButton.Position = UDim2.new(0,0, 1,-20)
+		BackgroundreloadButton.Size = UDim2.new(1,0, 0,30)
+		BackgroundreloadButton.Position = UDim2.new(0,0, 1,-30)
 		
 		local LabelreloadButton = Lib.Label.new()
 		LabelreloadButton.Gui.Parent = window.GuiElems.Content
-		LabelreloadButton.Size = UDim2.new(1,0, 0,20)
-		LabelreloadButton.Position = UDim2.new(0,0, 1,-20)
-		LabelreloadButton.Gui.Text = "Restart"
+		LabelreloadButton.Size = UDim2.new(1,0, 0,30)
+		LabelreloadButton.Position = UDim2.new(0,0, 1,-30)
+		LabelreloadButton.Gui.Text = "Save & Restart"
+		LabelreloadButton.Gui.TextSize = 16
+		LabelreloadButton.Gui.Font = Enum.Font.SourceSansBold
 		LabelreloadButton.Gui.TextXAlignment = Enum.TextXAlignment.Center
 		
 		local reloadButton = Instance.new("TextButton")
