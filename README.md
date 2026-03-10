@@ -1,4 +1,4 @@
-## Loadstring
+## Loadstring ( Moblie/Pc )
 ```lua
 loadstring(game:HttpGet("https://github.com/BOXLEGENDARY/Dex/releases/latest/download/out.lua"))()
 ```
