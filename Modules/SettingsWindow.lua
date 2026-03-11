@@ -232,12 +232,50 @@ local function main()
 			end)
 		end
 
+		SettingsWindow.ReloadPrompt = function()		
+			local win = ScriptViewer.ReloadPromptWindow
+			if not win then
+				win = Lib.Window.new()
+				win.Alignable = false
+				win.Resizable = false
+				win:SetTitle("Apply Current Settings")
+				win:SetSize(300,115)
+	
+				local reloadButton = Lib.Button.new()
+				local nameLabel = Lib.Label.new()
+				nameLabel.Text = "By applying current settings requires reload.\nAny unsaved progress will be lost.\nAre you sure?"
+				nameLabel.Position = UDim2.new(0,30,0,20)
+				nameLabel.Size = UDim2.new(0,40,0,20)
+				win:Add(nameLabel)
+	
+				local cancelButton = Lib.Button.new()
+				cancelButton.AnchorPoint = Vector2.new(1,1)
+				cancelButton.Text = "Apply Later"
+				cancelButton.Position = UDim2.new(1,-5,1,-5)
+				cancelButton.Size = UDim2.new(0.5,-10,0,20)
+				cancelButton.OnClick:Connect(function()
+					win:Close()
+				end)
+				win:Add(cancelButton)
+	
+				reloadButton.Text = "Apply Now"
+				reloadButton.AnchorPoint = Vector2.new(0,1)
+				reloadButton.Position = UDim2.new(0,5,1,-5)
+				reloadButton.Size = UDim2.new(0.5,-5,0,20)
+				reloadButton.OnClick:Connect(function()
+					Main.Reinit()
+				end)
+	
+				win:Add(reloadButton,"reloadButton")
+	
+				SettingsWindow.ReloadPromptWindow = win
+			end
+			win:Show()
+		end
+
 		AddSeperator("UI & General")
 		local classIcon = AddDropdown("Class Icons", {"Old", "NewDark", "Vanilla3"}, Settings.ClassIcon, false, 100)
 		classIcon.OnSelect:Connect(function() Settings.ClassIcon = classIcon.Selected end)
-
-		local remoteBlockWrite = AddCheckbox("Remote Block Write Attribute", Settings.RemoteBlockWriteAttribute)
-		remoteBlockWrite.OnInput:Connect(function() Settings.RemoteBlockWriteAttribute = remoteBlockWrite.Toggled end)
 		
 		AddSeperator("Explorer")
 		local clickRename = AddCheckbox("Click to Rename", Settings.Explorer.ClickToRename)
@@ -348,11 +386,9 @@ local function main()
 		
 		local LabelreloadButton = Lib.Label.new()
 		LabelreloadButton.Gui.Parent = window.GuiElems.Content
-		LabelreloadButton.Size = UDim2.new(1,0, 0,30)
-		LabelreloadButton.Position = UDim2.new(0,0, 1,-30)
-		LabelreloadButton.Gui.Text = "Save & Restart"
-		LabelreloadButton.Gui.TextSize = 16
-		LabelreloadButton.Gui.Font = Enum.Font.SourceSansBold
+		LabelreloadButton.Size = UDim2.new(1,0, 0,20)
+		LabelreloadButton.Position = UDim2.new(0,0, 1,-20)
+		LabelreloadButton.Gui.Text = "Restart"
 		LabelreloadButton.Gui.TextXAlignment = Enum.TextXAlignment.Center
 		
 		local reloadButton = Instance.new("TextButton")
