@@ -220,7 +220,7 @@ local function main()
 			label.Text = title
 			label.TextTruncate = Enum.TextTruncate.AtEnd
 
-			colorBtn.MouseButton1Click:Connect(function()
+			colorBtn.Activated:Connect(function()
 				local picker = Lib.ColorPicker.new()
 				picker.Window:SetTitle("Edit: " .. title)
 				picker:SetColor(tableRef[key])
