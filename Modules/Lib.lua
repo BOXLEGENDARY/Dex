@@ -5647,11 +5647,11 @@ local function main()
 			window:SetTitle("Color Picker")
 			
 			if env.isonmobile then
-			    window:Resize(450, 290) -- (450 * 0.8 = 360, 290 * 0.8 = 232)
+			    window:Resize(450, 330) -- (450 * 0.85 = 383, 330 * 0.85 = 281)
 			    local uiScale = Instance.new("UIScale")
-			    uiScale.Scale = 0.8
+			    uiScale.Scale = 0.85
 			    uiScale.Parent = window.GuiElems.Main
-			    window.GuiElems.Main.Position = UDim2.new(0.5, -180, 0.5, -132)
+			    window.GuiElems.Main.Position = UDim2.new(0.5, -191, 0.5, -140)
 			else
 			    window:Resize(450, 330)
 			    window.GuiElems.Main.Position = UDim2.new(0.5, -225, 0.5, -165)
