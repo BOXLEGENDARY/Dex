@@ -9,7 +9,8 @@ loadstring(game:HttpGet("https://github.com/BOXLEGENDARY/Dex/releases/latest/dow
 > [!IMPORTANT]
 > 1. If you can’t use the menu functions in Explorer, it means your executor is not supported or the required functions are restricted/locked.
 > 2. open a gitHub issue to report any problems.
-> 3. rejoin if fetching api is too long
+> 3. rejoin if fetching api is too long.
+> 4. you can reset settings by delete DexSettings.json
 
 > [!NOTE]
 > 1. ​The console will be removed soon since it’s basically useless and only causes lag. We all know what Dex is for anyway.
