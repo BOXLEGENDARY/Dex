@@ -5723,42 +5723,52 @@ local function main()
 				if column == 6 then row = row + 1 column = 0 end
 			end
 			
-			local function handleInputBegan(input, updateFunc)
-				if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-					while user:IsMouseButtonPressed(Enum.UserInputType.MouseButton1) do
-						updateFunc()
-						task.wait()
+			local function setupDraggable(guiObj, updateFunc)
+				guiObj.InputBegan:Connect(function(input)
+					if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+						updateFunc(input.Position)
+						local connection
+						local releaseConnection
+						
+						connection = user.InputChanged:Connect(function(input2)
+							if input2.UserInputType == Enum.UserInputType.MouseMovement or input2.UserInputType == Enum.UserInputType.Touch then
+								updateFunc(input2.Position)
+							end
+						end)
+						
+						releaseConnection = user.InputEnded:Connect(function(input2)
+							if input2.UserInputType == Enum.UserInputType.MouseButton1 or input2.UserInputType == Enum.UserInputType.Touch then
+								if connection then connection:Disconnect() end
+								if releaseConnection then releaseConnection:Disconnect() end
+							end
+						end)
 					end
-				end
+				end)
 			end
 			
-			self.GuiElems.ColorSpace.InputBegan:Connect(function(input) 
-				handleInputBegan(input, function()
-					local relativeX = mouse.X - self.GuiElems.ColorSpace.AbsolutePosition.X
-					local relativeY = mouse.Y - self.GuiElems.ColorSpace.AbsolutePosition.Y
-					
-					if relativeX < 0 then relativeX = 0 elseif relativeX > 219 then relativeX = 219 end
-					if relativeY < 0 then relativeY = 0 elseif relativeY > 199 then relativeY = 199 end
-					
-					self.Hue = (219 - relativeX) / 219
-					self.Sat = (199 - relativeY) / 199
-					
-					local hsvColor = Color3.fromHSV(self.Hue, self.Sat, self.Val)
-					self.R, self.G, self.B = hsvColor.R, hsvColor.G, hsvColor.B
-					self:UpdateColor()
-				end) 
+			setupDraggable(self.GuiElems.ColorSpace, function(pos)
+				local relativeX = pos.X - self.GuiElems.ColorSpace.AbsolutePosition.X
+				local relativeY = pos.Y - self.GuiElems.ColorSpace.AbsolutePosition.Y
+				
+				if relativeX < 0 then relativeX = 0 elseif relativeX > 219 then relativeX = 219 end
+				if relativeY < 0 then relativeY = 0 elseif relativeY > 199 then relativeY = 199 end
+				
+				self.Hue = (219 - relativeX) / 219
+				self.Sat = (199 - relativeY) / 199
+				
+				local hsvColor = Color3.fromHSV(self.Hue, self.Sat, self.Val)
+				self.R, self.G, self.B = hsvColor.R, hsvColor.G, hsvColor.B
+				self:UpdateColor()
 			end)
 			
-			self.GuiElems.ColorStrip.InputBegan:Connect(function(input) 
-				handleInputBegan(input, function()
-					local relativeY = mouse.Y - self.GuiElems.ColorStrip.AbsolutePosition.Y
-					if relativeY < 0 then relativeY = 0 elseif relativeY > 199 then relativeY = 199 end	
-					self.Val = (199 - relativeY) / 199
-					
-					local hsvColor = Color3.fromHSV(self.Hue, self.Sat, self.Val)
-					self.R, self.G, self.B = hsvColor.R, hsvColor.G, hsvColor.B
-					self:UpdateColor()
-				end) 
+			setupDraggable(self.GuiElems.ColorStrip, function(pos)
+				local relativeY = pos.Y - self.GuiElems.ColorStrip.AbsolutePosition.Y
+				if relativeY < 0 then relativeY = 0 elseif relativeY > 199 then relativeY = 199 end	
+				self.Val = (199 - relativeY) / 199
+				
+				local hsvColor = Color3.fromHSV(self.Hue, self.Sat, self.Val)
+				self.R, self.G, self.B = hsvColor.R, hsvColor.G, hsvColor.B
+				self:UpdateColor()
 			end)
 			
 			local function updateHue(str)
