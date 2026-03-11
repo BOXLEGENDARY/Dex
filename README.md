@@ -4,23 +4,22 @@ loadstring(game:HttpGet("https://github.com/BOXLEGENDARY/Dex/releases/latest/dow
 ```
 
 ---
-
 ## Dex
-> [!IMPORTANT]
-> 1. If you can’t use the menu functions in Explorer, it means your executor is not supported or the required functions are restricted/locked.
-> 2. open a gitHub issue to report any problems.
-> 3. rejoin if fetching api is too long.
-> 4. you can reset settings by delete DexSettings.json
 
-> [!NOTE]
-> 1. ​The console will be removed soon since it’s basically useless and only causes lag. We all know what Dex is for anyway.
-If you really need it, just type `/console` in chat or press `F9`.
-> 2. Dex is already advanced enough and doesn’t require frequent updates.
-> 3. Assets are not downloaded. If the original assets get deleted… good luck.
-> 4. What's different between Dex 2021 and Dex 2026?
->    - Mostly keeping it fresh and adding more features.
->    - Uses stable third-party components.
-> 5. I didn’t add any unnecessary or overkill functions.
+**Important & Guidelines**
+* If you can’t use the menu functions in Explorer, it means your executor is not supported or the required functions are restricted/locked.
+* Open a GitHub issue to report any problems.
+* Rejoin if fetching API is too long.
+* You can reset settings by deleting `DexSettings.json`.
+
+**General Notes**
+* The console will be removed soon since it’s basically useless and only causes lag. If you really need it, just type `/console` in chat or press `F9`.
+* Dex is already advanced enough and doesn’t require frequent updates.
+* Assets are not downloaded. If the original assets get deleted… good luck.
+* What's different between Dex 2021 and Dex 2026?
+    * Mostly keeping it fresh and adding more features.
+    * Uses stable third-party components.
+* I didn’t add any unnecessary or overkill functions.
 
 ---
 
