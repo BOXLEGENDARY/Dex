@@ -5645,7 +5645,17 @@ local function main()
 			window.Resizable = false
 			window.Alignable = false
 			window:SetTitle("Color Picker")
-			window:Resize(450,330)
+			
+			if env.isonmobile then
+			    window:Resize(360, 264) -- (450 * 0.8 = 360, 330 * 0.8 = 264)
+			    local uiScale = Instance.new("UIScale")
+			    uiScale.Scale = 0.8
+			    uiScale.Parent = window.GuiElems.Main
+			    window.GuiElems.Main.Position = UDim2.new(0.5, -180, 0.5, -132)
+			else
+			    window:Resize(450, 330)
+			    window.GuiElems.Main.Position = UDim2.new(0.5, -225, 0.5, -165)
+			end
 			for i,v in pairs(guiContents:GetChildren()) do
 				v.Parent = window.GuiElems.Content
 			end
