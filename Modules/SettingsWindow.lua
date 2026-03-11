@@ -348,12 +348,6 @@ local function main()
 		AddColorPicker("Placeholder Text", Settings.Theme, "PlaceholderText")
 		AddColorPicker("Important (Errors)", Settings.Theme, "Important")
 
-		local expIconMapBox = AddTextbox("Explorer Icon Map URL", Settings.Theme.ExplorerIconMap, 150)
-		expIconMapBox.FocusLost:Connect(function() Settings.Theme.ExplorerIconMap = expIconMapBox.Text end)
-		
-		local miscIconMapBox = AddTextbox("Misc Icon Map URL", Settings.Theme.MiscIconMap, 150)
-		miscIconMapBox.FocusLost:Connect(function() Settings.Theme.MiscIconMap = miscIconMapBox.Text end)
-
 		AddSeperator("Theme - Syntax Highlighting")
 		AddColorPicker("Text Default", Settings.Theme.Syntax, "Text")
 		AddColorPicker("Background", Settings.Theme.Syntax, "Background")
