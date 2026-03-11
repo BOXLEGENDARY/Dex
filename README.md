@@ -23,6 +23,10 @@ If you really need it, just type `/console` in chat or press `F9`.
 > 5. I didn’t add any unnecessary or overkill functions.
 
 ---
+## TODO
+im gonna fix can't pick colour in settings later i want sleep
+
+---
 
 ## To Build
 1. Download this repository
