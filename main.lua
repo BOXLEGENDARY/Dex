@@ -1302,7 +1302,7 @@ Main = (function()
 		if env.readfile and env.listfiles then
 			if #listfiles("dex/plugins") > 0 then
 				intro.SetProgress("Loading Plugin Files",0.8)
-				for _, pluginDir in pairs(listfiles("dex/plugins")) do
+				for _, pluginDir in pairs(env.listfiles("dex/plugins")) do
 					local moduleData = Main.LoadPluginFile(pluginDir)
 					moduleData.PluginData = moduleData.PluginData or {}
 
