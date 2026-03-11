@@ -31,8 +31,10 @@ local function initAfterMain()
 end
 
 local function main()
+    local SettingsWindow = {}
+    
 	SettingsWindow.Init = function()
-		window = Lib.Window.new()
+		local window = Lib.Window.new()
 		window:SetTitle("Settings")
 		window:Resize(320, 500)
 		SettingsWindow.Window = window
