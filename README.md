@@ -24,7 +24,7 @@ loadstring(game:HttpGet("https://github.com/BOXLEGENDARY/Dex/releases/latest/dow
 ---
 
 ## TODOs
-* Add AutoUpdateMode
+~~* Add AutoUpdateMode~~
 * ​Add Global Debug API for Advanced Debugging
 
 ---
