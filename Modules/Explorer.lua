@@ -779,14 +779,17 @@ local function main()
 		if itemChangedCon then itemChangedCon:Disconnect() end
 
 		local updateMode = Settings.Explorer.AutoUpdateMode or 0
-		if updateMode >= 2 then return end
+		
+		if updateMode == 3 then return end
 
-		if Main.Elevated then
-			descendantAddedCon = game.DescendantAdded:Connect(addObject)
-			descendantRemovingCon = game.DescendantRemoving:Connect(removeObject)
-		else
-			descendantAddedCon = game.DescendantAdded:Connect(function(obj) pcall(addObject,obj) end)
-			descendantRemovingCon = game.DescendantRemoving:Connect(function(obj) pcall(removeObject,obj) end)
+		if updateMode < 2 then
+			if Main.Elevated then
+				descendantAddedCon = game.DescendantAdded:Connect(addObject)
+				descendantRemovingCon = game.DescendantRemoving:Connect(removeObject)
+			else
+				descendantAddedCon = game.DescendantAdded:Connect(function(obj) pcall(addObject,obj) end)
+				descendantRemovingCon = game.DescendantRemoving:Connect(function(obj) pcall(removeObject,obj) end)
+			end
 		end
 
 		if Settings.Explorer.UseNameWidth then
