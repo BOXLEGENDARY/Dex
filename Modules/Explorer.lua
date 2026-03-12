@@ -142,7 +142,7 @@ local function main()
 			searchFunc({newNode})
 		end
 
-		if not updateDebounce and Explorer.IsNodeVisible(par) then
+		if (Settings.Explorer.AutoUpdateMode or 0) == 0 and not updateDebounce and Explorer.IsNodeVisible(par) then
 			if expanded[par] then
 				Explorer.PerformUpdate()
 			elseif not refreshDebounce then
@@ -179,7 +179,7 @@ local function main()
 		node.Del = true
 		nodes[root] = nil
 
-		if par and not updateDebounce and Explorer.IsNodeVisible(par) then
+		if (Settings.Explorer.AutoUpdateMode or 0) == 0 and par and not updateDebounce and Explorer.IsNodeVisible(par) then
 			if expanded[par] then
 				Explorer.PerformUpdate()
 			elseif not refreshDebounce then
@@ -260,7 +260,7 @@ local function main()
 			end
 		end
 
-		if not updateDebounce and (Explorer.IsNodeVisible(newPar) or Explorer.IsNodeVisible(oldPar)) then
+		if (Settings.Explorer.AutoUpdateMode or 0) == 0 and not updateDebounce and (Explorer.IsNodeVisible(newPar) or Explorer.IsNodeVisible(oldPar)) then
 			if expanded[newPar] or expanded[oldPar] then
 				Explorer.PerformUpdate()
 			elseif not refreshDebounce then
@@ -778,6 +778,9 @@ local function main()
 		if descendantRemovingCon then descendantRemovingCon:Disconnect() end
 		if itemChangedCon then itemChangedCon:Disconnect() end
 
+		local updateMode = Settings.Explorer.AutoUpdateMode or 0
+		if updateMode >= 2 then return end
+
 		if Main.Elevated then
 			descendantAddedCon = game.DescendantAdded:Connect(addObject)
 			descendantRemovingCon = game.DescendantRemoving:Connect(removeObject)
@@ -792,6 +795,7 @@ local function main()
 					moveObject(obj)
 				elseif prop == "Name" and nodes[obj] then
 					nodes[obj].NameWidth = nil
+					if updateMode == 0 then Explorer.PerformRefresh() end
 				end
 			end)
 		else
