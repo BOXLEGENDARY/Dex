@@ -23,6 +23,13 @@ loadstring(game:HttpGet("https://github.com/BOXLEGENDARY/Dex/releases/latest/dow
 
 ---
 
+## TODOs
+Add AutoUpdateMode
+Add MaxAttributes
+​Add Global Debug API For Advanced Debugging
+
+---
+
 ## To Build
 1. Download this repository
 2. Ensure you have Python 3 (I use 3.9.0)
