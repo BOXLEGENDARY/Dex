@@ -28,7 +28,7 @@ Add AutoUpdateMode
 
 Add MaxAttributes
 
-​Add Global Debug API For Advanced Debugging
+​Add Global Debug API for Advanced Debugging
 
 ---
 
