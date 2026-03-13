@@ -142,7 +142,7 @@ local function main()
 			searchFunc({newNode})
 		end
 
-		if (Settings.Explorer.AutoUpdateMode or 0) == 0 and not updateDebounce and Explorer.IsNodeVisible(par) then
+		if (Settings.Explorer.AutoUpdateMode) == 0 and not updateDebounce and Explorer.IsNodeVisible(par) then
 			if expanded[par] then
 				Explorer.PerformUpdate()
 			elseif not refreshDebounce then
@@ -179,7 +179,7 @@ local function main()
 		node.Del = true
 		nodes[root] = nil
 
-		if (Settings.Explorer.AutoUpdateMode or 0) == 0 and par and not updateDebounce and Explorer.IsNodeVisible(par) then
+		if (Settings.Explorer.AutoUpdateMode) == 0 and par and not updateDebounce and Explorer.IsNodeVisible(par) then
 			if expanded[par] then
 				Explorer.PerformUpdate()
 			elseif not refreshDebounce then
@@ -260,7 +260,7 @@ local function main()
 			end
 		end
 
-		if (Settings.Explorer.AutoUpdateMode or 0) == 0 and not updateDebounce and (Explorer.IsNodeVisible(newPar) or Explorer.IsNodeVisible(oldPar)) then
+		if (Settings.Explorer.AutoUpdateMode) == 0 and not updateDebounce and (Explorer.IsNodeVisible(newPar) or Explorer.IsNodeVisible(oldPar)) then
 			if expanded[newPar] or expanded[oldPar] then
 				Explorer.PerformUpdate()
 			elseif not refreshDebounce then
@@ -778,7 +778,7 @@ local function main()
 		if descendantRemovingCon then descendantRemovingCon:Disconnect() end
 		if itemChangedCon then itemChangedCon:Disconnect() end
 
-		local updateMode = Settings.Explorer.AutoUpdateMode or 0
+		local updateMode = Settings.Explorer.AutoUpdateMode
 		
 		if updateMode == 3 then return end
 
