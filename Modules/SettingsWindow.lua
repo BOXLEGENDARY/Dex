@@ -284,6 +284,23 @@ local function main()
 		local explorerSorting = AddCheckbox("Enable Sorting", Settings.Explorer.Sorting)
 		explorerSorting.OnInput:Connect(function() Settings.Explorer.Sorting = explorerSorting.Toggled end)
 
+		local tpOffsetDefault = tostring(Settings.Explorer.TeleportToOffset.X) .. ", " .. tostring(Settings.Explorer.TeleportToOffset.Y) .. ", " .. tostring(Settings.Explorer.TeleportToOffset.Z)
+		local tpOffsetBox = AddTextbox("Teleport To Offset (X, Y, Z)", tpOffsetDefault, 75)
+		tpOffsetBox.FocusLost:Connect(function()
+			local text = tpOffsetBox.Text
+			local parts = string.split(text, ",")
+			local x = tonumber(parts[1]) or 0
+			local y = tonumber(parts[2]) or 0
+			local z = tonumber(parts[3]) or 0
+			Settings.Explorer.TeleportToOffset = Vector3.new(x, y, z)
+			tpOffsetBox.Text = tostring(x) .. ", " .. tostring(y) .. ", " .. tostring(z)
+		end)
+
+		local remoteBlockAttr = AddCheckbox("Remote Block Write Attribute", Settings.RemoteBlockWriteAttribute)
+		remoteBlockAttr.OnInput:Connect(function() 
+			Settings.RemoteBlockWriteAttribute = remoteBlockAttr.Toggled 
+		end)
+
 		local autoUpdateSearch = AddCheckbox("Auto Update Search", Settings.Explorer.AutoUpdateSearch)
 		autoUpdateSearch.OnInput:Connect(function() Settings.Explorer.AutoUpdateSearch = autoUpdateSearch.Toggled end)
 
