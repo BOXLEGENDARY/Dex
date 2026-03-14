@@ -2493,6 +2493,11 @@ return search]==]
 		Explorer.GuiElems.ToolBar = toolBar
 		Explorer.GuiElems.TreeFrame = treeFrame
 
+		toolBar.Refresh.Visible = true
+		toolBar.Refresh.MouseButton1Click:Connect(function()
+			Explorer.ForceUpdate()
+		end)
+
 		scrollV = Lib.ScrollBar.new()		
 		scrollV.WheelIncrement = 3
 		scrollV.Gui.Position = UDim2.new(1,-16,0,23)
