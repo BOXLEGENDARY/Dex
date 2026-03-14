@@ -2310,7 +2310,7 @@ return search]==]
 				
 				local id = sys.ClickId
 				Lib.FastWait(sys.ComboTime)
-				if combo == 1 and id == sys.ClickId and sys.IsRenaming and selection.Map[node] then
+				if Settings.Explorer.ClickToRename and combo == 1 and id == sys.ClickId and sys.IsRenaming and selection.Map[node] then
 					Explorer.SetRenamingNode(node)
 				end
 			elseif button == 2 then

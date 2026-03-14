@@ -215,17 +215,33 @@ local function main()
 	
 	Properties.StringToValue = function(prop,str)
 		local typeName = prop.ValueType.Name
+		local finalValue = nil
 	
 		if Properties.ToNumberTypes[typeName] then
-			return tonumber(str)
+			finalValue = tonumber(str)
+		else
+			local converter = StringConverters[typeName]
+			if converter then
+				finalValue = converter(str)
+			end
+		end
+		
+		if finalValue == nil and Settings.Properties.LoadstringInput and env.loadstring then
+			local success, result = pcall(function()
+				local func = env.loadstring("return " .. str)
+				if func then
+					return func()
+				end
+			end)
+			
+			if success and result ~= nil then
+				if typeof(result) == typeName or (Properties.ToNumberTypes[typeName] and type(result) == "number") then
+					finalValue = result
+				end
+			end
 		end
 	
-		local converter = StringConverters[typeName]
-		if converter then
-			return converter(str)
-		end
-	
-		return nil
+		return finalValue
 	end
 
 	Properties.ValueToString = function(prop,val)
@@ -1810,7 +1826,12 @@ local function main()
 			end
 		else
 			if Properties.IsTextEditable(prop) then
-				inputTextBox.Text = propVal and Properties.ValueToString(prop,propVal) or ""
+				inputTextBox.ClearTextOnFocus = Settings.Properties.ClearOnFocus
+				if Settings.Properties.ClearOnFocus then
+					inputTextBox.Text = ""
+				else
+					inputTextBox.Text = propVal and Properties.ValueToString(prop,propVal) or ""
+				end
 				inputTextBox:CaptureFocus()
 			elseif typeData.Category == "Enum" then
 				Properties.DisplayEnumDropdown(entryIndex)
