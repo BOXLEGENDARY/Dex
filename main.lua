@@ -281,7 +281,7 @@ Main = (function()
 	Main.LoadPluginFile = function(pluginDir)
 		if env.readfile then
 			if env.isfile(pluginDir) then
-				local preloadedPlugin = loadfile and loadfile(pluginDir) or loadstring(env.readfile(pluginDir))
+				local preloadedPlugin = env.loadfile and env.loadfile(pluginDir) or loadstring(env.readfile(pluginDir))
 				local loadedPlugin = preloadedPlugin()
 				
 				local control = loadedPlugin
