@@ -11,6 +11,7 @@ loadstring(game:HttpGet("https://github.com/BOXLEGENDARY/Dex/releases/latest/dow
 * Open a GitHub issue to report any problems.
 * Rejoin if fetching API is too long.
 * You can reset settings by deleting `DexSettings.json`.
+* ​To install plugins, place the plugin files in `workspace/dex/plugins`.
 
 **General Notes**
 * The console will be removed soon since it’s basically useless and only causes lag. If you really need it, just type `/console` in chat or press `F9`.
