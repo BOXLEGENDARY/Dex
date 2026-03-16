@@ -1185,7 +1185,7 @@ local function main()
 
 				if Obj:IsA("BasePart") then
 					if Obj.CanCollide then
-						plr.Character:MoveTo(Obj.Position)
+						plr.Character:MoveTo(Obj.Position + Settings.Explorer.TeleportToOffset)
 					else
 						plrRP.CFrame = CFrame.new(Obj.Position + Settings.Explorer.TeleportToOffset)
 					end
@@ -1193,7 +1193,7 @@ local function main()
 				elseif Obj:IsA("Model") then
 					if Obj.PrimaryPart then
 						if Obj.PrimaryPart.CanCollide then
-							plr.Character:MoveTo(Obj.PrimaryPart.Position)
+							plr.Character:MoveTo(Obj.PrimaryPart.Position + Settings.Explorer.TeleportToOffset)
 						else
 							plrRP.CFrame = CFrame.new(Obj.PrimaryPart.Position + Settings.Explorer.TeleportToOffset)
 						end
@@ -1202,13 +1202,13 @@ local function main()
 						local part = Obj:FindFirstChildWhichIsA("BasePart", true)
 						if part and nodes[part] then
 							if part.CanCollide then
-								plr.Character:MoveTo(part.Position)
+								plr.Character:MoveTo(part.Position + Settings.Explorer.TeleportToOffset)
 							else
 								plrRP.CFrame = CFrame.new(part.Position + Settings.Explorer.TeleportToOffset)
 							end
 							break
 						elseif Obj.WorldPivot then
-							plrRP.CFrame = Obj.WorldPivot
+							plrRP.CFrame = Obj.WorldPivot + Settings.Explorer.TeleportToOffset
 						end
 					end
 				end
