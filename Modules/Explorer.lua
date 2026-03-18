@@ -2009,6 +2009,11 @@ local function main()
 						local compFunc = specifier and compFilters[specifier]
 						local specFunc = specifier and specFilters[specifier]
 
+						if not Settings.Explorer.EnableSearchFilters then
+							compFunc = nil
+							specFunc = nil
+						end
+
 						if compFunc then
 							local argStr = sub(term,y+2)
 							local ret = compFunc(inQuotes(argStr) or argStr)

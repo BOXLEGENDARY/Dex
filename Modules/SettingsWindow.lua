@@ -281,6 +281,9 @@ local function main()
 		local clickRename = AddCheckbox("Click to Rename", Settings.Explorer.ClickToRename)
 		clickRename.OnInput:Connect(function() Settings.Explorer.ClickToRename = clickRename.Toggled end)
 
+		local enableSearchFilters = AddCheckbox("Enable Search Filters", Settings.Explorer.EnableSearchFilters)
+		enableSearchFilters.OnInput:Connect(function() Settings.Explorer.EnableSearchFilters = enableSearchFilters.Toggled end)
+
 		local explorerSorting = AddCheckbox("Enable Sorting", Settings.Explorer.Sorting)
 		explorerSorting.OnInput:Connect(function() Settings.Explorer.Sorting = explorerSorting.Toggled end)
 
