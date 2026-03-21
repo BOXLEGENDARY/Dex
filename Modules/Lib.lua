@@ -522,10 +522,15 @@ local function main()
 				filename = (win.Elements.NameBox.TextBox.Text ~= "" and win.Elements.NameBox.TextBox.Text) or filename
 				currentextension = ext or filename:match("%.([^%.]+)$") or "txt"
 				filename = filename:gsub("%.[^.]+$", "") .. "." .. currentextension
+				
+				local finalFilename = filename
+				if not finalFilename:match("^dex/saved/") then
+					finalFilename = "dex/saved/" .. finalFilename
+				end
 
 				local codeText = codeToSave or ""
 				if env.writefile then
-					local s, msg = pcall(env.writefile, filename, codeText)
+					local s, msg = pcall(env.writefile, finalFilename, codeText)
 					if not s then
 						win.Elements.Error.Text = "Error: " .. msg
 						task.spawn(error, msg)
@@ -537,10 +542,13 @@ local function main()
 				end
 			elseif type(codeToSave) == "function" then
 				filename = (win.Elements.NameBox.TextBox.Text ~= "" and win.Elements.NameBox.TextBox.Text) or filename
-				currentextension = ext or filename:match("%.([^%.]+)$") or "txt"
-				filename = filename:gsub("%.[^.]+$", "") .. "." .. currentextension
+				
+				local finalFilename = filename
+				if not finalFilename:match("^dex/saved/") then
+					finalFilename = "dex/saved/" .. finalFilename
+				end
 
-				local s, msg = pcall(codeToSave,filename) -- callback
+				local s, msg = pcall(codeToSave, finalFilename) -- callback
 				if not s then
 					win.Elements.Error.Text = "Error: " .. msg
 					task.spawn(error, msg)

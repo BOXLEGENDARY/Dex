@@ -286,7 +286,7 @@ local function main()
 		end})
 		context:Register("SAVE_INST",{Name = "Save to File", OnClick = function()
 			if model then
-				Lib.SaveAsPrompt("Place_"..game.PlaceId.."_"..originalModel.Name.."_"..os.time(), function(filename)
+				Lib.SaveAsPrompt(env.parsefile(originalModel.Name) .. "_Model", function(filename)
 					window:SetTitle(originalModel.Name.." - Model Viewer - Saving")	
 					
 					local success, result = pcall(env.saveinstance,

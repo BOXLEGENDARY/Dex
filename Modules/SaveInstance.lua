@@ -35,7 +35,9 @@ end
 local function main()
 	local SaveInstance = {}
 	local window, ListFrame
-	local fileName = "Place_"..game.PlaceId.."_"..game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name.."_{TIMESTAMP}"
+	local placeName = "Place_"..game.PlaceId
+	pcall(function() placeName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name end)
+	local fileName = env.parsefile(placeName) .. "_{TIMESTAMP}"
 	local Saving = false
 	
 	local SaveInstanceArgs = {
@@ -274,7 +276,10 @@ local function main()
 		
 		FilenameTextBox.TextBox.Text = fileName
 		Button.MouseButton1Click:Connect(function()
-			local fileName = FilenameTextBox.TextBox.Text:gsub("{TIMESTAMP}", os.date("%d-%m-%Y_%H-%M-%S"))
+			local fileName = FilenameTextBox.TextBox.Text:gsub("{TIMESTAMP}", os.date("%Y%m%d_%H%M%S"))
+			if not fileName:match("^dex/saved/") then
+				fileName = "dex/saved/" .. fileName
+			end
 			window:SetTitle("Save Instance - Saving")
 			local s, result = pcall(env.saveinstance, game, fileName, SaveInstanceArgs)
 			if s then

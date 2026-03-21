@@ -75,11 +75,11 @@ local function main()
 		
 		save.MouseButton1Click:Connect(function()
 			local source = codeFrame:GetText()
-			local filename = "Place_"..game.PlaceId.."_Script_"..os.time()..".txt"
+			local filename = "dex/saved/Notepad_" .. os.date("%Y%m%d_%H%M%S") .. ".lua"
 
 			env.writefile(filename, source)
 			if env.movefileas then
-				env.movefileas(filename, ".txt")
+				env.movefileas(filename, ".lua")
 			end
 		end)
 		

@@ -1362,7 +1362,7 @@ local function main()
 		context:Register("SAVE_INST",{Name = "Save to File", IconMap = Explorer.MiscIcons, Icon = "Save", OnClick = function()
 			local sList = selection.List
 			if #sList == 1 then
-				Lib.SaveAsPrompt("Place_"..game.PlaceId.."_"..sList[1].Obj.ClassName.."_"..sList[1].Obj.Name.."_"..os.time(), function(filename)
+				Lib.SaveAsPrompt(env.parsefile(sList[1].Obj.Name) .. "_" .. sList[1].Obj.ClassName, function(filename)
 					env.saveinstance(sList[1].Obj, filename, {
 						Decompile = true,
 						RemovePlayerCharacters = false
@@ -1370,15 +1370,12 @@ local function main()
 				end)
 			elseif #sList > 1 then
 				for i = 1,#sList do
-					-- sList[i].Obj.Name.." ("..sList[1].Obj.ClassName..")"
-					-- "Place_"..game.PlaceId.."_"..sList[1].Obj.ClassName.."_"..sList[i].Obj.Name.."_"..os.time()
-					Lib.SaveAsPrompt("Place_"..game.PlaceId.."_"..sList[i].Obj.ClassName.."_"..sList[i].Obj.Name.."_"..os.time(), function(filename)
+					Lib.SaveAsPrompt(env.parsefile(sList[i].Obj.Name) .. "_" .. sList[i].Obj.ClassName, function(filename)
 						env.saveinstance(sList[i].Obj, filename, {
 							Decompile = true,
 							RemovePlayerCharacters = false
 						})
 					end)
-					
 					task.wait(0.1)
 				end
 			end
@@ -1497,10 +1494,9 @@ local function main()
 					local success, source, time = pcall(decompile, v.Obj)
 					if not success or not source then source = ("-- DEX - %s failed to decompile %s"):format(env.executor, v.Obj.ClassName) end
 					if time then source = "-- Decompiler in: " .. tostring(time) .. "s\n" .. source end
-					local fileName = ("%s_%s_%i_Source.txt"):format(env.parsefile(v.Obj.Name), v.Obj.ClassName, game.PlaceId)
-					--env.writefile(fileName, source)
-					Lib.SaveAsPrompt(fileName, source)
 					
+					local fileName = ("%s_%s_Source.lua"):format(env.parsefile(v.Obj.Name), v.Obj.ClassName)
+					Lib.SaveAsPrompt(fileName, source)
 					task.wait(0.2)
 				end
 			end
@@ -1511,8 +1507,7 @@ local function main()
 				if v.Obj:IsA("LuaSourceContainer") and env.isViableDecompileScript(v.Obj) then
 					local success, bytecode = pcall(env.getscriptbytecode, v.Obj)
 					if success and type(bytecode) == "string" then
-						local fileName = ("%s_%s_%i_Bytecode.txt"):format(env.parsefile(v.Obj.Name), v.Obj.ClassName, game.PlaceId)
-						--env.writefile(fileName, bytecode)
+						local fileName = ("%s_%s_Bytecode.txt"):format(env.parsefile(v.Obj.Name), v.Obj.ClassName)
 						Lib.SaveAsPrompt(fileName, bytecode)
 						task.wait(0.2)
 					end
