@@ -35,7 +35,7 @@ cloneref = cloneref or function(ref)
 end
 
 -- Main vars
-local Main, Explorer, Properties, ScriptViewer, ModelViewer, Console, SaveInstance, SettingsWindow, DefaultSettings, Notebook, Serializer, Lib
+local Main, Explorer, Properties, ScriptViewer, ModelViewer, SaveInstance, SettingsWindow, DefaultSettings, Notebook, Serializer, Lib
 local API, RM
 
 -- Default Settings
@@ -162,10 +162,10 @@ end
 Main = (function()
 	local Main = {}
 	
-	Main.ModuleList = {"Explorer","Properties","ScriptViewer","ModelViewer","Console","SaveInstance","SettingsWindow"}
+	Main.ModuleList = {"Explorer","Properties","ScriptViewer","ModelViewer","SaveInstance","SettingsWindow"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
-	Main.Version = "2.9.2"
+	Main.Version = "2.9.3"
 	Main.Mouse = plr:GetMouse()
 	Main.AppControls = {}
 	Main.Apps = Apps
@@ -315,7 +315,6 @@ Main = (function()
 		Properties = Apps.Properties
 		ScriptViewer = Apps.ScriptViewer
 		ModelViewer = Apps.ModelViewer
-		Console = Apps.Console
 		SaveInstance = Apps.SaveInstance
 		SettingsWindow = Apps.SettingsWindow
 		Notebook = Apps.Notebook
@@ -324,7 +323,6 @@ Main = (function()
 			Properties = Properties,
 			ScriptViewer = ScriptViewer,
 			ModelViewer = ModelViewer,
-			Console = Console,
 			SaveInstance = SaveInstance,
 			SettingsWindow = SettingsWindow,
 			Notebook = Notebook
@@ -1143,8 +1141,6 @@ Main = (function()
 
 		Main.CreateApp({Name = "3D Preview", IconMap = Main.LargeIcons, Icon = "Object", Window = ModelViewer.Window})
 
-		Main.CreateApp({Name = "Console", IconMap = Main.LargeIcons, Icon = "Executor", Window = Console.Window})
-
 		Main.CreateApp({Name = "Save Instance", IconMap = Main.LargeIcons, Icon = "Book", Window = SaveInstance.Window})
 
 		local cptsOnMouseClick = nil
@@ -1297,7 +1293,6 @@ Main = (function()
 		Properties.Init()
 		ScriptViewer.Init()
 		ModelViewer.Init()
-		Console.Init()
 		SaveInstance.Init()
 		SettingsWindow.Init()
 
