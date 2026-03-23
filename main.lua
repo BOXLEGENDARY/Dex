@@ -1,39 +1,5 @@
 local oldgame = oldgame or game
 
-cloneref = cloneref or function(ref)
-    if not getreg then return ref end
-    
-    local InstanceList
-    local a = Instance.new("Part")
-    
-    for _, c in pairs(getreg()) do
-        if type(c) == "table" then
-            if rawget(c, "__mode") == "kvs" then
-                for d, e in pairs(c) do
-                    if e == a then
-                        InstanceList = c
-                        break
-                    end
-                end
-            end
-        end
-        if InstanceList then break end
-    end
-    
-    a:Destroy()
-
-    if InstanceList then
-        for b, c in pairs(InstanceList) do
-            if c == ref then
-                InstanceList[b] = nil
-                break
-            end
-        end
-    end
-
-    return ref 
-end
-
 -- Main vars
 local Main, Explorer, Properties, ScriptViewer, ModelViewer, SaveInstance, SettingsWindow, DefaultSettings, Notebook, Serializer, Lib
 local API, RM
@@ -165,7 +131,7 @@ Main = (function()
 	Main.ModuleList = {"Explorer","Properties","ScriptViewer","ModelViewer","SaveInstance","SettingsWindow"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
-	Main.Version = "2.9.3"
+	Main.Version = "2.9.4"
 	Main.Mouse = plr:GetMouse()
 	Main.AppControls = {}
 	Main.Apps = Apps

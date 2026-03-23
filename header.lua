@@ -11,36 +11,40 @@ local nodes = {}
 local oldgame = game
 local game = workspace.Parent
 
-cloneref = cloneref or function(ref)
-    if not getreg then return ref end
-    
-    local InstanceList
-    local a = Instance.new("Part")
-    
-    for _, c in pairs(getreg()) do
-        if type(c) == "table" then
-            if rawget(c, "__mode") == "kvs" then
-                for d, e in pairs(c) do
-                    if e == a then
-                        InstanceList = c
-                        break
-                    end
+local _registry_table = nil
+local _marker = Instance.new("Folder")
+
+local function _find_instance_registry()
+    local reg = getreg()
+    local k, v = next(reg)
+    while k ~= nil do
+        if type(v) == "table" and rawget(v, "__mode") == "kvs" then
+            for _, obj in next, v do
+                if obj == _marker then
+                    return v
                 end
             end
         end
-        if InstanceList then break end
+        k, v = next(reg, k)
     end
-    
-    a:Destroy()
+    return nil
+end
 
-    if InstanceList then
-        for b, c in pairs(InstanceList) do
-            if c == ref then
-                InstanceList[b] = nil
+cloneref = function(instance)
+    if type(instance) ~= "userdata" then return instance end
+
+    if not _registry_table then
+        _registry_table = _find_instance_registry()
+    end
+
+    if _registry_table then
+        for k, v in next, _registry_table do
+            if v == instance then
+                _registry_table[k] = nil
                 break
             end
         end
     end
 
-    return ref 
+    return instance
 end
