@@ -5,8 +5,7 @@ loadstring(game:HttpGet("https://github.com/BOXLEGENDARY/Dex/releases/latest/dow
 
 ---
 ## Dex
-
-**Important & Guidelines**
+**Important**
 * If you can’t use the menu functions in Explorer, it means your executor is not supported or the required functions are restricted/locked.
 * Open a GitHub issue to report any problems.
 * Rejoin if fetching API is too long.
