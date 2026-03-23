@@ -14,8 +14,6 @@ loadstring(game:HttpGet("https://github.com/BOXLEGENDARY/Dex/releases/latest/dow
 * ​To install plugins, place the plugin files in `workspace/dex/plugins`.
 
 **General Notes**
-* Dex is already advanced enough and doesn’t require frequent updates.
-* Assets are not downloaded. If the original assets get deleted… good luck.
 * What's different between Dex 2021 and Dex 2026?
     * Mostly keeping it fresh and adding more features.
     * Uses stable third-party components.
