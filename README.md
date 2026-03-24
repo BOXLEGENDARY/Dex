@@ -40,4 +40,6 @@ loadstring(game:HttpGet("https://github.com/BOXLEGENDARY/Dex/releases/latest/dow
 
 [UniversalSynapseSaveInstance](https://github.com/BOXLEGENDARY/UniversalSynSaveInstance)
 
+[Shiny](https://github.com/BOXLEGENDARY/shiny)
+
 ---
