@@ -770,6 +770,19 @@ Main = (function()
 	    loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/Advanced-Luau-Decompiler/main/init.lua", true))()
 	end
 
+    --[[
+	getgenv().decompile = function(script_instance)
+	    local bytecode = getscriptbytecode(script_instance)
+	    local encoded = crypt.base64encode(bytecode)
+	
+	    return env.request({
+	        Url = "http://127.0.0.1:3000/luau/decompile",
+	        Method = "POST",
+	        Body = encoded
+	    }).Body
+	end
+	]]
+
 	Main.ShowGui = Main.SecureGui
 
 	Main.CreateIntro = function(initStatus) -- TODO: Must theme and show errors
