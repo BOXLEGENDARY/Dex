@@ -277,6 +277,9 @@ local function main()
 		local classIcon = AddDropdown("Class Icons", {"Old", "NewDark", "Vanilla3"}, Settings.ClassIcon, false, 100)
 		classIcon.OnSelect:Connect(function() Settings.ClassIcon = classIcon.Selected end)
 		
+		local decompilerDrop = AddDropdown("Decompiler Mode", {"Default", "Shiny"}, Settings.DecompilerMode or "Default", false, 100)
+		decompilerDrop.OnSelect:Connect(function() Settings.DecompilerMode = decompilerDrop.Selected end)
+
 		AddSeperator("Explorer")
 		local clickRename = AddCheckbox("Click to Rename", Settings.Explorer.ClickToRename)
 		clickRename.OnInput:Connect(function() Settings.Explorer.ClickToRename = clickRename.Toggled end)
