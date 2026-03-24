@@ -132,7 +132,7 @@ Main = (function()
 	Main.ModuleList = {"Explorer","Properties","ScriptViewer","ModelViewer","SaveInstance","SettingsWindow"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
-	Main.Version = "2.10.0"
+	Main.Version = "2.10.1"
 	Main.Mouse = plr:GetMouse()
 	Main.AppControls = {}
 	Main.Apps = Apps
@@ -323,8 +323,7 @@ Main = (function()
 		env.listfiles = listfiles
 		env.loadfile = loadfile
 		env.movefileas = movefileas
-		env.saveinstance = saveinstance or (function()
-			--warn("No built-in saveinstance exists, using SynSaveInstance and wrapper...")
+		env.saveinstance = (function()
 			local Params = {
 				RepoURL = "https://raw.githubusercontent.com/BOXLEGENDARY/UniversalSynSaveInstance/main/",
 				SSI = "saveinstance",
@@ -361,7 +360,6 @@ Main = (function()
 	
 		-- other
 		if type(decompile) ~= "function" then
-		    --warn("No built-in decompiler exists, using Advanced Luau Decompiler...")
 		    pcall(Main.LoadAdvancedLuauDecompiler)
 		end
 
