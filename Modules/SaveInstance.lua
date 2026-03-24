@@ -1,3 +1,37 @@
+--[[
+	Save Instance App Module
+	
+	Revival of the old dex's Save Instance
+]] 
+
+-- Common Locals
+local Main,Lib,Apps,Settings -- Main Containers
+local Explorer, Properties, ScriptViewer, SaveInstance, Notebook -- Major Apps
+local API,RMD,env,service,plr,create,createSimple -- Main Locals
+
+local function initDeps(data)
+	Main = data.Main
+	Lib = data.Lib
+	Apps = data.Apps
+	Settings = data.Settings
+
+	API = data.API
+	RMD = data.RMD
+	env = data.env
+	service = data.service
+	plr = data.plr
+	create = data.create
+	createSimple = data.createSimple
+end
+
+local function initAfterMain()
+	Explorer = Apps.Explorer
+	Properties = Apps.Properties
+	ScriptViewer = Apps.ScriptViewer
+	SaveInstance = Apps.SaveInstance
+	Notebook = Apps.Notebook
+end
+
 local function main()
 	local SaveInstance = {}
 	local window, ListFrame
