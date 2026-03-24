@@ -360,6 +360,11 @@ Main = (function()
 		env.hookmetamethod = hookmetamethod
 	
 		-- other
+		if type(decompile) ~= "function" then
+		    --warn("No built-in decompiler exists, using Advanced Luau Decompiler...")
+		    pcall(Main.LoadAdvancedLuauDecompiler)
+		end
+
 		local Decompiler = getgenv().decompile or decompile
 		
 		env.decompile = function(script_instance)
@@ -395,11 +400,6 @@ Main = (function()
 			end
 			
 			return "-- Fallback should work, but why?"
-		end
-
-		if type(decompile) ~= "function" then
-		    --warn("No built-in decompiler exists, using Advanced Luau Decompiler...")
-		    pcall(Main.LoadAdvancedLuauDecompiler)
 		end
 		env.getscriptbytecode = getscriptbytecode
 		env.setfflag = setfflag
