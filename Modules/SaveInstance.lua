@@ -41,17 +41,92 @@ local function main()
 	local Saving = false
 	
 	local SaveInstanceArgs = {
+		mode = "optimized",
 		Decompile = true,
-		DecompileTimeout = 10,
-		DecompileIgnore = {"Chat", "CoreGui", "CorePackages"},
+		timeout = 10,
+		SaveBytecode = false,
+		DecompileJobless = false,
+		DecompileIgnore = {"Chat", "CoreGui", "CorePackages", "TextChatService"},
+		IgnoreList = {"CoreGui", "CorePackages"},
+		
+		SafeMode = true,
+		KillAllScripts = true,
+		ShutdownWhenDone = false,
+		AntiIdle = true,
+		Anonymous = false,
+
+		ShowStatus = true,
+		ReadMe = true,
+		AvoidFileOverwrite = true,
+		AlternativeWritefile = true,
+
 		NilInstances = false,
 		RemovePlayerCharacters = true,
-		SavePlayers = false,
-		MaxThreads = 3,
-		ShowStatus = true,
-		IgnoreDefaultProps = true,
-		IsolateStarterPlayer = true
+		IsolateLocalPlayer = false,
+		IsolateStarterPlayer = false,
+		IsolateLocalPlayerCharacter = false,
+		IsolatePlayers = false,
+		SaveNotCreatable = false,
+
+		IgnoreDefaultProperties = true,
+		IgnoreNotArchivable = true,
+		IgnoreSpecialProperties = false,
+		IgnorePropertiesOfNotScriptsOnScriptsMode = false,
+		IgnoreDefaultPlayerScripts = true,
+		IgnoreSharedStrings = true,
+		SharedStringOverwrite = false,
+		TreatUnionsAsParts = false,
+		__DEBUG_MODE = false
 	}
+	
+	local function AddSeperator(title)
+		local frame = Lib.Frame.new()
+		frame.Gui.Parent = ListFrame
+		frame.Gui.Transparency = 1
+		frame.Gui.Size = UDim2.new(1,0,0,25)
+		
+		local label = Lib.Label.new()
+		label.Parent = frame.Gui
+		label.Size = UDim2.new(1, 0, 1, 0)
+		label.Text = title
+		label.TextSize = 16
+		label.TextColor3 = Color3.fromRGB(200,200,200)
+		label.Font = Enum.Font.SourceSansBold
+		label.TextTruncate = Enum.TextTruncate.AtEnd
+		return label
+	end
+
+	local function AddDropdown(title, options, default, allowEmpty, sizeX)
+		if allowEmpty == nil then allowEmpty = true end
+		local frame = Lib.Frame.new()
+		frame.Gui.Parent = ListFrame
+		frame.Gui.Transparency = 1
+		frame.Gui.Size = UDim2.new(1,0,0,20)
+
+		local listlayout = Instance.new("UIListLayout")
+		listlayout.Parent = frame.Gui
+		listlayout.FillDirection = Enum.FillDirection.Horizontal
+		listlayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+		listlayout.VerticalAlignment = Enum.VerticalAlignment.Center
+		listlayout.Padding = UDim.new(0, 10)
+
+		local dropdown = Lib.DropDown.new()
+		dropdown.CanBeEmpty = allowEmpty
+		dropdown.Size = UDim2.new(0, sizeX or 75, 0, 18)
+		dropdown:SetOptions(options)
+		if default then dropdown:SetSelected(default) end
+		dropdown.Gui.Parent = frame.Gui
+
+		frame.Gui.AutomaticSize = Enum.AutomaticSize.X
+
+		local label = Lib.Label.new()
+		label.Parent = frame.Gui
+		label.Size = UDim2.new(1, 0,1, -15)
+		label.Text = title
+		label.TextTruncate = Enum.TextTruncate.AtEnd
+
+		return dropdown
+	end
 	
 	local function AddCheckbox(title, default)
 		local frame = Lib.Frame.new()
@@ -68,13 +143,11 @@ local function main()
 		
 		-- Checkbox
 		local checkbox = Lib.Checkbox.new()
-		
 		checkbox.Gui.Parent = frame.Gui
 		checkbox.Gui.Size = UDim2.new(0,15,0,15)
 		
 		-- Label
 		local label = Lib.Label.new()
-		
 		label.Gui.Parent = frame.Gui
 		label.Gui.Size = UDim2.new(1, 0,1, -15)
 		label.Gui.Text = title
@@ -100,7 +173,7 @@ local function main()
 		listlayout.Padding = UDim.new(0, 10)
 
 		-- Textbox
-		local textbox = Instance.new("TextBox") -- replaced cuz why Moon make every inputs only work on mouse/pc users >:( 
+		local textbox = Instance.new("TextBox") 
 		textbox.BackgroundColor3 = Settings.Theme.TextBox
 		textbox.BorderColor3 = Settings.Theme.Outline3
 		textbox.ClearTextOnFocus = false
@@ -135,12 +208,10 @@ local function main()
 	SaveInstance.Init = function()
 		window = Lib.Window.new()
 		window:SetTitle("Save Instance")
-		window:Resize(350,350)
+		window:Resize(380,500)
 		SaveInstance.Window = window
 		
 		-- ListFrame
-		
-		-- Fake ScrollBar dex, because its too advanced
 		ListFrame = Instance.new("ScrollingFrame")
 		ListFrame.Parent = window.GuiElems.Content
 		ListFrame.Size = UDim2.new(1, 0,1, -40)
@@ -181,71 +252,123 @@ local function main()
 		Padding.PaddingRight = UDim.new(0, 10)
 		Padding.PaddingTop = UDim.new(0, 5)
 		
-		-- Options
-		
-		local Decompile = AddCheckbox("Decompile Scripts (LocalScript and ModuleScript)", SaveInstanceArgs.Decompile)
-		Decompile.OnInput:Connect(function()
-			SaveInstanceArgs.Decompile = Decompile.Toggled
-		end)
-		
-		local decompileTimeout = AddTextbox("Decompile Timeout (s)", SaveInstanceArgs.DecompileTimeout, 15)
-		decompileTimeout.TextBox.FocusLost:Connect(function()
-			SaveInstanceArgs.DecompileTimeout = tonumber(decompileTimeout.TextBox.Text)
-		end)
-		
-		local decompileThread = AddTextbox("Decompiler Max Threads", "3", 15)
-		decompileThread.TextBox.FocusLost:Connect(function()
-			SaveInstanceArgs.MaxThreads = tonumber(decompileThread.TextBox.Text)
-		end)
-		
-		local decompileIgnore = AddTextbox("Decompile Ignore", table.concat(SaveInstanceArgs.DecompileIgnore, ","), 50)
-		decompileIgnore.TextBox.FocusLost:Connect(function()
-			local inputText = decompileIgnore.TextBox.Text
-			local rawList = string.split(inputText, ", ") or string.split(inputText, ",")
-			local finalList = {}
+		AddSeperator("General Settings")
+		local modeDrop = AddDropdown("Mode", {"optimized", "full", "scripts"}, SaveInstanceArgs.mode, false, 80)
+		modeDrop.OnSelect:Connect(function(val) SaveInstanceArgs.mode = val end)
 
+		local ShowStat = AddCheckbox("Show Status", SaveInstanceArgs.ShowStatus)
+		ShowStat.OnInput:Connect(function() SaveInstanceArgs.ShowStatus = ShowStat.Toggled end)
+
+		local ReadMeBox = AddCheckbox("Generate ReadMe", SaveInstanceArgs.ReadMe)
+		ReadMeBox.OnInput:Connect(function() SaveInstanceArgs.ReadMe = ReadMeBox.Toggled end)
+
+		local AvoidFileOverwriteBox = AddCheckbox("Avoid File Overwrite", SaveInstanceArgs.AvoidFileOverwrite)
+		AvoidFileOverwriteBox.OnInput:Connect(function() SaveInstanceArgs.AvoidFileOverwrite = AvoidFileOverwriteBox.Toggled end)
+
+		local AlternativeWritefileBox = AddCheckbox("Alternative Writefile", SaveInstanceArgs.AlternativeWritefile)
+		AlternativeWritefileBox.OnInput:Connect(function() SaveInstanceArgs.AlternativeWritefile = AlternativeWritefileBox.Toggled end)
+
+		local AnonymousBox = AddCheckbox("Anonymous Mode", SaveInstanceArgs.Anonymous)
+		AnonymousBox.OnInput:Connect(function() SaveInstanceArgs.Anonymous = AnonymousBox.Toggled end)
+
+		AddSeperator("Protection & Safety")
+		local SafeModeBox = AddCheckbox("Safe Mode (Kick before saving)", SaveInstanceArgs.SafeMode)
+		SafeModeBox.OnInput:Connect(function() SaveInstanceArgs.SafeMode = SafeModeBox.Toggled end)
+
+		local KillAllScriptsBox = AddCheckbox("Kill All Scripts", SaveInstanceArgs.KillAllScripts)
+		KillAllScriptsBox.OnInput:Connect(function() SaveInstanceArgs.KillAllScripts = KillAllScriptsBox.Toggled end)
+
+		local AntiIdleBox = AddCheckbox("Anti Idle", SaveInstanceArgs.AntiIdle)
+		AntiIdleBox.OnInput:Connect(function() SaveInstanceArgs.AntiIdle = AntiIdleBox.Toggled end)
+
+		local ShutdownWhenDoneBox = AddCheckbox("Shutdown When Done", SaveInstanceArgs.ShutdownWhenDone)
+		ShutdownWhenDoneBox.OnInput:Connect(function() SaveInstanceArgs.ShutdownWhenDone = ShutdownWhenDoneBox.Toggled end)
+
+		AddSeperator("Decompilation")
+		local Decompile = AddCheckbox("Decompile Scripts", SaveInstanceArgs.Decompile)
+		Decompile.OnInput:Connect(function() SaveInstanceArgs.Decompile = Decompile.Toggled end)
+
+		local SaveBytecodeBox = AddCheckbox("Save Bytecode", SaveInstanceArgs.SaveBytecode)
+		SaveBytecodeBox.OnInput:Connect(function() SaveInstanceArgs.SaveBytecode = SaveBytecodeBox.Toggled end)
+
+		local DecompileJoblessBox = AddCheckbox("Decompile Jobless", SaveInstanceArgs.DecompileJobless)
+		DecompileJoblessBox.OnInput:Connect(function() SaveInstanceArgs.DecompileJobless = DecompileJoblessBox.Toggled end)
+
+		local decompileTimeout = AddTextbox("Decompile Timeout (s)", SaveInstanceArgs.timeout, 25)
+		decompileTimeout.TextBox.FocusLost:Connect(function() SaveInstanceArgs.timeout = tonumber(decompileTimeout.TextBox.Text) or 10 end)
+
+		local decompileIgnore = AddTextbox("Decompile Ignore", table.concat(SaveInstanceArgs.DecompileIgnore, ", "), 150)
+		decompileIgnore.TextBox.FocusLost:Connect(function()
+			local rawList = string.split(decompileIgnore.TextBox.Text, ",")
+			local finalList = {}
 			for _, text in ipairs(rawList) do
-				local split = string.split(text, ",") or string.split(text, ", ")
-				for _, textFound in ipairs(split) do
-					table.insert(finalList, textFound)
-				end
+				local clean = string.match(text, "^%s*(.-)%s*$")
+				if clean and #clean > 0 then table.insert(finalList, clean) end
 			end
 			SaveInstanceArgs.DecompileIgnore = finalList
 		end)
 
-		
-		local NilObj = AddCheckbox("Save Nil Instances", SaveInstanceArgs.NilInstances)
-		NilObj.OnInput:Connect(function()
-			SaveInstanceArgs.NilInstances = NilObj.Toggled
+		AddSeperator("Instances & Isolation")
+		local IgnoreList = AddTextbox("Ignore List", table.concat(SaveInstanceArgs.IgnoreList, ", "), 150)
+		IgnoreList.TextBox.FocusLost:Connect(function()
+			local rawList = string.split(IgnoreList.TextBox.Text, ",")
+			local finalList = {}
+			for _, text in ipairs(rawList) do
+				local clean = string.match(text, "^%s*(.-)%s*$")
+				if clean and #clean > 0 then table.insert(finalList, clean) end
+			end
+			SaveInstanceArgs.IgnoreList = finalList
 		end)
 
+		local NilObj = AddCheckbox("Save Nil Instances", SaveInstanceArgs.NilInstances)
+		NilObj.OnInput:Connect(function() SaveInstanceArgs.NilInstances = NilObj.Toggled end)
+
+		local SaveNotCreatableBox = AddCheckbox("Save Not Creatable", SaveInstanceArgs.SaveNotCreatable)
+		SaveNotCreatableBox.OnInput:Connect(function() SaveInstanceArgs.SaveNotCreatable = SaveNotCreatableBox.Toggled end)
+
 		local RemovePlayerChar = AddCheckbox("Remove Player Characters", SaveInstanceArgs.RemovePlayerCharacters)
-		RemovePlayerChar.OnInput:Connect(function()
-			SaveInstanceArgs.RemovePlayerCharacters = RemovePlayerChar.Toggled
-		end)
-		
-		local SavePlayerObj = AddCheckbox("Save Player Instance", SaveInstanceArgs.SavePlayers)
-		SavePlayerObj.OnInput:Connect(function()
-			SaveInstanceArgs.SavePlayers = SavePlayerObj.Toggled
-		end)
-		
+		RemovePlayerChar.OnInput:Connect(function() SaveInstanceArgs.RemovePlayerCharacters = RemovePlayerChar.Toggled end)
+
+		local IsolateLocalPlayerBox = AddCheckbox("Isolate Local Player", SaveInstanceArgs.IsolateLocalPlayer)
+		IsolateLocalPlayerBox.OnInput:Connect(function() SaveInstanceArgs.IsolateLocalPlayer = IsolateLocalPlayerBox.Toggled end)
+
 		local IsolateStarterPlr = AddCheckbox("Isolate StarterPlayer", SaveInstanceArgs.IsolateStarterPlayer)
-		IsolateStarterPlr.OnInput:Connect(function()
-			SaveInstanceArgs.IsolateStarterPlayer = IsolateStarterPlr.Toggled
-		end)
-		
-		local IgnoreDefaultProps = AddCheckbox("Ignore Default Properties", SaveInstanceArgs.IgnoreDefaultProps)
-		IgnoreDefaultProps.OnInput:Connect(function()
-			SaveInstanceArgs.IgnoreDefaultProps = IgnoreDefaultProps.Toggled
-		end)
-		
-		local ShowStat = AddCheckbox("Show Status", SaveInstanceArgs.ShowStatus)
-		ShowStat.OnInput:Connect(function()
-			SaveInstanceArgs.ShowStatus = ShowStat.Toggled
-		end)
-		
-		
-		-- Decompile buttons below
+		IsolateStarterPlr.OnInput:Connect(function() SaveInstanceArgs.IsolateStarterPlayer = IsolateStarterPlr.Toggled end)
+
+		local IsolateLocalPlayerCharacterBox = AddCheckbox("Isolate Local Player Character", SaveInstanceArgs.IsolateLocalPlayerCharacter)
+		IsolateLocalPlayerCharacterBox.OnInput:Connect(function() SaveInstanceArgs.IsolateLocalPlayerCharacter = IsolateLocalPlayerCharacterBox.Toggled end)
+
+		local IsolatePlayersBox = AddCheckbox("Isolate All Players", SaveInstanceArgs.IsolatePlayers)
+		IsolatePlayersBox.OnInput:Connect(function() SaveInstanceArgs.IsolatePlayers = IsolatePlayersBox.Toggled end)
+
+		AddSeperator("Advanced Fixes & Properties")
+		local IgnoreDefaultProps = AddCheckbox("Ignore Default Properties", SaveInstanceArgs.IgnoreDefaultProperties)
+		IgnoreDefaultProps.OnInput:Connect(function() SaveInstanceArgs.IgnoreDefaultProperties = IgnoreDefaultProps.Toggled end)
+
+		local IgnoreNotArchivableBox = AddCheckbox("Ignore Not Archivable", SaveInstanceArgs.IgnoreNotArchivable)
+		IgnoreNotArchivableBox.OnInput:Connect(function() SaveInstanceArgs.IgnoreNotArchivable = IgnoreNotArchivableBox.Toggled end)
+
+		local IgnoreSpecialPropertiesBox = AddCheckbox("Ignore Special Properties", SaveInstanceArgs.IgnoreSpecialProperties)
+		IgnoreSpecialPropertiesBox.OnInput:Connect(function() SaveInstanceArgs.IgnoreSpecialProperties = IgnoreSpecialPropertiesBox.Toggled end)
+
+		local IgnorePropertiesOfNotScriptsOnScriptsModeBox = AddCheckbox("Ignore Properties Of Not Scripts (Scripts Mode)", SaveInstanceArgs.IgnorePropertiesOfNotScriptsOnScriptsMode)
+		IgnorePropertiesOfNotScriptsOnScriptsModeBox.OnInput:Connect(function() SaveInstanceArgs.IgnorePropertiesOfNotScriptsOnScriptsMode = IgnorePropertiesOfNotScriptsOnScriptsModeBox.Toggled end)
+
+		local IgnoreDefaultPlayerScriptsBox = AddCheckbox("Ignore Default Player Scripts", SaveInstanceArgs.IgnoreDefaultPlayerScripts)
+		IgnoreDefaultPlayerScriptsBox.OnInput:Connect(function() SaveInstanceArgs.IgnoreDefaultPlayerScripts = IgnoreDefaultPlayerScriptsBox.Toggled end)
+
+		local IgnoreSharedStringsBox = AddCheckbox("Ignore Shared Strings (Fixes Crashes)", SaveInstanceArgs.IgnoreSharedStrings)
+		IgnoreSharedStringsBox.OnInput:Connect(function() SaveInstanceArgs.IgnoreSharedStrings = IgnoreSharedStringsBox.Toggled end)
+
+		local SharedStringOverwriteBox = AddCheckbox("Shared String Overwrite", SaveInstanceArgs.SharedStringOverwrite)
+		SharedStringOverwriteBox.OnInput:Connect(function() SaveInstanceArgs.SharedStringOverwrite = SharedStringOverwriteBox.Toggled end)
+
+		local TreatUnionsAsPartsBox = AddCheckbox("Treat Unions As Parts", SaveInstanceArgs.TreatUnionsAsParts)
+		TreatUnionsAsPartsBox.OnInput:Connect(function() SaveInstanceArgs.TreatUnionsAsParts = TreatUnionsAsPartsBox.Toggled end)
+
+		local DebugModeBox = AddCheckbox("Debug Mode (Log Unusual Scenarios)", SaveInstanceArgs.__DEBUG_MODE)
+		DebugModeBox.OnInput:Connect(function() SaveInstanceArgs.__DEBUG_MODE = DebugModeBox.Toggled end)
+
 		local FilenameTextBox = Lib.ViewportTextBox.new()
 		FilenameTextBox.Gui.Parent = window.GuiElems.Content
 		FilenameTextBox.Size = UDim2.new(1,0, 0,20)
@@ -286,11 +409,10 @@ local function main()
 				window:SetTitle("Save Instance - Saved")
 			else
 				window:SetTitle("Save Instance - Error")
-				task.spawn(error("Failed to save the game: "..result))
+				task.spawn(error, "Failed to save the game: "..tostring(result))
 			end
 			task.wait(5)
 			window:SetTitle("Save Instance")
-			---env.saveinstance(game, fileName, SaveInstanceArgs)
 		end)
 	end
 
