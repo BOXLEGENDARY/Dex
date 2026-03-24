@@ -84,6 +84,7 @@ DefaultSettings = (function()
 		-- > Vanilla3
 		-- > Old
 		-- > NewDark
+		DecompilerMode = "Default",
 	}
 end)()
 
@@ -131,7 +132,7 @@ Main = (function()
 	Main.ModuleList = {"Explorer","Properties","ScriptViewer","ModelViewer","SaveInstance","SettingsWindow"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
-	Main.Version = "2.9.4"
+	Main.Version = "2.10.0"
 	Main.Mouse = plr:GetMouse()
 	Main.AppControls = {}
 	Main.Apps = Apps
@@ -359,6 +360,43 @@ Main = (function()
 		env.hookmetamethod = hookmetamethod
 	
 		-- other
+		local Decompiler = getgenv().decompile or decompile
+		
+		env.decompile = function(script_instance)
+			local mode = Settings.DecompilerMode
+			
+			if mode == "Shiny" then
+				local success, bytecode = pcall(env.getscriptbytecode, script_instance)
+				if not success or not bytecode then return "-- Failed to get bytecode" end
+				
+				local base64encode = (crypt and crypt.base64encode) or (base64 and base64.encode)
+				if not base64encode then return "-- Base64 encode missing on this executor" end
+				
+				local encoded = base64encode(bytecode)
+				
+				local req = env.request
+				if not req then return "-- HTTP Request not supported by your executor" end
+				
+				local successReq, res = pcall(req, {
+					Url = "http://127.0.0.1:3000/luau/decompile",
+					Method = "POST",
+					Body = encoded
+				})
+				
+				if successReq and res and res.Body then
+					return res.Body
+				else
+					return "-- request failed (Is the local server running?)"
+				end
+			end
+			
+			if Decompiler then
+				return Decompiler(script_instance)
+			end
+			
+			return "-- No decompiler available on this executor"
+		end
+
 		if type(decompile) ~= "function" then
 		    --warn("No built-in decompiler exists, using Advanced Luau Decompiler...")
 		    pcall(Main.LoadAdvancedLuauDecompiler)
@@ -769,19 +807,6 @@ Main = (function()
 	Main.LoadAdvancedLuauDecompiler = function()
 	    loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/Advanced-Luau-Decompiler/main/init.lua", true))()
 	end
-
-    --[[
-	getgenv().decompile = function(script_instance)
-	    local bytecode = getscriptbytecode(script_instance)
-	    local encoded = crypt.base64encode(bytecode)
-	
-	    return env.request({
-	        Url = "http://127.0.0.1:3000/luau/decompile",
-	        Method = "POST",
-	        Body = encoded
-	    }).Body
-	end
-	]]
 
 	Main.ShowGui = Main.SecureGui
 
