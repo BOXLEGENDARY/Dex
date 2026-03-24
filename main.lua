@@ -367,7 +367,7 @@ Main = (function()
 			
 			if mode == "Shiny" then
 				local success, bytecode = pcall(env.getscriptbytecode, script_instance)
-				if not success or not bytecode then return "-- Failed to get bytecode" end
+				if not success or not bytecode then return "-- Your executor is missing the function 'getscriptbytecode'" end
 				
 				local base64encode = (crypt and crypt.base64encode) or (base64 and base64.encode)
 				if not base64encode then return "-- Base64 encode missing on this executor" end
@@ -394,7 +394,7 @@ Main = (function()
 				return Decompiler(script_instance)
 			end
 			
-			return "-- No decompiler available on this executor"
+			return "-- Fallback should work, but why?"
 		end
 
 		if type(decompile) ~= "function" then
