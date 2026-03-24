@@ -101,7 +101,6 @@ local function main()
 		AvoidFileOverwrite = true,
 		SaveNotCreatable = false,
 		IsolateLocalPlayer = false,
-		FilePath = "dex/saved/" .. fileName,
 		AntiIdle = true,
 		ShutdownWhenDone = false,
 		SafeMode = true,
