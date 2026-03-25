@@ -15,7 +15,6 @@ loadstring(game:HttpGet("https://github.com/BOXLEGENDARY/Dex/releases/latest/dow
     * Uses stable third-party components.
     * 2 Decompilers (with 1 fallback)
     > `getscriptbytecode` is required
-* I didn’t add any unnecessary or overkill functions.
 
 ---
 
