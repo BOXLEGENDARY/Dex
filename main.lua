@@ -85,6 +85,7 @@ DefaultSettings = (function()
 		-- > Old
 		-- > NewDark
 		DecompilerMode = "Default",
+		ShinyDecompilerPort = 3000,
 	}
 end)()
 
@@ -132,7 +133,7 @@ Main = (function()
 	Main.ModuleList = {"Explorer","Properties","ScriptViewer","ModelViewer","SaveInstance","SettingsWindow"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
-	Main.Version = "2.10.1"
+	Main.Version = "2.10.2"
 	Main.Mouse = plr:GetMouse()
 	Main.AppControls = {}
 	Main.Apps = Apps
@@ -381,7 +382,7 @@ Main = (function()
 				if not req then return "-- HTTP Request not supported by your executor" end
 				
 				local successReq, res = pcall(req, {
-					Url = "http://127.0.0.1:3000/luau/decompile",
+					Url = "http://127.0.0.1:" .. tostring(Settings.ShinyDecompilerPort) .. "/luau/decompile",					
 					Method = "POST",
 					Body = encoded
 				})
