@@ -280,6 +280,20 @@ local function main()
 		local decompilerDrop = AddDropdown("Decompiler Mode", {"Default", "Shiny"}, Settings.DecompilerMode or "Default", false, 100)
 		decompilerDrop.OnSelect:Connect(function() Settings.DecompilerMode = decompilerDrop.Selected end)
 
+		local ShinyPort = AddTextbox("Shiny Decompiler Port", tostring(Settings.ShinyDecompilerPort), 50)
+		ShinyPort.FocusLost:Connect(function()
+			local portinput = tonumber(ShinyPort.Text)
+			if not portinput then
+				ShinyPort.Text = Settings.ShinyDecompilerPort
+			else
+				if portinput > 0 and portinput <= 65535 then
+					Settings.ShinyDecompilerPort = portinput
+				else
+					ShinyPort.Text = Settings.ShinyDecompilerPort
+				end
+			end
+		end)
+
 		AddSeperator("Explorer")
 		local clickRename = AddCheckbox("Click to Rename", Settings.Explorer.ClickToRename)
 		clickRename.OnInput:Connect(function() Settings.Explorer.ClickToRename = clickRename.Toggled end)
