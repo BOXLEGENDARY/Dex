@@ -14,8 +14,6 @@ loadstring(game:HttpGet("https://github.com/BOXLEGENDARY/Dex/releases/latest/dow
 * What's different between Dex 2021 and Dex 2026?
     * Mostly keeping it fresh and adding more features.
     * Uses stable third-party components.
-    * 2 Decompilers (with 1 fallback)
-    > `getscriptbytecode` is required
 
 ---
 
