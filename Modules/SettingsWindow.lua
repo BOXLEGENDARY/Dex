@@ -280,7 +280,7 @@ local function main()
 		local decompilerDrop = AddDropdown("Decompiler Mode", {"Default", "Shiny"}, Settings.DecompilerMode or "Default", false, 100)
 		decompilerDrop.OnSelect:Connect(function() Settings.DecompilerMode = decompilerDrop.Selected end)
 
-		local ShinyPort = AddTextbox("Shiny Decompiler Port", tostring(Settings.ShinyDecompilerPort), 50)
+		local ShinyPort = AddTextbox("Shiny Decompiler Local Port", tostring(Settings.ShinyDecompilerPort), 50)
 		ShinyPort.FocusLost:Connect(function()
 			local portinput = tonumber(ShinyPort.Text)
 			if not portinput then
@@ -295,17 +295,17 @@ local function main()
 		end)
 
 		AddSeperator("Explorer")
-		local clickRename = AddCheckbox("Click to Rename", Settings.Explorer.ClickToRename)
+		local clickRename = AddCheckbox("Click Selected to Rename", Settings.Explorer.ClickToRename)
 		clickRename.OnInput:Connect(function() Settings.Explorer.ClickToRename = clickRename.Toggled end)
 
 		local enableSearchFilters = AddCheckbox("Enable Search Filters", Settings.Explorer.EnableSearchFilters)
 		enableSearchFilters.OnInput:Connect(function() Settings.Explorer.EnableSearchFilters = enableSearchFilters.Toggled end)
 
-		local explorerSorting = AddCheckbox("Enable Sorting", Settings.Explorer.Sorting)
+		local explorerSorting = AddCheckbox("Sort Items Alphabetically", Settings.Explorer.Sorting)
 		explorerSorting.OnInput:Connect(function() Settings.Explorer.Sorting = explorerSorting.Toggled end)
 
 		local tpOffsetDefault = tostring(Settings.Explorer.TeleportToOffset.X) .. ", " .. tostring(Settings.Explorer.TeleportToOffset.Y) .. ", " .. tostring(Settings.Explorer.TeleportToOffset.Z)
-		local tpOffsetBox = AddTextbox("Teleport To Offset (X, Y, Z)", tpOffsetDefault, 75)
+		local tpOffsetBox = AddTextbox("Teleportation Coordinate Offset (X, Y, Z)", tpOffsetDefault, 75)
 		tpOffsetBox.FocusLost:Connect(function()
 			local text = tpOffsetBox.Text
 			local parts = string.split(text, ",")
@@ -316,7 +316,7 @@ local function main()
 			tpOffsetBox.Text = tostring(x) .. ", " .. tostring(y) .. ", " .. tostring(z)
 		end)
 
-		local remoteBlockAttr = AddCheckbox("Remote Block Write Attribute", Settings.RemoteBlockWriteAttribute)
+		local remoteBlockAttr = AddCheckbox("Mark Blocked Remotes with Attribute", Settings.RemoteBlockWriteAttribute)
 		remoteBlockAttr.OnInput:Connect(function() 
 			Settings.RemoteBlockWriteAttribute = remoteBlockAttr.Toggled 
 		end)
@@ -324,7 +324,7 @@ local function main()
 		local autoUpdateSearch = AddCheckbox("Auto Update Search", Settings.Explorer.AutoUpdateSearch)
 		autoUpdateSearch.OnInput:Connect(function() Settings.Explorer.AutoUpdateSearch = autoUpdateSearch.Toggled end)
 
-		local updateModeOpts = {"0: Default", "1: No Tree Update", "2: No Events", "3: Frozen"}
+		local updateModeOpts = {"Default", "No Tree Update", "No Events", "Frozen"}
 		local currentUpdateMode = updateModeOpts[Settings.Explorer.AutoUpdateMode + 1] or updateModeOpts[1]
 		local updateModeDrop = AddDropdown("Auto Update Mode", updateModeOpts, currentUpdateMode, false, 110)
 		updateModeDrop.OnSelect:Connect(function() Settings.Explorer.AutoUpdateMode = tonumber(string.sub(updateModeDrop.Selected, 1, 1)) or 0 end)
@@ -339,7 +339,7 @@ local function main()
 		copypathUseChildren.OnInput:Connect(function() Settings.Explorer.CopyPathUseGetChildren = copypathUseChildren.Toggled end)
 		
 		AddSeperator("Properties")
-		local scaleOpts = {"0: Full Name Shown", "1: Equal Halves"}
+		local scaleOpts = {"Full Name Shown", "Equal Halves"}
 		local currentScale = scaleOpts[Settings.Properties.ScaleType + 1] or scaleOpts[1]
 		local scaleTypeDrop = AddDropdown("Scale Type", scaleOpts, currentScale, false, 120)
 		scaleTypeDrop.OnSelect:Connect(function() Settings.Properties.ScaleType = tonumber(string.sub(scaleTypeDrop.Selected, 1, 1)) or 0 end)
@@ -353,7 +353,7 @@ local function main()
 		local showAttributes = AddCheckbox("Show Attributes", Settings.Properties.ShowAttributes)
 		showAttributes.OnInput:Connect(function() Settings.Properties.ShowAttributes = showAttributes.Toggled end)
 
-		local clearOnFocus = AddCheckbox("Clear On Focus", Settings.Properties.ClearOnFocus)
+		local clearOnFocus = AddCheckbox("Clear Input Box on Click", Settings.Properties.ClearOnFocus)
 		clearOnFocus.OnInput:Connect(function() Settings.Properties.ClearOnFocus = clearOnFocus.Toggled end)
 
 		local loadstringInput = AddCheckbox("Enable Loadstring Input", Settings.Properties.LoadstringInput)
@@ -365,7 +365,7 @@ local function main()
 		local maxAttrBox = AddTextbox("Max Attributes to Load", Settings.Properties.MaxAttributes, 50)
 		maxAttrBox.FocusLost:Connect(function() local num = tonumber(maxAttrBox.Text) if num then Settings.Properties.MaxAttributes = num end end)
 
-		local numRoundingBox = AddTextbox("Number Rounding (Decimals)", Settings.Properties.NumberRounding, 50)
+		local numRoundingBox = AddTextbox("Decimal Rounding (Places)", Settings.Properties.NumberRounding, 50)
 		numRoundingBox.FocusLost:Connect(function() local num = tonumber(numRoundingBox.Text) if num then Settings.Properties.NumberRounding = num end end)
 		
 		AddSeperator("Theme - General Colors")
