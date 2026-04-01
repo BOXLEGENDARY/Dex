@@ -327,7 +327,10 @@ local function main()
 		local updateModeOpts = {"Default", "No Tree Update", "No Events", "Frozen"}
 		local currentUpdateMode = updateModeOpts[Settings.Explorer.AutoUpdateMode + 1] or updateModeOpts[1]
 		local updateModeDrop = AddDropdown("Auto Update Mode", updateModeOpts, currentUpdateMode, false, 110)
-		updateModeDrop.OnSelect:Connect(function() Settings.Explorer.AutoUpdateMode = tonumber(string.sub(updateModeDrop.Selected, 1, 1)) or 0 end)
+		updateModeDrop.OnSelect:Connect(function()
+		    local selectedIndex = table.find(updateModeOpts, updateModeDrop.Selected)
+		    Settings.Explorer.AutoUpdateMode = selectedIndex and (selectedIndex - 1) or 0
+		end)
 		
 		local partSelectionBox = AddCheckbox("Part Selection Box", Settings.Explorer.PartSelectionBox)
 		partSelectionBox.OnInput:Connect(function() Settings.Explorer.PartSelectionBox = partSelectionBox.Toggled end)
@@ -342,7 +345,10 @@ local function main()
 		local scaleOpts = {"Full Name Shown", "Equal Halves"}
 		local currentScale = scaleOpts[Settings.Properties.ScaleType + 1] or scaleOpts[1]
 		local scaleTypeDrop = AddDropdown("Scale Type", scaleOpts, currentScale, false, 120)
-		scaleTypeDrop.OnSelect:Connect(function() Settings.Properties.ScaleType = tonumber(string.sub(scaleTypeDrop.Selected, 1, 1)) or 0 end)
+		scaleTypeDrop.OnSelect:Connect(function()
+		    local selectedIndex = table.find(scaleOpts, scaleTypeDrop.Selected)
+		    Settings.Properties.ScaleType = selectedIndex and (selectedIndex - 1) or 0
+		end)
 
 		local showDeprecated = AddCheckbox("Show Deprecated", Settings.Properties.ShowDeprecated)
 		showDeprecated.OnInput:Connect(function() Settings.Properties.ShowDeprecated = showDeprecated.Toggled end)
