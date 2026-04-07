@@ -133,7 +133,7 @@ Main = (function()
 	Main.ModuleList = {"Explorer","Properties","ScriptViewer","ModelViewer","SaveInstance","SettingsWindow"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
-	Main.Version = "2.10.5"
+	Main.Version = "2.10.6"
 	Main.Mouse = plr:GetMouse()
 	Main.AppControls = {}
 	Main.Apps = Apps
@@ -1170,23 +1170,13 @@ Main = (function()
 	end
 	
 	Main.SetupFilesystem = function()
-		if not env.writefile or not env.makefolder or not env.isfile then return end
-		local writefile, makefolder, isfile = env.writefile, env.makefolder, env.isfile
+		if not env.writefile or not env.makefolder then return end
+		local writefile, makefolder = env.writefile, env.makefolder
 		makefolder("dex")
 		makefolder("dex/assets")
 		makefolder("dex/saved")
 		makefolder("dex/plugins")
 		makefolder("dex/ModuleCache")
-
-	    local userInputService = game:GetService("UserInputService")
-	    local isPlatformAndroid = userInputService:GetPlatform() == Enum.Platform.Android
-	    
-	    if isPlatformAndroid and isfile then
-	        local targetFilePath = "dex/assets/.nomedia"
-	        if not isfile(targetFilePath) then
-	            writefile(targetFilePath, "")
-	        end
-	    end
 	end
 	
 	Main.SaveCurrentSettings = function()
