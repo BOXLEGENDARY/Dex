@@ -957,7 +957,7 @@ local function main()
 		end
 		if presentClasses["LuaSourceContainer"] then
 			context:AddRegistered("VIEW_SCRIPT", not presentClasses.isViableDecompileScript)
-			context:AddRegistered("DISASSEMBLE_SCRIPT", not presentClasses.isViableDecompileScript or Settings.DecompilerMode ~= "Konstant")
+			context:AddRegistered("DISASSEMBLE_SCRIPT", not presentClasses.isViableDecompileScript)
             context:AddRegistered("SAVE_SCRIPT", not presentClasses.isViableDecompileScript)
 			context:AddRegistered("SAVE_BYTECODE", env.getscriptbytecode == nil)
 		end
