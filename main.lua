@@ -133,7 +133,7 @@ Main = (function()
 	Main.ModuleList = {"Explorer","Properties","ScriptViewer","ModelViewer","SaveInstance","SettingsWindow"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
-	Main.Version = "2.10.5"
+	Main.Version = "2.11.0"
 	Main.Mouse = plr:GetMouse()
 	Main.AppControls = {}
 	Main.Apps = Apps
@@ -366,6 +366,41 @@ Main = (function()
 
 		local Decompiler = getgenv().decompile or decompile
 		
+		local last_konstant_call = 0
+		local KONSTANT_API = "http://api.plusgiant5.com"
+
+		local function konstant_call(konstantType, script_instance)
+			local success, bytecode = pcall(env.getscriptbytecode, script_instance)
+			if not success or not bytecode then return "-- Failed to get script bytecode (Exploit not supported)" end
+
+			local time_elapsed = os.clock() - last_konstant_call
+			if time_elapsed <= 0.5 then
+				task.wait(0.5 - time_elapsed)
+			end
+			
+			local req = env.request
+			if not req then return "-- HTTP Request not supported by your executor" end
+
+			local successReq, res = pcall(req, {
+				Url = KONSTANT_API .. konstantType,
+				Body = bytecode,
+				Method = "POST",
+				Headers = {
+					["Content-Type"] = "text/plain"
+				}
+			})
+			last_konstant_call = os.clock()
+
+			if not successReq or not res then
+				return "-- Request failed (Is the API down?)"
+			end
+			if res.StatusCode ~= 200 then
+				return "-- Error occured while requesting the API:\n\n--[[\n" .. tostring(res.Body) .. "\n--]]"
+			end
+			
+			return res.Body
+		end
+
 		env.decompile = function(script_instance)
 			local mode = Settings.DecompilerMode
 			
@@ -392,6 +427,8 @@ Main = (function()
 				else
 					return "-- request failed (Is the local server running?)"
 				end
+			elseif mode == "Konstant" then
+				return konstant_call("/konstant/decompile", script_instance)
 			end
 			
 			if Decompiler then
@@ -399,6 +436,10 @@ Main = (function()
 			end
 			
 			return "-- Fallback should work, but why?"
+		end
+
+		env.disassemble = function(script_instance)
+			return konstant_call("/konstant/disassemble", script_instance)
 		end
 		env.getscriptbytecode = getscriptbytecode
 		env.setfflag = setfflag
