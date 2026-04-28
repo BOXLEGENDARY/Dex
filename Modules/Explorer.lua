@@ -958,6 +958,7 @@ local function main()
 		if presentClasses["LuaSourceContainer"] then
 			context:AddRegistered("VIEW_SCRIPT", not presentClasses.isViableDecompileScript)
             context:AddRegistered("SAVE_SCRIPT", not presentClasses.isViableDecompileScript)
+            context:AddRegistered("DISASSEMBLE_SCRIPT", not presentClasses.isViableDecompileScript or Settings.DecompilerMode ~= "Konstant")
 			context:AddRegistered("SAVE_BYTECODE", env.getscriptbytecode == nil)
 		end
 		
@@ -1488,6 +1489,11 @@ local function main()
 			if scr then ScriptViewer.ViewScript(scr) end
 		end})
 		
+		context:Register("DISASSEMBLE_SCRIPT",{Name = "Disassemble Script", IconMap = Explorer.MiscIcons, Icon = "ViewScript", OnClick = function()
+			local scr = selection.List[1] and selection.List[1].Obj
+			if scr then ScriptViewer.DisassembleScript(scr) end
+		end})
+
 		context:Register("SAVE_SCRIPT",{Name = "Save Script", IconMap = Explorer.MiscIcons, Icon = "Save", DisabledIcon = "Empty", OnClick = function()
 			for _, v in next, selection.List do
 				if v.Obj:IsA("LuaSourceContainer") and env.isViableDecompileScript(v.Obj) then

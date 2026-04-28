@@ -44,6 +44,18 @@ local function main()
 		window:Show()
 	end
 
+	ScriptViewer.DisassembleScript = function(scr)
+		local success, source = pcall(env.disassemble or function() end, scr)
+		if not success or not source then 
+			source = "-- DEX - Source failed to disassemble\n-- " .. tostring(source)
+			PreviousScr = nil 
+		else 
+			PreviousScr = scr 
+		end
+		codeFrame:SetText(source:gsub("\0", "\\0"))
+		window:Show()
+	end
+
 	ScriptViewer.Init = function()
 		window = Lib.Window.new()
 		window:SetTitle("Notepad")
