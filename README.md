@@ -37,6 +37,8 @@ loadstring(game:HttpGet("https://github.com/BOXLEGENDARY/Dex/releases/latest/dow
 
 ## Third Party Components
 
+[Konstant-Decompiler](https://discord.gg/konstant-tm-tm-lykooking-tm-krack-tm-tm-tm-tm-1277806964356939837)
+
 [Advanced-Luau-Decompiler](https://github.com/BOXLEGENDARY/Advanced-Luau-Decompiler)
 
 [UniversalSynapseSaveInstance](https://github.com/BOXLEGENDARY/UniversalSynSaveInstance)
