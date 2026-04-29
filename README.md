@@ -10,6 +10,7 @@ loadstring(game:HttpGet("https://github.com/BOXLEGENDARY/Dex/releases/latest/dow
 * ​To install plugins, place the plugin files in `workspace/dex/plugins`.
 
 **General Notes**
+* better use Shiny to Decompiler.
 * Dex is now fully stable, so future updates will be less frequent.
 * What's different between Dex 2021 and Dex 2026?
     * Mostly keeping it fresh and adding more features.
