@@ -358,85 +358,88 @@ Main = (function()
 		env.hookmetamethod = hookmetamethod
 	
 		-- other
-		if type(decompile) ~= "function" then
-		    pcall(Main.LoadAdvancedLuauDecompiler)
-		end
-
-		local Decompiler = getgenv().decompile or decompile
-		
-		local last_konstant_call = 0
-		local KONSTANT_API = "http://api.plusgiant5.com"
-
-		local function konstant_call(konstantType, script_instance)
-			local success, bytecode = pcall(env.getscriptbytecode, script_instance)
-			if not success or not bytecode then return "-- Failed to get script bytecode (Exploit not supported)" end
-
-			local time_elapsed = os.clock() - last_konstant_call
-			if time_elapsed <= 0.5 then
-				task.wait(0.5 - time_elapsed)
-			end
-			
-			local req = env.request
-			if not req then return "-- HTTP Request not supported by your executor" end
-
-			local successReq, res = pcall(req, {
-				Url = KONSTANT_API .. konstantType,
-				Body = bytecode,
-				Method = "POST",
-				Headers = {
-					["Content-Type"] = "text/plain"
-				}
-			})
-			last_konstant_call = os.clock()
-
-			if not successReq or not res then
-				return "-- Request failed (Is the API down?)"
-			end
-			if res.StatusCode ~= 200 then
-				return "-- Error occured while requesting the API:\n\n--[[\n" .. tostring(res.Body) .. "\n--]]"
-			end
-			
-			return res.Body
-		end
-
-		env.decompile = function(script_instance)
-			local mode = Settings.DecompilerMode
-			
-			if mode == "Shiny" then
-				local success, bytecode = pcall(env.getscriptbytecode, script_instance)
-				if not success or not bytecode then return "-- Your executor is missing the function 'getscriptbytecode'" end
-				
-				local base64encode = (crypt and crypt.base64encode) or (base64 and base64.encode)
-				if not base64encode then return "-- Base64 encode missing on this executor" end
-				
-				local encoded = base64encode(bytecode)
-				
-				local req = env.request
-				if not req then return "-- HTTP Request not supported by your executor" end
-				
-				local successReq, res = pcall(req, {
-					Url = "http://127.0.0.1:" .. tostring(Settings.ShinyDecompilerPort) .. "/luau/decompile",					
-					Method = "POST",
-					Body = encoded
-				})
-				
-				if successReq and res and res.Body then
-					return res.Body
-				else
-					return "-- request failed (Is the local server running?)"
-				end
-			elseif mode == "Konstant" then
-				return konstant_call("/konstant/decompile", script_instance)
-			end
-			
-			if Decompiler then
-				return Decompiler(script_instance)
-			end
-			
-			return "-- Fallback should work, but why?"
-		end
-
-		env.disassemble = disassemble
+	    local Decompiler = getgenv().decompile or decompile  
+		local ok, ADV = pcall(Main.LoadAdvancedLuauDecompiler)  
+		if not ok then  
+		    ADV = nil  
+		end  
+		  
+		local last_konstant_call = 0  
+		local KONSTANT_API = "http://api.plusgiant5.com"  
+	
+		local function konstant_call(konstantType, script_instance)  
+			local success, bytecode = pcall(env.getscriptbytecode, script_instance)  
+			if not success or not bytecode then return "-- Failed to get script bytecode (Exploit not supported)" end  
+	
+			local time_elapsed = os.clock() - last_konstant_call  
+			if time_elapsed <= 0.5 then  
+				task.wait(0.5 - time_elapsed)  
+			end  
+			  
+			local req = env.request  
+			if not req then return "-- HTTP Request not supported by your executor" end  
+	
+			local successReq, res = pcall(req, {  
+				Url = KONSTANT_API .. konstantType,  
+				Body = bytecode,  
+				Method = "POST",  
+				Headers = {  
+					["Content-Type"] = "text/plain"  
+				}  
+			})  
+			last_konstant_call = os.clock()  
+	
+			if not successReq or not res then  
+				return "-- Request failed (Is the API down?)"  
+			end  
+			if res.StatusCode ~= 200 then  
+				return "-- Error occured while requesting the API:\n\n--[[\n" .. tostring(res.Body) .. "\n--]]"  
+			end  
+			  
+			return res.Body  
+		end  
+	
+		env.decompile = function(script_instance)  
+			local mode = Settings.DecompilerMode  
+			  
+			if mode == "Shiny" then  
+				local success, bytecode = pcall(env.getscriptbytecode, script_instance)  
+				if not success or not bytecode then return "-- Your executor is missing the function 'getscriptbytecode'" end  
+				  
+				local base64encode = (crypt and crypt.base64encode) or (base64 and base64.encode)  
+				if not base64encode then return "-- Base64 encode missing on this executor" end  
+				  
+				local encoded = base64encode(bytecode)  
+				  
+				local req = env.request  
+				if not req then return "-- HTTP Request not supported by your executor" end  
+				  
+				local successReq, res = pcall(req, {  
+					Url = "http://127.0.0.1:" .. tostring(Settings.ShinyDecompilerPort) .. "/luau/decompile",					  
+					Method = "POST",  
+					Body = encoded  
+				})  
+				  
+				if successReq and res and res.Body then  
+					return res.Body  
+				else  
+					return "-- request failed (Is the local server running?)"  
+				end  
+			elseif mode == "Konstant" then  
+				return konstant_call("/konstant/decompile", script_instance)  
+			end  
+			  
+			if Decompiler then  
+				return Decompiler(script_instance)  
+			end  
+			  
+			if ADV then  
+			    return ADV(script_instance)  
+			end  
+			  
+			return "-- Fallback should work, but why?"  
+		end  
+		env.disassemble = ADV
 		env.getscriptbytecode = getscriptbytecode
 		env.setfflag = setfflag
 		env.request = (syn and syn.request) or (http and http.request) or (http_request) or (request)
@@ -1291,8 +1294,6 @@ Main = (function()
 		Main.LargeIcons:SetDict({
 			Explorer = 0, Properties = 1, Script_Viewer = 2, Watcher = 3, Output = 4, ScriptEdit = 5, Book = 6, Executor = 7, Object = 8, Honey = 9
 		})
-
-        pcall(Main.LoadAdvancedLuauDecompiler)
 
 		-- Fetch version if needed
 		intro.SetProgress("Fetching Roblox Version",0.2)
