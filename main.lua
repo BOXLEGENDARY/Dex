@@ -172,16 +172,14 @@ Main = (function()
 		--warn("Secured: "..gui.Name)
 		gui.Name = "_Dex_".. Main.GetRandomString()
 		-- service already using cloneref
-		if gethui then
-			gui.Parent = gethui()
-		elseif syn and syn.protect_gui then
-			syn.protect_gui(gui)
-			gui.Parent = service.CoreGui
-		elseif protect_gui then
-			protect_gui(gui)
-			gui.Parent = service.CoreGui
-		elseif protectgui then
-			protectgui(gui)
+		if env.gethui then
+			if type(env.gethui) == "function" then
+				gui.Parent = env.gethui()
+			else
+				gui.Parent = env.gethui
+			end
+		elseif env.protectgui then
+			env.protectgui(gui)
 			gui.Parent = service.CoreGui
 		else
 			if Main.Elevated then
@@ -443,7 +441,7 @@ Main = (function()
 		env.setfflag = setfflag
 		env.request = (syn and syn.request) or (http and http.request) or (http_request) or (request)
 		env.protectgui = protectgui or protect_gui or (syn and syn.protect_gui)
-		env.gethui = gethui or get_hidden_gui
+		env.gethui = gethui or gethui() or get_hidden_gui
 		env.setclipboard = setclipboard or toclipboard or set_clipboard or (Clipboard and Clipboard.set)
 		env.getnilinstances = getnilinstances or get_nil_instances
 		env.getloadedmodules = getloadedmodules
