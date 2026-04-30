@@ -133,7 +133,7 @@ Main = (function()
 	Main.ModuleList = {"Explorer","Properties","ScriptViewer","ModelViewer","SaveInstance","SettingsWindow"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
-	Main.Version = "2.11.0"
+	Main.Version = "2.12.0"
 	Main.Mouse = plr:GetMouse()
 	Main.AppControls = {}
 	Main.Apps = Apps
@@ -438,9 +438,7 @@ Main = (function()
 			return "-- Fallback should work, but why?"
 		end
 
-		env.disassemble = function(script_instance)
-			return konstant_call("/konstant/disassemble", script_instance)
-		end
+		env.disassemble = disassemble
 		env.getscriptbytecode = getscriptbytecode
 		env.setfflag = setfflag
 		env.request = (syn and syn.request) or (http and http.request) or (http_request) or (request)
@@ -1295,6 +1293,8 @@ Main = (function()
 		Main.LargeIcons:SetDict({
 			Explorer = 0, Properties = 1, Script_Viewer = 2, Watcher = 3, Output = 4, ScriptEdit = 5, Book = 6, Executor = 7, Object = 8, Honey = 9
 		})
+
+        pcall(Main.LoadAdvancedLuauDecompiler)
 
 		-- Fetch version if needed
 		intro.SetProgress("Fetching Roblox Version",0.2)
