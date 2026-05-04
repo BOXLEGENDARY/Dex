@@ -161,11 +161,17 @@ Main = (function()
 	end
 	
 	Main.GetSecureContainer = function()
-		return
-			syn and syn.protect_gui or
-			gethui and gethui() or
-			service.CoreGui or
-			service.Players.LocalPlayer:WaitForChild("PlayerGui")
+		if env.gethui then
+			if type(env.gethui) == "function" then
+				return env.gethui()
+			else
+				return env.gethui
+			end
+		elseif env.protectgui or Main.Elevated then
+			return service.CoreGui
+		else
+			return service.Players.LocalPlayer:WaitForChild("PlayerGui")
+		end
 	end
 	
 	Main.SecureGui = function(gui)
