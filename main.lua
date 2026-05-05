@@ -92,7 +92,7 @@ end)()
 -- Vars
 local Settings = DefaultSettings or {}
 local Apps = {}
-env = env or {}
+local env = {}
 
 local service = setmetatable({},{__index = function(self,name)
 	local serv = cloneref(game:GetService(name))
@@ -356,7 +356,7 @@ Main = (function()
 		env.getinfo = (debug and (debug.getinfo or debug.info)) or getinfo
 		env.islclosure = islclosure or is_l_closure or is_lclosure
 		env.checkcaller = checkcaller
-		env.getreg = getreg()
+		env.getreg = getreg
 		env.getgc = getgc or get_gc_objects
 	
 		-- hooks
