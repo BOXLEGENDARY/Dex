@@ -1,5 +1,7 @@
 --[[
-	Just Setting
+	Settings App Module
+	
+	A settings
 ]] 
 
 -- Common Locals
