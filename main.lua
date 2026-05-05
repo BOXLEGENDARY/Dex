@@ -92,7 +92,7 @@ end)()
 -- Vars
 local Settings = DefaultSettings or {}
 local Apps = {}
-local env = {}
+env = env or {}
 
 local service = setmetatable({},{__index = function(self,name)
 	local serv = cloneref(game:GetService(name))
@@ -133,7 +133,7 @@ Main = (function()
 	Main.ModuleList = {"Explorer","Properties","ScriptViewer","ModelViewer","SaveInstance","SettingsWindow"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
-	Main.Version = "2.11.0"
+	Main.Version = "2.11.1"
 	Main.Mouse = plr:GetMouse()
 	Main.AppControls = {}
 	Main.Apps = Apps
@@ -356,7 +356,7 @@ Main = (function()
 		env.getinfo = (debug and (debug.getinfo or debug.info)) or getinfo
 		env.islclosure = islclosure or is_l_closure or is_lclosure
 		env.checkcaller = checkcaller
-		env.getreg = getreg
+		env.getreg = getreg()
 		env.getgc = getgc or get_gc_objects
 	
 		-- hooks

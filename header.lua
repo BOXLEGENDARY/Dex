@@ -7,6 +7,7 @@ _G.LOADED = true
 
 local selection
 local nodes = {}
+local env = {}
 
 local oldgame = game
 local game = workspace.Parent
@@ -15,7 +16,7 @@ local _registry_table = nil
 local _marker = Instance.new("Folder")
 
 local function _find_instance_registry()
-    local reg = getreg()
+    local reg = env.getreg
     local k, v = next(reg)
     while k ~= nil do
         if type(v) == "table" and rawget(v, "__mode") == "kvs" then
