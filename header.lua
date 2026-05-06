@@ -15,6 +15,7 @@ local _registry_table = nil
 local _marker = Instance.new("Folder")
 
 local function _find_instance_registry()
+    if not getreg then return nil end
     local reg = getreg()
     local k, v = next(reg)
     while k ~= nil do
