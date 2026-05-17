@@ -14,7 +14,6 @@ local function initDeps(data)
 	Lib = data.Lib
 	Apps = data.Apps
 	Settings = data.Settings
-
 	API = data.API
 	RMD = data.RMD
 	env = data.env
@@ -38,19 +37,43 @@ local function main()
 	local placeName = "Place_"..game.PlaceId
 	pcall(function() placeName = game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name end)
 	local fileName = env.parsefile(placeName) .. "_{TIMESTAMP}"
-	local Saving = false
 	
 	local SaveInstanceArgs = {
-		Decompile = true,
-		DecompileTimeout = 10,
-		DecompileIgnore = {"Chat", "CoreGui", "CorePackages"},
-		NilInstances = false,
-		RemovePlayerCharacters = true,
-		SavePlayers = false,
-		MaxThreads = 3,
+		SafeMode = true,
+		KillAllScripts = true,
+		BoostFPS = false,
+		ShutdownWhenDone = false,
+		AntiIdle = true,
+		Anonymous = false,
 		ShowStatus = true,
-		IgnoreDefaultProps = true,
-		IsolateStarterPlayer = true
+		ReadMe = true,
+		AlternativeWritefile = true,
+		AvoidFileOverwrite = true,
+		mode = "optimized",
+		SaveCacheInterval = 22528,
+		Decompile = true,
+		scriptcache = true,
+		DecompileTimeout = 10,
+		DecompileJobless = false,
+		SaveBytecode = false,
+		NilInstances = false,
+		IgnoreDefaultProperties = true,
+		IgnoreNotArchivable = true,
+		IgnorePropertiesOfNotScriptsOnScriptsMode = false,
+		IgnoreSpecialProperties = false,
+		IgnoreDefaultPlayerScripts = true,
+		IgnoreSharedStrings = true,
+		SharedStringOverwrite = false,
+		TreatUnionsAsParts = false,
+		IsolateStarterPlayer = false,
+		IsolatePlayers = false,
+		IsolateLocalPlayer = false,
+		IsolateLocalPlayerCharacter = false,
+		SavePlayerCharacters = false,
+		SaveNotCreatable = false,
+		DecompileIgnore = {"TextChatService"},
+		IgnoreList = {"CoreGui", "CorePackages"},
+		IgnoreProperties = {}
 	}
 	
 	local function AddCheckbox(title, default)
@@ -66,22 +89,17 @@ local function main()
 		listlayout.VerticalAlignment = Enum.VerticalAlignment.Center
 		listlayout.Padding = UDim.new(0, 10)
 		
-		-- Checkbox
 		local checkbox = Lib.Checkbox.new()
-		
 		checkbox.Gui.Parent = frame.Gui
 		checkbox.Gui.Size = UDim2.new(0,15,0,15)
 		
-		-- Label
 		local label = Lib.Label.new()
-		
 		label.Gui.Parent = frame.Gui
 		label.Gui.Size = UDim2.new(1, 0,1, -15)
 		label.Gui.Text = title
 		label.TextTruncate = Enum.TextTruncate.AtEnd
 		
 		checkbox:SetState(default)
-		
 		return checkbox
 	end
 	
@@ -99,8 +117,7 @@ local function main()
 		listlayout.VerticalAlignment = Enum.VerticalAlignment.Center
 		listlayout.Padding = UDim.new(0, 10)
 
-		-- Textbox
-		local textbox = Instance.new("TextBox") -- replaced cuz why Moon make every inputs only work on mouse/pc users >:( 
+		local textbox = Instance.new("TextBox")
 		textbox.BackgroundColor3 = Settings.Theme.TextBox
 		textbox.BorderColor3 = Settings.Theme.Outline3
 		textbox.ClearTextOnFocus = false
@@ -108,27 +125,18 @@ local function main()
 		textbox.Font = Enum.Font.SourceSans
 		textbox.TextSize = 14
 		textbox.ZIndex = 2
-
 		textbox.Parent = frame.Gui
-		if sizeX and type(sizeX) == "number" then
-			textbox.Size = UDim2.new(0,sizeX,0,15)
-		else
-			textbox.Size = UDim2.new(0,45,0,15)
-		end
+		textbox.Size = sizeX and UDim2.new(0,sizeX,0,15) or UDim2.new(0,45,0,15)
 		
 		frame.Gui.AutomaticSize = Enum.AutomaticSize.X
 		textbox.AutomaticSize = Enum.AutomaticSize.X
 
-		-- Label
 		local label = Lib.Label.new()
-
 		label.Parent = frame.Gui
 		label.Size = UDim2.new(1, 0,1, -15)
 		label.Text = title
 		label.TextTruncate = Enum.TextTruncate.AtEnd
-
 		textbox.Text = default
-
 		return {TextBox = textbox}
 	end
 	
@@ -138,9 +146,6 @@ local function main()
 		window:Resize(350,350)
 		SaveInstance.Window = window
 		
-		-- ListFrame
-		
-		-- Fake ScrollBar dex, because its too advanced
 		ListFrame = Instance.new("ScrollingFrame")
 		ListFrame.Parent = window.GuiElems.Content
 		ListFrame.Size = UDim2.new(1, 0,1, -40)
@@ -163,11 +168,7 @@ local function main()
 		scrollbar.Gui.Down.ZIndex = 3
 		
 		ListFrame:GetPropertyChangedSignal("AbsoluteWindowSize"):Connect(function()
-			if ListFrame.AbsoluteCanvasSize ~= ListFrame.AbsoluteWindowSize then
-				scrollbar.Gui.Visible = true
-			else
-				scrollbar.Gui.Visible = false
-			end
+			scrollbar.Gui.Visible = ListFrame.AbsoluteCanvasSize ~= ListFrame.AbsoluteWindowSize
 		end)
 		
 		local ListLayout = Instance.new("UIListLayout")
@@ -181,71 +182,85 @@ local function main()
 		Padding.PaddingRight = UDim.new(0, 10)
 		Padding.PaddingTop = UDim.new(0, 5)
 		
-		-- Options
-		
-		local Decompile = AddCheckbox("Decompile Scripts (LocalScript and ModuleScript)", SaveInstanceArgs.Decompile)
-		Decompile.OnInput:Connect(function()
-			SaveInstanceArgs.Decompile = Decompile.Toggled
-		end)
-		
-		local decompileTimeout = AddTextbox("Decompile Timeout (s)", SaveInstanceArgs.DecompileTimeout, 15)
-		decompileTimeout.TextBox.FocusLost:Connect(function()
-			SaveInstanceArgs.DecompileTimeout = tonumber(decompileTimeout.TextBox.Text)
-		end)
-		
-		local decompileThread = AddTextbox("Decompiler Max Threads", "3", 15)
-		decompileThread.TextBox.FocusLost:Connect(function()
-			SaveInstanceArgs.MaxThreads = tonumber(decompileThread.TextBox.Text)
-		end)
-		
-		local decompileIgnore = AddTextbox("Decompile Ignore", table.concat(SaveInstanceArgs.DecompileIgnore, ","), 50)
-		decompileIgnore.TextBox.FocusLost:Connect(function()
-			local inputText = decompileIgnore.TextBox.Text
-			local rawList = string.split(inputText, ", ") or string.split(inputText, ",")
-			local finalList = {}
+		local BooleanOptions = {
+			{"Safe Mode", "SafeMode"},
+			{"Kill All Scripts", "KillAllScripts"},
+			{"Boost FPS", "BoostFPS"},
+			{"Shutdown When Done", "ShutdownWhenDone"},
+			{"Anti-Idle", "AntiIdle"},
+			{"Anonymous Mode", "Anonymous"},
+			{"Show Status", "ShowStatus"},
+			{"Include ReadMe", "ReadMe"},
+			{"Alternative Writefile", "AlternativeWritefile"},
+			{"Avoid File Overwrite", "AvoidFileOverwrite"},
+			{"Decompile Scripts", "Decompile"},
+			{"Use Script Cache", "scriptcache"},
+			{"Decompile Jobless", "DecompileJobless"},
+			{"Save Bytecode", "SaveBytecode"},
+			{"Save Nil Instances", "NilInstances"},
+			{"Ignore Default Properties", "IgnoreDefaultProperties"},
+			{"Ignore Not Archivable", "IgnoreNotArchivable"},
+			{"Ignore Non-Script Props (Scripts Mode)", "IgnorePropertiesOfNotScriptsOnScriptsMode"},
+			{"Ignore Special Properties", "IgnoreSpecialProperties"},
+			{"Ignore Default PlayerScripts", "IgnoreDefaultPlayerScripts"},
+			{"Ignore Shared Strings", "IgnoreSharedStrings"},
+			{"Shared String Overwrite", "SharedStringOverwrite"},
+			{"Treat Unions As Parts", "TreatUnionsAsParts"},
+			{"Isolate StarterPlayer", "IsolateStarterPlayer"},
+			{"Isolate Players", "IsolatePlayers"},
+			{"Isolate LocalPlayer", "IsolateLocalPlayer"},
+			{"Isolate LocalPlayer Character", "IsolateLocalPlayerCharacter"},
+			{"Save Player Characters", "SavePlayerCharacters"},
+			{"Save Not Creatable", "SaveNotCreatable"}
+		}
 
-			for _, text in ipairs(rawList) do
-				local split = string.split(text, ",") or string.split(text, ", ")
-				for _, textFound in ipairs(split) do
-					table.insert(finalList, textFound)
+		local TextOptions = {
+			{"Mode (optimized/full/scripts)", "mode", 70},
+			{"Decompile Timeout (s)", "DecompileTimeout", 30},
+			{"Save Cache Interval", "SaveCacheInterval", 50}
+		}
+
+		local ListOptions = {
+			{"Decompile Ignore", "DecompileIgnore", 100},
+			{"Ignore List", "IgnoreList", 100},
+			{"Ignore Properties", "IgnoreProperties", 100}
+		}
+
+		for _, opt in ipairs(BooleanOptions) do
+			local cb = AddCheckbox(opt[1], SaveInstanceArgs[opt[2]])
+			cb.OnInput:Connect(function()
+				SaveInstanceArgs[opt[2]] = cb.Toggled
+			end)
+		end
+
+		for _, opt in ipairs(TextOptions) do
+			local tb = AddTextbox(opt[1], tostring(SaveInstanceArgs[opt[2]]), opt[3])
+			tb.TextBox.FocusLost:Connect(function()
+				local text = tb.TextBox.Text
+				if type(SaveInstanceArgs[opt[2]]) == "number" then
+					SaveInstanceArgs[opt[2]] = tonumber(text) or SaveInstanceArgs[opt[2]]
+				else
+					SaveInstanceArgs[opt[2]] = text
 				end
-			end
-			SaveInstanceArgs.DecompileIgnore = finalList
-		end)
+			end)
+		end
 
+		for _, opt in ipairs(ListOptions) do
+			local tb = AddTextbox(opt[1], table.concat(SaveInstanceArgs[opt[2]], ","), opt[3])
+			tb.TextBox.FocusLost:Connect(function()
+				local inputText = tb.TextBox.Text
+				local rawList = string.split(inputText, ",")
+				local finalList = {}
+				for _, text in ipairs(rawList) do
+					local clean = string.match(text, "^%s*(.-)%s*$")
+					if clean and clean ~= "" then
+						table.insert(finalList, clean)
+					end
+				end
+				SaveInstanceArgs[opt[2]] = finalList
+			end)
+		end
 		
-		local NilObj = AddCheckbox("Save Nil Instances", SaveInstanceArgs.NilInstances)
-		NilObj.OnInput:Connect(function()
-			SaveInstanceArgs.NilInstances = NilObj.Toggled
-		end)
-
-		local RemovePlayerChar = AddCheckbox("Remove Player Characters", SaveInstanceArgs.RemovePlayerCharacters)
-		RemovePlayerChar.OnInput:Connect(function()
-			SaveInstanceArgs.RemovePlayerCharacters = RemovePlayerChar.Toggled
-		end)
-		
-		local SavePlayerObj = AddCheckbox("Save Player Instance", SaveInstanceArgs.SavePlayers)
-		SavePlayerObj.OnInput:Connect(function()
-			SaveInstanceArgs.SavePlayers = SavePlayerObj.Toggled
-		end)
-		
-		local IsolateStarterPlr = AddCheckbox("Isolate StarterPlayer", SaveInstanceArgs.IsolateStarterPlayer)
-		IsolateStarterPlr.OnInput:Connect(function()
-			SaveInstanceArgs.IsolateStarterPlayer = IsolateStarterPlr.Toggled
-		end)
-		
-		local IgnoreDefaultProps = AddCheckbox("Ignore Default Properties", SaveInstanceArgs.IgnoreDefaultProps)
-		IgnoreDefaultProps.OnInput:Connect(function()
-			SaveInstanceArgs.IgnoreDefaultProps = IgnoreDefaultProps.Toggled
-		end)
-		
-		local ShowStat = AddCheckbox("Show Status", SaveInstanceArgs.ShowStatus)
-		ShowStat.OnInput:Connect(function()
-			SaveInstanceArgs.ShowStatus = ShowStat.Toggled
-		end)
-		
-		
-		-- Decompile buttons below
 		local FilenameTextBox = Lib.ViewportTextBox.new()
 		FilenameTextBox.Gui.Parent = window.GuiElems.Content
 		FilenameTextBox.Size = UDim2.new(1,0, 0,20)
@@ -276,21 +291,20 @@ local function main()
 		
 		FilenameTextBox.TextBox.Text = fileName
 		Button.MouseButton1Click:Connect(function()
-			local fileName = FilenameTextBox.TextBox.Text:gsub("{TIMESTAMP}", os.date("%Y%m%d_%H%M%S"))
-			if not fileName:match("^dex/saved/") then
-				fileName = "dex/saved/" .. fileName
+			local fileNamePath = FilenameTextBox.TextBox.Text:gsub("{TIMESTAMP}", os.date("%Y%m%d_%H%M%S"))
+			if not fileNamePath:match("^dex/saved/") then
+				fileNamePath = "dex/saved/" .. fileNamePath
 			end
 			window:SetTitle("Save Instance - Saving")
-			local s, result = pcall(env.saveinstance, game, fileName, SaveInstanceArgs)
+			local s, result = pcall(env.saveinstance, game, fileNamePath, SaveInstanceArgs)
 			if s then
 				window:SetTitle("Save Instance - Saved")
 			else
 				window:SetTitle("Save Instance - Error")
-				task.spawn(error("Failed to save the game: "..result))
+				task.spawn(error, "Failed to save the game: " .. tostring(result))
 			end
 			task.wait(5)
 			window:SetTitle("Save Instance")
-			---env.saveinstance(game, fileName, SaveInstanceArgs)
 		end)
 	end
 
