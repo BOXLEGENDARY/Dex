@@ -2906,7 +2906,7 @@ local function main()
 			
 		end
 
-		local function renderSide(side,noTween) -- TODO: Use existing resizers
+		local function renderSide(side,noTween)
 			local currentPos = 0
 			local sideFramePos = getSideFramePos(side)
 			local template = side.WindowResizer:Clone()
