@@ -133,7 +133,7 @@ Main = (function()
 	Main.ModuleList = {"Explorer","Properties","ScriptViewer","ModelViewer","SaveInstance","SettingsWindow"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
-	Main.Version = "2.11.2"
+	Main.Version = "3.0.0"
 	Main.Mouse = plr:GetMouse()
 	Main.AppControls = {}
 	Main.Apps = Apps
@@ -214,12 +214,7 @@ Main = (function()
 	end
 	
 	Main.Error = function(str)
-		if rconsoleprint then
-			rconsoleprint("DEX ERROR: "..tostring(str).."\n")
-			wait(9e9)
-		else
-			error(str)
-		end
+		error(tostring(str), 2)
 	end
 	
 	Main.LoadModule = function(name)
@@ -854,26 +849,27 @@ Main = (function()
 
 	Main.ShowGui = Main.SecureGui
 
-	Main.CreateIntro = function(initStatus) -- TODO: Must theme and show errors
+	Main.CreateIntro = function(initStatus)
 		local gui = create({
 			{1,"ScreenGui",{Name="Intro",}},
-			{2,"Frame",{Active=true,BackgroundColor3=Color3.new(0.20392157137394,0.20392157137394,0.20392157137394),BorderSizePixel=0,Name="Main",Parent={1},Position=UDim2.new(0.5,-175,0.5,-100),Size=UDim2.new(0,350,0,200),}},
-			{3,"Frame",{BackgroundColor3=Color3.new(0.17647059261799,0.17647059261799,0.17647059261799),BorderSizePixel=0,ClipsDescendants=true,Name="Holder",Parent={2},Size=UDim2.new(1,0,1,0),}},
+			{2,"Frame",{Active=true,BackgroundColor3=Settings.Theme.Main1,BorderSizePixel=0,Name="Main",Parent={1},Position=UDim2.new(0.5,-175,0.5,-100),Size=UDim2.new(0,350,0,200),}},
+			{3,"Frame",{BackgroundColor3=Settings.Theme.Main2,BorderSizePixel=0,ClipsDescendants=true,Name="Holder",Parent={2},Size=UDim2.new(1,0,1,0),}},
 			{4,"UIGradient",{Parent={3},Rotation=30,Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(1,1,0),}),}},
-			{5,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=4,Name="Title",Parent={3},Position=UDim2.new(0,-190,0,15),Size=UDim2.new(0,100,0,50),Text="Dex",TextColor3=Color3.new(1,1,1),TextSize=50,TextTransparency=1,}},
-			{6,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=3,Name="Desc",Parent={3},Position=UDim2.new(0,-230,0,60),Size=UDim2.new(0,180,0,25),Text="Ultimate Debugging Suite",TextColor3=Color3.new(1,1,1),TextSize=18,TextTransparency=1,}},
-			{7,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=3,Name="StatusText",Parent={3},Position=UDim2.new(0,20,0,110),Size=UDim2.new(0,180,0,25),Text="Fetching API",TextColor3=Color3.new(1,1,1),TextSize=14,TextTransparency=1,}},
-			{8,"Frame",{BackgroundColor3=Color3.new(0.20392157137394,0.20392157137394,0.20392157137394),BorderSizePixel=0,Name="ProgressBar",Parent={3},Position=UDim2.new(0,110,0,145),Size=UDim2.new(0,0,0,4),}},
-			{9,"Frame",{BackgroundColor3=Color3.new(0.2392156869173,0.56078433990479,0.86274510622025),BorderSizePixel=0,Name="Bar",Parent={8},Size=UDim2.new(0,0,1,0),}},
-			{10,"ImageLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Image="rbxassetid://2764171053",ImageColor3=Color3.new(0.17647059261799,0.17647059261799,0.17647059261799),Parent={8},ScaleType=1,Size=UDim2.new(1,0,1,0),SliceCenter=Rect.new(2,2,254,254),}},
-			{11,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=3,Name="Creator",Parent={2},Position=UDim2.new(1,-110,1,-20),Size=UDim2.new(0,105,0,20),Text="Developed by ZxL",TextColor3=Color3.new(1,1,1),TextSize=14,TextXAlignment=1,}},
+			{5,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=4,Name="Title",Parent={3},Position=UDim2.new(0,-190,0,15),Size=UDim2.new(0,100,0,50),Text="Dex",TextColor3=Settings.Theme.Text,TextSize=50,TextTransparency=1,}},
+			{6,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=3,Name="Desc",Parent={3},Position=UDim2.new(0,-230,0,60),Size=UDim2.new(0,180,0,25),Text="Ultimate Debugging Suite",TextColor3=Settings.Theme.Text,TextSize=18,TextTransparency=1,}},
+			{7,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=3,Name="StatusText",Parent={3},Position=UDim2.new(0,20,0,110),Size=UDim2.new(0,180,0,25),Text="Fetching API",TextColor3=Settings.Theme.Text,TextSize=14,TextTransparency=1,}},
+			{8,"Frame",{BackgroundColor3=Settings.Theme.Main1,BorderSizePixel=0,Name="ProgressBar",Parent={3},Position=UDim2.new(0,110,0,145),Size=UDim2.new(0,0,0,4),}},
+			{9,"Frame",{BackgroundColor3=Settings.Theme.ListSelection,BorderSizePixel=0,Name="Bar",Parent={8},Size=UDim2.new(0,0,1,0),}},
+			{10,"ImageLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Image="rbxassetid://2764171053",ImageColor3=Settings.Theme.Main2,Parent={8},ScaleType=1,Size=UDim2.new(1,0,1,0),SliceCenter=Rect.new(2,2,254,254),}},
+			{11,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=3,Name="Creator",Parent={2},Position=UDim2.new(1,-110,1,-20),Size=UDim2.new(0,105,0,20),Text="Developed by ZxL",TextColor3=Settings.Theme.Text,TextSize=14,TextXAlignment=1,}},
 			{12,"UIGradient",{Parent={11},Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(1,1,0),}),}},
-			{13,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=3,Name="Version",Parent={2},Position=UDim2.new(1,-110,1,-35),Size=UDim2.new(0,105,0,20),Text=Main.Version,TextColor3=Color3.new(1,1,1),TextSize=14,TextXAlignment=1,}},
+			{13,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=3,Name="Version",Parent={2},Position=UDim2.new(1,-110,1,-35),Size=UDim2.new(0,105,0,20),Text=Main.Version,TextColor3=Settings.Theme.Text,TextSize=14,TextXAlignment=1,}},
 			{14,"UIGradient",{Parent={13},Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(1,1,0),}),}},
 			{15,"ImageLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,BorderSizePixel=0,Image="rbxassetid://1427967925",Name="Outlines",Parent={2},Position=UDim2.new(0,-5,0,-5),ScaleType=1,Size=UDim2.new(1,10,1,10),SliceCenter=Rect.new(6,6,25,25),TileSize=UDim2.new(0,20,0,20),}},
 			{16,"UIGradient",{Parent={15},Rotation=-30,Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(1,1,0),}),}},
 			{17,"UIGradient",{Parent={2},Rotation=-30,Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,1,0),NumberSequenceKeypoint.new(1,1,0),}),}},
-			{18,"UIDragDetector", {Parent={2}}}
+			{18,"UIDragDetector", {Parent={2}}},
+			{19,"TextLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Font=3,Name="ErrorText",Parent={3},Position=UDim2.new(0,20,0,160),Size=UDim2.new(0,310,0,30),Text="",TextColor3=Settings.Theme.Important,TextSize=14,TextWrapped=true,TextXAlignment=0,TextYAlignment=1,}}
 		})
 		Main.ShowGui(gui)
 		local backGradient = gui.Main.UIGradient
@@ -887,6 +883,7 @@ Main = (function()
 		local creatorGradient = creatorText.UIGradient
 		local statusText = gui.Main.Holder.StatusText
 		local progressBar = gui.Main.Holder.ProgressBar
+		local errorText = gui.Main.Holder.ErrorText
 		local tweenS = service.TweenService
 		
 		local renderStepped = service.RunService.RenderStepped
@@ -966,6 +963,10 @@ Main = (function()
 			statusText.Text = text
 			tweenS:Create(progressBar.Bar,progressTI,{Size = UDim2.new(n,0,1,0)}):Play()
 		end
+
+		local function setError(text)
+			errorText.Text = text
+		end
 		
 		local function close()
 			tweenS:Create(titleText,progressTI,{TextTransparency = 1}):Play()
@@ -973,6 +974,7 @@ Main = (function()
 			tweenS:Create(versionText,progressTI,{TextTransparency = 1}):Play()
 			tweenS:Create(creatorText,progressTI,{TextTransparency = 1}):Play()
 			tweenS:Create(statusText,progressTI,{TextTransparency = 1}):Play()
+			tweenS:Create(errorText,progressTI,{TextTransparency = 1}):Play()
 			tweenS:Create(progressBar,progressTI,{BackgroundTransparency = 1}):Play()
 			tweenS:Create(progressBar.Bar,progressTI,{BackgroundTransparency = 1}):Play()
 			tweenS:Create(progressBar.ImageLabel,progressTI,{ImageTransparency = 1}):Play()
@@ -1006,11 +1008,17 @@ Main = (function()
 			gui:Destroy()
 		end
 		
-		return {SetProgress = setProgress, Close = close}
+		return {SetProgress = setProgress, SetError = setError, Close = close}
 	end
 	
 	Main.CreateApp = function(data)
-		if Main.MenuApps[data.Name] then return end -- TODO: Handle conflict
+		local baseName = data.Name
+		local counter = 1
+		while Main.MenuApps[data.Name] do
+			counter = counter + 1
+			data.Name = baseName .. " " .. tostring(counter)
+		end
+		
 		local control = {}
 		
 		local app = Main.AppTemplate:Clone()
@@ -1243,144 +1251,159 @@ Main = (function()
 		end
 		Main.LoadSettings()
 		
-		-- Load Lib
+		-- Load Lib		
 		local intro = Main.CreateIntro("Initializing Library")
-		Lib = Main.LoadModule("Lib")
-		Lib.FastWait()
+		local function initProcess()
+			Lib = Main.LoadModule("Lib")
+			Lib.FastWait()
+			
+			
+			-- Init other stuff
+    		--Main.IncompatibleTest()
 		
-		-- Init other stuff
-		--Main.IncompatibleTest()
-		
-		-- Init icons
-		Main.MiscIcons = Lib.IconMap.new("rbxassetid://6511490623",256,256,16,16) -- 6579106223
-		
-		Main.MiscIcons:SetDict({
-			["Reference"] = 0;
-			["Cut"] = 1;
-			["Cut_Disabled"] = 2;
-			["Copy"] = 3;
-			["Copy_Disabled"] = 4;
-			["Paste"] = 5;
-			["Paste_Disabled"] = 6;
-			["Delete"] = 7;
-			["Delete_Disabled"] = 8;
-			["Group"] = 9;
-			["Group_Disabled"] = 10;
-			["Ungroup"] = 11;
-			["Ungroup_Disabled"] = 12;
-			["TeleportTo"] = 13;
-			["Rename"] = 14;
-			["JumpToParent"] = 15;
-			["ExploreData"] = 16;
-			["Save"] = 17;
-			["CallFunction"] = 18;
-			["CallRemote"] = 19;
-			["Undo"] = 20,
-			["Undo_Disabled"] = 21;
-			["Redo"] = 22;
-			["Redo_Disabled"] = 23;
-			["Expand_Over"] = 24;
-			["Expand"] = 25;
-			["Collapse_Over"] = 26;
-			["Collapse"] = 27;
-			["SelectChildren"] = 28;
-			["SelectChildren_Disabled"] = 29;
-			["InsertObject"] = 30;
-			["ViewScript"] = 31;
-			["AddStar"] = 32;
-			["RemoveStar"] = 33;
-			["Script_Disabled"] = 34;
-			["LocalScript_Disabled"] = 35;
-			["Play"] = 36;
-			["Pause"] = 37;
-			["Rename_Disabled"] = 38;
-		})
-		Main.LargeIcons = Lib.IconMap.new("rbxassetid://129589545519436",256,256,32,32) -- 6579106223
-		Main.LargeIcons:SetDict({
-			Explorer = 0, Properties = 1, Script_Viewer = 2, Watcher = 3, Output = 4, ScriptEdit = 5, Book = 6, Executor = 7, Object = 8, Honey = 9
-		})
+    		-- Init icons
+			Main.MiscIcons = Lib.IconMap.new("rbxassetid://6511490623",256,256,16,16)
 
-		-- Fetch version if needed
-		intro.SetProgress("Fetching Roblox Version",0.2)
-		if Main.Elevated then
-			local fileVer = Lib.ReadFile("dex/deps_version.dat")
-			Main.ClientVersion = Version()
-			if fileVer then
-				Main.DepsVersionData = string.split(fileVer,"\n")
-				if Main.LocalDepsUpToDate() then
-					Main.RobloxVersion = Main.DepsVersionData[2]
+			Main.MiscIcons:SetDict({
+				["Reference"] = 0;
+				["Cut"] = 1;
+				["Cut_Disabled"] = 2;
+				["Copy"] = 3;
+				["Copy_Disabled"] = 4;
+				["Paste"] = 5;
+				["Paste_Disabled"] = 6;
+				["Delete"] = 7;
+				["Delete_Disabled"] = 8;
+				["Group"] = 9;
+				["Group_Disabled"] = 10;
+				["Ungroup"] = 11;
+				["Ungroup_Disabled"] = 12;
+				["TeleportTo"] = 13;
+				["Rename"] = 14;
+				["JumpToParent"] = 15;
+				["ExploreData"] = 16;
+				["Save"] = 17;
+				["CallFunction"] = 18;
+				["CallRemote"] = 19;
+				["Undo"] = 20;
+				["Undo_Disabled"] = 21;
+				["Redo"] = 22;
+				["Redo_Disabled"] = 23;
+				["Expand_Over"] = 24;
+				["Expand"] = 25;
+				["Collapse_Over"] = 26;
+				["Collapse"] = 27;
+				["SelectChildren"] = 28;
+				["SelectChildren_Disabled"] = 29;
+				["InsertObject"] = 30;
+				["ViewScript"] = 31;
+				["AddStar"] = 32;
+				["RemoveStar"] = 33;
+				["Script_Disabled"] = 34;
+				["LocalScript_Disabled"] = 35;
+				["Play"] = 36;
+				["Pause"] = 37;
+				["Rename_Disabled"] = 38;
+			})
+			Main.LargeIcons = Lib.IconMap.new("rbxassetid://129589545519436",256,256,32,32)
+			Main.LargeIcons:SetDict({
+				Explorer = 0, Properties = 1, Script_Viewer = 2, Watcher = 3, Output = 4, ScriptEdit = 5, Book = 6, Executor = 7, Object = 8, Honey = 9
+			})
+
+    		-- Fetch version if needed
+			intro.SetProgress("Fetching Roblox Version",0.2)
+			if Main.Elevated then
+				local fileVer = Lib.ReadFile("dex/deps_version.dat")
+				Main.ClientVersion = Version()
+				if fileVer then
+					Main.DepsVersionData = string.split(fileVer,"\n")
+					if Main.LocalDepsUpToDate() then
+						Main.RobloxVersion = Main.DepsVersionData[2]
+					end
 				end
+				Main.RobloxVersion = Main.RobloxVersion or game:HttpGet("https://clientsettings.roblox.com/v2/client-version/WindowsStudio64/channel/LIVE"):match("(version%-[%w]+)")
 			end
-			Main.RobloxVersion = Main.RobloxVersion or game:HttpGet("https://clientsettings.roblox.com/v2/client-version/WindowsStudio64/channel/LIVE"):match("(version%-[%w]+)")
+			
+    		-- Fetch external deps
+			intro.SetProgress("Fetching API",0.35)
+			API = Main.FetchAPI()
+			Lib.FastWait()
+			intro.SetProgress("Fetching RMD",0.5)
+			RMD = Main.FetchRMD()
+			Lib.FastWait()
+			
+    		-- Save external deps locally if needed
+			if Main.Elevated and env.writefile and not Main.LocalDepsUpToDate() then
+				env.writefile("dex/deps_version.dat", Main.ClientVersion .. "\n" .. Main.RobloxVersion)
+				env.writefile("dex/rbx_api.dat", Main.RawAPI)
+				env.writefile("dex/rbx_rmd.dat", Main.RawRMD)
+			end
+			
+    		-- Load other modules
+			intro.SetProgress("Loading Modules",0.75)
+			Main.AppControls.Lib.InitDeps(Main.GetInitDeps())
+			Main.LoadModules()
+			Lib.FastWait()
+			
+    		-- Init other modules
+			intro.SetProgress("Initializing Modules",0.9)
+			Explorer.Init()
+			Properties.Init()
+			ScriptViewer.Init()
+			ModelViewer.Init()
+			SaveInstance.Init()
+			SettingsWindow.Init()
+
+			if env.readfile and env.listfiles then
+				if #env.listfiles("dex/plugins") > 0 then
+					intro.SetProgress("Loading Plugin Files",0.8)
+					for _, pluginDir in pairs(env.listfiles("dex/plugins")) do
+						local moduleData = Main.LoadPluginFile(pluginDir)
+						moduleData.PluginData = moduleData.PluginData or {}
+						moduleData.Init()
+						local pluginFriendlyName = moduleData.PluginData.FriendlyName or moduleData.Window.GuiElems.Title.Text or "Unnamed Plugin"
+						local pluginName = moduleData.PluginData.Name or moduleData.Window.GuiElems.Title.Text:gsub(" ", "") or "unnamedPlugin"
+						intro.SetProgress("Initializing Plugin: ".. pluginFriendlyName,0.9)
+						moduleData.PluginData.Name = pluginName
+						moduleData.PluginData.FriendlyName = pluginFriendlyName
+						table.insert(Main.Plugins, moduleData)
+					end
+				end	
+			end
+			
+			Lib.FastWait()
+			
+			-- Init window system, create main menu, show explorer and properties			
+			Lib.Window.Init()
+			Main.CreateMainGui()
+			Explorer.Window:Show({Align = "right", Pos = 1, Size = 0.5, Silent = true})
+			Properties.Window:Show({Align = "right", Pos = 2, Size = 0.5, Silent = true})
+			Lib.DeferFunc(function() Lib.Window.ToggleSide("right") end)
 		end
-		
-		-- Fetch external deps
-		intro.SetProgress("Fetching API",0.35)
-		API = Main.FetchAPI()
-		Lib.FastWait()
-		intro.SetProgress("Fetching RMD",0.5)
-		RMD = Main.FetchRMD()
-		Lib.FastWait()
-		
-		-- Save external deps locally if needed
-		if Main.Elevated and env.writefile and not Main.LocalDepsUpToDate() then
-			env.writefile("dex/deps_version.dat", Main.ClientVersion .. "\n" .. Main.RobloxVersion)
-			env.writefile("dex/rbx_api.dat", Main.RawAPI)
-			env.writefile("dex/rbx_rmd.dat", Main.RawRMD)
+
+		local success, result = xpcall(initProcess, function(err)
+			return tostring(err) .. "\n" .. debug.traceback()
+		end)
+
+		if success then
+			_G.LOADED = true
+			_G.LOADING = nil
+			-- Done
+			intro.SetProgress("Complete",1)
+			coroutine.wrap(function()
+				task.wait(1.25)
+				intro.Close()
+			end)()
+		else
+			_G.LOADING = nil
+			warn("Dex Initialization Error:\n" .. tostring(result))
+			intro.SetError(tostring(result))
+			intro.SetProgress("Initialization Failed", 1)
+			coroutine.wrap(function()
+				task.wait(4)
+				intro.Close()
+			end)()
 		end
-		
-		-- Load other modules
-		intro.SetProgress("Loading Modules",0.75)
-		Main.AppControls.Lib.InitDeps(Main.GetInitDeps()) -- Missing deps now available
-		Main.LoadModules()
-		Lib.FastWait()
-		
-		-- Init other modules
-		intro.SetProgress("Initializing Modules",0.9)
-		Explorer.Init()
-		Properties.Init()
-		ScriptViewer.Init()
-		ModelViewer.Init()
-		SaveInstance.Init()
-		SettingsWindow.Init()
-
-		if env.readfile and env.listfiles then
-			if #env.listfiles("dex/plugins") > 0 then
-				intro.SetProgress("Loading Plugin Files",0.8)
-				for _, pluginDir in pairs(env.listfiles("dex/plugins")) do
-					local moduleData = Main.LoadPluginFile(pluginDir)
-					moduleData.PluginData = moduleData.PluginData or {}
-
-					moduleData.Init()
-
-					local pluginFriendlyName = moduleData.PluginData.FriendlyName or moduleData.Window.GuiElems.Title.Text or "Unnamed Plugin"
-					local pluginName = moduleData.PluginData.Name or moduleData.Window.GuiElems.Title.Text:gsub(" ", "") or "unnamedPlugin"
-
-					intro.SetProgress("Initializing Plugin: ".. pluginFriendlyName,0.9)
-
-					moduleData.PluginData.Name = pluginName
-					moduleData.PluginData.FriendlyName = pluginFriendlyName
-
-					table.insert(Main.Plugins, moduleData)
-				end
-			end	
-		end
-		
-		Lib.FastWait()
-		
-		-- Done
-		intro.SetProgress("Complete",1)
-		coroutine.wrap(function()
-			Lib.FastWait(1.25)
-			intro.Close()
-		end)()
-		
-		-- Init window system, create main menu, show explorer and properties
-		Lib.Window.Init()
-		Main.CreateMainGui()
-		Explorer.Window:Show({Align = "right", Pos = 1, Size = 0.5, Silent = true})
-		Properties.Window:Show({Align = "right", Pos = 2, Size = 0.5, Silent = true})
-		Lib.DeferFunc(function() Lib.Window.ToggleSide("right") end)
 	end
 	
 	Main.Uninit = function()
