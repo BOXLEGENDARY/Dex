@@ -2,7 +2,8 @@
 
 
 
-if _G.LOADED then return end
+if _G.LOADED or _G.LOADING then return end
+_G.LOADING = true
 
 local selection
 local nodes = {}
