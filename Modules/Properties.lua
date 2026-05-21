@@ -1165,17 +1165,22 @@ local function main()
 				Properties.SetProp(editor.CurrentProp,BrickColor.new(col))
 			end)
 
-			editor.OnMoreColors:Connect(function() -- TODO: Special Case BasePart.BrickColor to BasePart.Color
+			editor.OnMoreColors:Connect(function()
 				editor:Close()
 				local colProp
-				for i,v in pairs(API.Classes.BasePart.Properties) do
-					if v.Name == "Color" then
-						colProp = v
-						break
+				local targetClass = editor.CurrentProp and editor.CurrentProp.Class
+				if targetClass and API.Classes[targetClass] then
+					for i,v in pairs(API.Classes[targetClass].Properties) do
+						if v.Name == "Color" then
+							colProp = v
+							break
+						end
 					end
 				end
-				Properties.DisplayColorEditor(colProp,editor.SavedColor.Color)
-			end)
+				if colProp then
+					Properties.DisplayColorEditor(colProp, editor.SavedColor.Color)
+				end
+			end)			
 
 			Properties.BrickColorEditor = editor
 		end
@@ -1908,24 +1913,24 @@ local function main()
 		Properties.FullNameFrameAttach = Lib.AttachTo(fullNameFrame)
 	end
 
-	Properties.Init = function() -- TODO: MAKE BETTER
+	Properties.Init = function()
 		local guiItems = create({
-			{1,"Folder",{Name="Items",}},
-			{2,"Frame",{BackgroundColor3=Color3.new(0.20392157137394,0.20392157137394,0.20392157137394),BorderSizePixel=0,Name="ToolBar",Parent={1},Size=UDim2.new(1,0,0,22),}},
-			{3,"Frame",{BackgroundColor3=Color3.new(0.14901961386204,0.14901961386204,0.14901961386204),BorderColor3=Color3.new(0.1176470592618,0.1176470592618,0.1176470592618),BorderSizePixel=0,Name="SearchFrame",Parent={2},Position=UDim2.new(0,3,0,1),Size=UDim2.new(1,-6,0,18),}},
-			{4,"TextBox",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,ClearTextOnFocus=false,Font=3,Name="SearchBox",Parent={3},PlaceholderColor3=Color3.new(0.39215689897537,0.39215689897537,0.39215689897537),PlaceholderText="Search properties",Position=UDim2.new(0,4,0,0),Size=UDim2.new(1,-24,0,18),Text="",TextColor3=Color3.new(1,1,1),TextSize=14,TextXAlignment=0,}},
-			{5,"UICorner",{CornerRadius=UDim.new(0,2),Parent={3},}},
-			{6,"UIStroke",{Thickness=1.4,Parent={3},Color=Color3.fromRGB(42,42,42)}},
-			{7,"TextButton",{AutoButtonColor=false,BackgroundColor3=Color3.new(0.12549020349979,0.12549020349979,0.12549020349979),BackgroundTransparency=1,BorderSizePixel=0,Font=3,Name="Reset",Parent={3},Position=UDim2.new(1,-17,0,1),Size=UDim2.new(0,16,0,16),Text="",TextColor3=Color3.new(1,1,1),TextSize=14,}},
-			{8,"ImageLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Image="rbxassetid://5034718129",ImageColor3=Color3.new(0.39215686917305,0.39215686917305,0.39215686917305),Parent={7},Size=UDim2.new(0,16,0,16),}},
-			{9,"TextButton",{AutoButtonColor=false,BackgroundColor3=Color3.new(0.12549020349979,0.12549020349979,0.12549020349979),BackgroundTransparency=1,BorderSizePixel=0,Font=3,Name="Refresh",Parent={2},Position=UDim2.new(1,-20,0,1),Size=UDim2.new(0,18,0,18),Text="",TextColor3=Color3.new(1,1,1),TextSize=14,Visible=false,}},
-			{10,"ImageLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Image="rbxassetid://5642310344",Parent={9},Position=UDim2.new(0,3,0,3),Size=UDim2.new(0,12,0,12),}},
-			{11,"Frame",{BackgroundColor3=Color3.new(0.15686275064945,0.15686275064945,0.15686275064945),BorderSizePixel=0,Name="ScrollCorner",Parent={1},Position=UDim2.new(1,-16,1,-16),Size=UDim2.new(0,16,0,16),Visible=false,}},
-			{12,"Frame",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,ClipsDescendants=true,Name="List",Parent={1},Position=UDim2.new(0,0,0,23),Size=UDim2.new(1,0,1,-23),}},
+			{1,"Folder",{Name="Items"}},
+			{2,"Frame",{BackgroundColor3=Settings.Theme.Menu,BorderSizePixel=0,Name="ToolBar",Parent={1},Size=UDim2.new(1,0,0,22)}},
+			{3,"Frame",{BackgroundColor3=Settings.Theme.TextBox,BorderColor3=Settings.Theme.Outline3,BorderSizePixel=0,Name="SearchFrame",Parent={2},Position=UDim2.new(0,3,0,1),Size=UDim2.new(1,-6,0,18)}},
+			{4,"TextBox",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,ClearTextOnFocus=false,Font=3,Name="SearchBox",Parent={3},PlaceholderColor3=Settings.Theme.PlaceholderText,PlaceholderText="Search properties",Position=UDim2.new(0,4,0,0),Size=UDim2.new(1,-24,0,18),Text="",TextColor3=Settings.Theme.Text,TextSize=14,TextXAlignment=0}},
+			{5,"UICorner",{CornerRadius=UDim.new(0,2),Parent={3}}},
+			{6,"UIStroke",{Thickness=1.4,Parent={3},Color=Settings.Theme.Outline3}},
+			{7,"TextButton",{AutoButtonColor=false,BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,BorderSizePixel=0,Font=3,Name="Reset",Parent={3},Position=UDim2.new(1,-17,0,1),Size=UDim2.new(0,16,0,16),Text="",TextColor3=Color3.new(1,1,1),TextSize=14}},
+			{8,"ImageLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Image="rbxassetid://5034718129",ImageColor3=Settings.Theme.PlaceholderText,Parent={7},Size=UDim2.new(0,16,0,16)}},
+			{9,"TextButton",{AutoButtonColor=false,BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,BorderSizePixel=0,Font=3,Name="Refresh",Parent={2},Position=UDim2.new(1,-20,0,1),Size=UDim2.new(0,18,0,18),Text="",TextColor3=Color3.new(1,1,1),TextSize=14,Visible=false}},
+			{10,"ImageLabel",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,Image="rbxassetid://5642310344",Parent={9},Position=UDim2.new(0,3,0,3),Size=UDim2.new(0,12,0,12)}},
+			{11,"Frame",{BackgroundColor3=Settings.Theme.Main1,BorderSizePixel=0,Name="ScrollCorner",Parent={1},Position=UDim2.new(1,-16,1,-16),Size=UDim2.new(0,16,0,16),Visible=false}},
+			{12,"Frame",{BackgroundColor3=Color3.new(1,1,1),BackgroundTransparency=1,ClipsDescendants=true,Name="List",Parent={1},Position=UDim2.new(0,0,0,23),Size=UDim2.new(1,0,1,-23)}}
 		})
 
 		-- Vars
-		categoryOrder =	API.CategoryOrder
+		categoryOrder = API.CategoryOrder
 		for category,_ in next,categoryOrder do
 			if not Properties.CollapsedCategories[category] then
 				expanded["CAT_"..category] = true
@@ -1946,7 +1951,6 @@ local function main()
 
 		Properties.InitEntryStuff()
 
-		-- Window events
 		window.GuiElems.Main:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
 			if Properties.Window:IsContentVisible() then
 				Properties.UpdateView()
@@ -1989,6 +1993,7 @@ local function main()
 		guiItems.ScrollCorner.Parent = window.GuiElems.Content
 		scrollV.Gui.Parent = window.GuiElems.Content
 		scrollH.Gui.Parent = window.GuiElems.Content
+		
 		Properties.InitInputBox()
 		Properties.InitSearch()
 	end

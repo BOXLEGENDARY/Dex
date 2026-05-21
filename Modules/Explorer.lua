@@ -1815,10 +1815,7 @@ local function main()
 		Explorer.InsertObjectContext = context
 	end
 	
-	--[[
-		Headers, Setups, Predicate, ObjectDefs
-	]]
-	Explorer.SearchFilters = { -- TODO: Use data table (so we can disable some if funcs don't exist)
+	Explorer.SearchFilters = {
 		Comparison = {
 			["isa"] = function(argString)
 				local lower = string.lower
@@ -1832,7 +1829,7 @@ local function main()
 					local cName = lower(class)
 					if cName == classQuery then
 						className = class
-						break
+                        break
 					elseif find(cName,classQuery,1,true) then
 						className = class
 					end
@@ -1873,10 +1870,7 @@ local function main()
 		Specific = {
 			["players"] = function()
 				return function() return service.Players:GetPlayers() end
-			end,
-			["loadedmodules"] = function()
-				return env.getloadedmodules
-			end,
+			end
 		},
 		Default = function(argString,caseSensitive)
 			local cleanString = argString:gsub("\"","\\\""):gsub("\n","\\n")
@@ -1902,6 +1896,12 @@ local function main()
 			}
 		end,
 	}
+
+	if env.getloadedmodules then
+		Explorer.SearchFilters.Specific["loadedmodules"] = function()
+			return env.getloadedmodules
+		end
+	end
 
 	Explorer.BuildSearchFunc = function(query)
 		local specFilterList,specMap = {},{}
