@@ -3240,14 +3240,20 @@ local function main()
 				else
 					if table.find(visibleWindows,window) then return end
 
-					-- TODO: make better
-					window.GuiElems.Main.Size = UDim2.new(0,window.SizeX,0,20)
-					local ti = TweenInfo.new(0.2,Enum.EasingStyle.Quad,Enum.EasingDirection.Out)
-					window:StopTweens()
-					window:DoTween(window.GuiElems.Main,ti,{Size = UDim2.new(0,window.SizeX,0,window.SizeY)})
-
 					window.SizeY = size or window.SizeY
-					table.insert(visibleWindows,1,window)
+					window.GuiElems.Main.Size = UDim2.new(0, window.SizeX, 0, 20)
+					window.GuiElems.Main.BackgroundTransparency = 1
+					
+					local ti = TweenInfo.new(0.25, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
+					window:StopTweens()
+					window:DoTween(window.GuiElems.Main, ti, {
+						Size = UDim2.new(0, window.SizeX, 0, window.SizeY),
+						BackgroundTransparency = 0
+					})
+					
+					if not table.find(visibleWindows, window) then
+						table.insert(visibleWindows, 1, window)
+					end
 					updateWindows()
 				end
 			end
@@ -4930,19 +4936,26 @@ local function main()
 			--self.TextChanged:Fire()
 		end
 		
-		funcs.ConvertText = function(self,text,toEditor)
+		funcs.ConvertText = function(self, text, toEditor)
 			if toEditor then
-				--return text:gsub("\t",(" %s%s "):format(tabSub,tabSub))
-				return text:gsub("\t","    ") -- Fixed unknown unicode showing when pressing TAB
+				return string.gsub(text, "\t", "    ")
 			else
-				return text:gsub((" %s%s "):format(tabSub,tabSub),"\t")
+				local lines = string.split(text, "\n")
+				for i = 1, #lines do
+					lines[i] = string.gsub(lines[i], "^( +)", function(spaces)
+						local tabs = math.floor(#spaces / 4)
+						local remainder = #spaces % 4
+						return string.rep("\t", tabs) .. string.rep(" ", remainder)
+					end)
+				end
+				return table.concat(lines, "\n")
 			end
 		end
 		
-		funcs.GetText = function(self) -- TODO: better (use new tab format)
-			local source = table.concat(self.Lines,"\n")
-			return self:ConvertText(source,false) -- Tab Convert
-		end
+		funcs.GetText = function(self)
+			local source = table.concat(self.Lines, "\n")
+			return self:ConvertText(source, false) -- Tab Convert
+		end		
 
 		funcs.SetText = function(self,txt)
 			txt = self:ConvertText(txt,true) -- Tab Convert
