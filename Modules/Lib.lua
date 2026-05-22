@@ -279,9 +279,10 @@ local function main()
 	end)()
 
 	Lib.FastWait = function(s)
-		if not s then return signalWait(renderStepped) end
-		local start = tick()
-		while tick() - start < s do signalWait(renderStepped) end
+		if not s then
+			return service.RunService.RenderStepped:Wait()
+		end
+		return task.wait(s)
 	end
 	
 	Lib.ButtonAnim = function(button,data)
