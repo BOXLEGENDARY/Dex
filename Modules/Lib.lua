@@ -3248,7 +3248,7 @@ local function main()
 					window:StopTweens()
 					window:DoTween(window.GuiElems.Main, ti, {
 						Size = UDim2.new(0, window.SizeX, 0, window.SizeY),
-						BackgroundTransparency = 0
+						BackgroundTransparency = 1
 					})
 					
 					if not table.find(visibleWindows, window) then
