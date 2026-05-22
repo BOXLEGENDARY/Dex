@@ -133,7 +133,7 @@ Main = (function()
 	Main.ModuleList = {"Explorer","Properties","ScriptViewer","ModelViewer","SaveInstance","SettingsWindow"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
-	Main.Version = "3.0.1"
+	Main.Version = "3.0.2"
 	Main.Mouse = plr:GetMouse()
 	Main.AppControls = {}
 	Main.Apps = Apps
@@ -886,12 +886,11 @@ Main = (function()
 		local errorText = gui.Main.Holder.ErrorText
 		local tweenS = service.TweenService
 		
-		local renderStepped = service.RunService.RenderStepped
-		local signalWait = renderStepped.wait
 		local fastwait = function(s)
-			if not s then return signalWait(renderStepped) end
-			local start = tick()
-			while tick() - start < s do signalWait(renderStepped) end
+			if not s then
+				return service.RunService.RenderStepped:Wait()
+			end
+			return task.wait(s)
 		end
 		
 		statusText.Text = initStatus
