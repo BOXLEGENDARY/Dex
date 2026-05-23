@@ -1196,7 +1196,7 @@ Main = (function()
 		
 		Main.CreateApp({Name = "ScriptViewer", IconMap = Main.LargeIcons, Icon = "Script_Viewer", Window = ScriptViewer.Window})
 		
-		Main.CreateApp({Name = "Notepad", IconMap = Main.LargeIcons, Icon = "ScriptEdit", Window = ScriptViewer.Window})
+		Main.CreateApp({Name = "Notepad", IconMap = Main.LargeIcons, Icon = "ScriptEdit", Window = Notepad.Window})
 
 		Main.CreateApp({Name = "3D Preview", IconMap = Main.LargeIcons, Icon = "Object", Window = ModelViewer.Window})
 
