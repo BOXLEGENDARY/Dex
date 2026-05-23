@@ -70,7 +70,7 @@ local function main()
 	    local copy = Instance.new("TextButton", window.GuiElems.Content)
 	    copy.BackgroundTransparency = 1
 	    copy.Size = UDim2.new(0.333,0,0,20)
-	    copy.Position = UDim2.new(0,0,1,-20)
+	    copy.Position = UDim2.new(0,0,0,0)
 	    copy.Text = "Copy"
 	    copy.TextColor3 = Color3.new(1,1,1)
 	
@@ -82,7 +82,7 @@ local function main()
 	    local save = Instance.new("TextButton",window.GuiElems.Content)
 	    save.BackgroundTransparency = 1
 	    save.Size = UDim2.new(0.333,0,0,20)
-	    save.Position = UDim2.new(0.333,0,1,-20)
+	    save.Position = UDim2.new(0.333,0,0,0)
 	    save.Text = "Save"
 	    save.TextColor3 = Color3.new(1,1,1)
 	    
@@ -99,7 +99,7 @@ local function main()
 	    local dumpbtn = Instance.new("TextButton",window.GuiElems.Content)
 	    dumpbtn.BackgroundTransparency = 1
 	    dumpbtn.Size = UDim2.new(0.334,0,0,20)
-	    dumpbtn.Position = UDim2.new(0.666,0,1,-20)
+	    dumpbtn.Position = UDim2.new(0.666,0,0,0)
 	    dumpbtn.Text = "Dump Functions"
 	    dumpbtn.TextColor3 = Color3.new(1,1,1)
 	    
