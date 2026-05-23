@@ -130,10 +130,10 @@ end
 Main = (function()
 	local Main = {}
 	
-	Main.ModuleList = {"Explorer","Properties","ScriptViewer","ModelViewer","SaveInstance","SettingsWindow"}
+	Main.ModuleList = {"Explorer","Properties","ScriptViewer","Notepad","ModelViewer","SaveInstance","SettingsWindow"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
-	Main.Version = "3.0.2"
+	Main.Version = "3.1.0"
 	Main.Mouse = plr:GetMouse()
 	Main.AppControls = {}
 	Main.Apps = Apps
@@ -281,6 +281,7 @@ Main = (function()
 		Explorer = Apps.Explorer
 		Properties = Apps.Properties
 		ScriptViewer = Apps.ScriptViewer
+		Notepad = Apps.Notepad
 		ModelViewer = Apps.ModelViewer
 		SaveInstance = Apps.SaveInstance
 		SettingsWindow = Apps.SettingsWindow
@@ -289,6 +290,7 @@ Main = (function()
 			Explorer = Explorer,
 			Properties = Properties,
 			ScriptViewer = ScriptViewer,
+			Notepad = Notepad,
 			ModelViewer = ModelViewer,
 			SaveInstance = SaveInstance,
 			SettingsWindow = SettingsWindow,
@@ -1192,7 +1194,9 @@ Main = (function()
 		
 		Main.CreateApp({Name = "Properties", IconMap = Main.LargeIcons, Icon = "Properties", Open = true, Window = Properties.Window})
 		
-		Main.CreateApp({Name = "Notepad", IconMap = Main.LargeIcons, Icon = "Script_Viewer", Window = ScriptViewer.Window})
+		Main.CreateApp({Name = "ScriptViewer", IconMap = Main.LargeIcons, Icon = "Script_Viewer", Window = ScriptViewer.Window})
+		
+		Main.CreateApp({Name = "Notepad", IconMap = Main.LargeIcons, Icon = "ScriptEdit", Window = ScriptViewer.Window})
 
 		Main.CreateApp({Name = "3D Preview", IconMap = Main.LargeIcons, Icon = "Object", Window = ModelViewer.Window})
 
@@ -1349,6 +1353,7 @@ Main = (function()
 			Explorer.Init()
 			Properties.Init()
 			ScriptViewer.Init()
+			Notepad.Init()
 			ModelViewer.Init()
 			SaveInstance.Init()
 			SettingsWindow.Init()
