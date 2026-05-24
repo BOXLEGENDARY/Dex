@@ -1920,18 +1920,21 @@ local function main()
 					Predicate = "isa(obj,'"..className.."')"
 				}
 			end,
+			
 			["remotes"] = function(argString)
 				return {
 					Headers = {"local isa = game.IsA"},
-					Predicate = "isa(obj,'RemoteEvent') or isa(obj,'RemoteFunction') or isa(obj,'UnreliableRemoteEvent')"
+					Predicate = "(isa(obj,'RemoteEvent') or isa(obj,'RemoteFunction') or isa(obj,'UnreliableRemoteEvent'))"
 				}
 			end,
+			
 			["bindables"] = function(argString)
 				return {
 					Headers = {"local isa = game.IsA"},
-					Predicate = "isa(obj,'BindableEvent') or isa(obj,'BindableFunction')"
+					Predicate = "(isa(obj,'BindableEvent') or isa(obj,'BindableFunction'))"
 				}
 			end,
+			
 			["rad"] = function(argString)
 				local num = tonumber(argString)
 				if not num then return end
@@ -2102,9 +2105,6 @@ local function main()
 							
 							argStr = sub(term, x + colonPos)
 							argStr = match(argStr, "^%s*(.-)%s*$") or ""
-						elseif sub(first,1,1) == "/" then
-							specifier = lower(sub(first,2))
-							argStr = sub(term, y + 2)
 						end
 
 						local compFunc = specifier and compFilters[specifier]
