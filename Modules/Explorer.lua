@@ -1817,6 +1817,86 @@ local function main()
 	
 	Explorer.SearchFilters = {
 		Comparison = {
+	        ["n"] = function(argString)
+	            return {
+	                Headers = {"local lower = string.lower", "local find = string.find", "local tostring = tostring"},
+	                ObjectDefs = {"local lowerName = lower(tostring(obj))"},
+	                Predicate = "find(lowerName, \"" .. argString:lower():gsub('"', '\\"') .. "\", 1, true)"
+	            }
+	        end,
+	        ["name"] = function(argString) return Explorer.SearchFilters.Comparison["n"](argString) end,
+	
+	        ["c"] = function(argString)
+	            return {
+	                Headers = {"local isa = game.IsA"},
+	                Predicate = "isa(obj, '" .. argString:gsub("'", "\\'") .. "')"
+	            }
+	        end,
+	        ["class"] = function(argString) return Explorer.SearchFilters.Comparison["c"](argString) end,
+	
+	        ["p"] = function(argString)
+	            local propName, expectedValue = string.match(argString, "^([^=]+)=?(.*)$")
+	            if expectedValue == "" then
+	                return {
+	                    Headers = {"local pcall = pcall"},
+	                    Predicate = "(pcall(function() return obj['" .. propName:gsub("'", "\\'") .. "'] ~= nil end))"
+	                }
+	            else
+	                return {
+	                    Headers = {"local tostring = tostring", "local pcall = pcall", "local lower = string.lower"},
+	                    Predicate = "(pcall(function() return lower(tostring(obj['" .. propName:gsub("'", "\\'") .. "'])) == lower('" .. expectedValue:gsub("'", "\\'") .. "') end))"
+	                }
+	            end
+	        end,
+	        ["p>"] = function(argString)
+	            local propName, value = string.match(argString, "^([^>]+)>?(.*)$")
+	            return {
+	                Headers = {"local tonumber = tonumber", "local pcall = pcall"},
+	                Predicate = "(pcall(function() return tonumber(obj['" .. propName:gsub("'", "\\'") .. "']) > " .. (tonumber(value) or 0) .. " end))"
+	            }
+	        end,
+	        ["p<"] = function(argString)
+	            local propName, value = string.match(argString, "^([^<]+)<?(.*)$")
+	            return {
+	                Headers = {"local tonumber = tonumber", "local pcall = pcall"},
+	                Predicate = "(pcall(function() return tonumber(obj['" .. propName:gsub("'", "\\'") .. "']) < " .. (tonumber(value) or 0) .. " end))"
+	            }
+	        end,
+	        ["prop"] = function(argString) return Explorer.SearchFilters.Comparison["p"](argString) end,
+	
+	        ["r"] = function(argString)
+	            local success = pcall(function() return string.match("TestString", argString) end)
+	            if not success then
+	                return {
+	                    Predicate = "false"
+	                }
+	            end
+	
+	            return {
+	                Headers = {"local match = string.match", "local tostring = tostring"},
+	                ObjectDefs = {"local objName = tostring(obj)"},
+	                Predicate = "match(objName, '" .. argString:gsub("'", "\\'") .. "') ~= nil"
+	            }
+	        end,
+	        ["regex"] = function(argString) return Explorer.SearchFilters.Comparison["r"](argString) end,
+	
+	        ["a"] = function(argString)
+	            local attrName, expectedValue = string.match(argString, "^([^=]+)=?(.*)$")
+	            if expectedValue == "" then
+	                return {
+	                    Headers = {"local getAttribute = game.GetAttribute"},
+	                    Predicate = "(getAttribute(obj, '" .. attrName:gsub("'", "\\'") .. "') ~= nil)"
+	                }
+	            else
+	                return {
+	                    Headers = {"local getAttribute = game.GetAttribute", "local tostring = tostring"},
+	                    Predicate = "(tostring(getAttribute(obj, '" .. attrName:gsub("'", "\\'") .. "')) == '" .. expectedValue:gsub("'", "\\'") .. "')"
+	                }
+	            end
+	        end,
+	        ["attr"] = function(argString) return Explorer.SearchFilters.Comparison["a"](argString) end,
+	    },
+	
 			["isa"] = function(argString)
 				local lower = string.lower
 				local find = string.find
@@ -2006,7 +2086,28 @@ local function main()
 					local x,y = find(term,"%S+")
 					if x then
 						local first = sub(term,x,y)
-						local specifier = sub(first,1,1) == "/" and lower(sub(first,2))
+						local specifier = nil
+						local argStr = nil
+						
+						local colonPos = find(first, ":")
+						if colonPos then
+							specifier = lower(sub(first, 1, colonPos - 1))
+							
+							if specifier == "p" or specifier == "prop" then
+							    local operatorPos = find(first, "[><]")
+							    if operatorPos and operatorPos > colonPos then
+							        specifier = specifier .. sub(first, operatorPos, operatorPos)
+							        colonPos = operatorPos
+							    end
+							end
+							
+							argStr = sub(term, x + colonPos)
+							argStr = match(argStr, "^%s*(.-)%s*$") or ""
+						elseif sub(first,1,1) == "/" then
+							specifier = lower(sub(first,2))
+							argStr = sub(term, y + 2)
+						end
+
 						local compFunc = specifier and compFilters[specifier]
 						local specFunc = specifier and specFilters[specifier]
 
@@ -2016,7 +2117,6 @@ local function main()
 						end
 
 						if compFunc then
-							local argStr = sub(term,y+2)
 							local ret = compFunc(inQuotes(argStr) or argStr)
 							if ret then
 								processFilter(ret)
