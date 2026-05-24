@@ -1933,18 +1933,7 @@ local function main()
 					Headers = {"local isa = game.IsA"},
 					Predicate = "isa(obj, 'ModuleScript')"
 				}
-			end,
-			["loadedmodules"] = function()
-				return {
-					Headers = {
-						"local getloaded = getloadedmodules",
-						"local loadedMap = {}",
-						"if getloaded then for _, v in pairs(getloaded()) do loadedMap[v] = true end end"
-					},
-					Predicate = "loadedMap[obj] == true"
-				}
-			end,
-			
+			end,			
 			["rad"] = function(argString)
 				local num = tonumber(argString)
 				if not num then return { Predicate = "false" } end
@@ -1962,7 +1951,11 @@ local function main()
 				}
 			end,
 		},
-		Specific = {},
+		Specific = {
+			["loadedmodules"] = function()
+				return env.getloadedmodules
+			end,
+        },
 		Default = function(argString,caseSensitive)
 			local cleanString = argString:gsub("\"","\\\""):gsub("\n","\\n")
 			if caseSensitive then
