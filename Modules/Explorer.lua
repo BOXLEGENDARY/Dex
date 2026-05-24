@@ -1895,7 +1895,6 @@ local function main()
 	            end
 	        end,
 	        ["attr"] = function(argString) return Explorer.SearchFilters.Comparison["a"](argString) end,
-	    },
 	
 			["isa"] = function(argString)
 				local lower = string.lower
