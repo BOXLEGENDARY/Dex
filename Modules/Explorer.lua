@@ -1935,6 +1935,30 @@ local function main()
 			end,
 			["attr"] = function(argString) return Explorer.SearchFilters.Comparison["a"](argString) end,
 	
+			["t"] = function(argString)
+				return {
+					Headers = {"local collectionService = service.CollectionService"},
+					Predicate = "(collectionService:HasTag(obj, '" .. argString:gsub("'", "\\'") .. "'))"
+				}
+			end,
+			["tag"] = function(argString) return Explorer.SearchFilters.Comparison["t"](argString) end,
+			
+			["ec"] = function(argString)
+				return {
+					Headers = {"local lower = string.lower"},
+					Predicate = "(lower(obj.ClassName) == lower('" .. argString:gsub("'", "\\'") .. "'))"
+				}
+			end,
+			
+			["exactclass"] = function(argString) return Explorer.SearchFilters.Comparison["ec"](argString) end,
+			
+			["in"] = function(argString)
+				return {
+					Headers = {"local lower = string.lower", "local tostring = tostring"},
+					Predicate = "(function() local p = obj.Parent while p do if lower(tostring(p)) == lower('" .. argString:gsub("'", "\\'") .. "') then return true end p = p.Parent end return false end)()"
+				}
+			end,
+
 			["remotes"] = function()
 				return {
 					Headers = {"local isa = game.IsA"},
