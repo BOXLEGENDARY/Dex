@@ -1880,8 +1880,33 @@ local function main()
 					Predicate = "(pcall(function() return tonumber(obj['" .. propName:gsub("'", "\\'") .. "']) < " .. (tonumber(value) or 0) .. " end))"
 				}
 			end,
+
+			["p>="] = function(argString)
+			    local propName, value = string.match(argString, "^([^>=]+)>=?(.*)$")
+			    return {
+			        Headers = {"local tonumber = tonumber", "local pcall = pcall"},
+			        Predicate = "(pcall(function() return tonumber(obj['" .. propName:gsub("'", "\\'") .. "']) >= " .. (tonumber(value) or 0) .. " end))"
+			    }
+			end,
+			
+			["p<="] = function(argString)
+			    local propName, value = string.match(argString, "^([^<=]+)<=?(.*)$")
+			    return {
+			        Headers = {"local tonumber = tonumber", "local pcall = pcall"},
+			        Predicate = "(pcall(function() return tonumber(obj['" .. propName:gsub("'", "\\'") .. "']) <= " .. (tonumber(value) or 0) .. " end))"
+			    }
+			end,
+			
+			["p~="] = function(argString)
+			    local propName, expectedValue = string.match(argString, "^([^~=]+)~=?(.*)$")
+			    return {
+			        Headers = {"local tostring = tostring", "local pcall = pcall", "local lower = string.lower"},
+			        Predicate = "(pcall(function() return lower(tostring(obj['" .. propName:gsub("'", "\\'") .. "'])) ~= lower('" .. expectedValue:gsub("'", "\\'") .. "') end))"
+			    }
+			end,
+			
 			["prop"] = function(argString) return Explorer.SearchFilters.Comparison["p"](argString) end,
-	
+
 			["r"] = function(argString)
 				local success = pcall(function() return string.match("TestString", argString) end)
 				if not success then return { Predicate = "false" } end
@@ -2090,17 +2115,17 @@ local function main()
 						local colonPos = find(first, ":")
 						if colonPos then
 							specifier = lower(sub(first, 1, colonPos - 1))
-							
-							if specifier == "p" or specifier == "prop" then
-							    local operatorPos = find(first, "[><]")
-							    if operatorPos and operatorPos > colonPos then
-							        specifier = specifier .. sub(first, operatorPos, operatorPos)
-							        colonPos = operatorPos
-							    end
-							end
-							
 							argStr = sub(term, x + colonPos)
 							argStr = match(argStr, "^%s*(.-)%s*$") or ""
+							
+							if specifier == "p" or specifier == "prop" then
+								if find(argStr, ">=") then specifier = "p>="
+								elseif find(argStr, "<=") then specifier = "p<="
+								elseif find(argStr, "~=") then specifier = "p~="
+								elseif find(argStr, ">") then specifier = "p>"
+								elseif find(argStr, "<") then specifier = "p<"
+								end
+							end
 						end
 
 						local compFunc = specifier and compFilters[specifier]
