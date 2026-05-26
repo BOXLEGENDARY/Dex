@@ -1824,7 +1824,6 @@ local function main()
 					Predicate = "find(lowerName, \"" .. argString:lower():gsub('"', '\\"') .. "\", 1, true)"
 				}
 			end,
-			["name"] = function(argString) return Explorer.SearchFilters.Comparison["n"](argString) end,
 	
 			["c"] = function(argString)
 				local lower = string.lower
@@ -1850,7 +1849,6 @@ local function main()
 					Predicate = "isa(obj, '" .. className .. "')"
 				}
 			end,
-			["class"] = function(argString) return Explorer.SearchFilters.Comparison["c"](argString) end,
 	
 			["p"] = function(argString)
 				local propName, expectedValue = string.match(argString, "^([^=]+)=?(.*)$")
@@ -1904,8 +1902,6 @@ local function main()
 			        Predicate = "(pcall(function() return lower(tostring(obj['" .. propName:gsub("'", "\\'") .. "'])) ~= lower('" .. expectedValue:gsub("'", "\\'") .. "') end))"
 			    }
 			end,
-			
-			["prop"] = function(argString) return Explorer.SearchFilters.Comparison["p"](argString) end,
 
 			["r"] = function(argString)
 				local success = pcall(function() return string.match("TestString", argString) end)
@@ -1917,7 +1913,6 @@ local function main()
 					Predicate = "match(objName, '" .. argString:gsub("'", "\\'") .. "') ~= nil"
 				}
 			end,
-			["regex"] = function(argString) return Explorer.SearchFilters.Comparison["r"](argString) end,
 	
 			["a"] = function(argString)
 				local attrName, expectedValue = string.match(argString, "^([^=]+)=?(.*)$")
@@ -1933,7 +1928,6 @@ local function main()
 					}
 				end
 			end,
-			["attr"] = function(argString) return Explorer.SearchFilters.Comparison["a"](argString) end,
 	
 			["t"] = function(argString)
 				return {
@@ -1941,7 +1935,6 @@ local function main()
 					Predicate = "(collectionService:HasTag(obj, '" .. argString:gsub("'", "\\'") .. "'))"
 				}
 			end,
-			["tag"] = function(argString) return Explorer.SearchFilters.Comparison["t"](argString) end,
 			
 			["ec"] = function(argString)
 				return {
@@ -1949,8 +1942,6 @@ local function main()
 					Predicate = "(lower(obj.ClassName) == lower('" .. argString:gsub("'", "\\'") .. "'))"
 				}
 			end,
-			
-			["exactclass"] = function(argString) return Explorer.SearchFilters.Comparison["ec"](argString) end,
 			
 			["in"] = function(argString)
 				return {
