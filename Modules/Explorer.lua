@@ -1962,12 +1962,6 @@ local function main()
 					Predicate = "(isa(obj,'BindableEvent') or isa(obj,'BindableFunction'))"
 				}
 			end,
-			["players"] = function()
-				return {
-					Headers = {"local isa = game.IsA"},
-					Predicate = "isa(obj, 'Player')"
-				}
-			end,
 			["rad"] = function(argString)
 				local num = tonumber(argString)
 				if not num then return { Predicate = "false" } end
@@ -1986,6 +1980,9 @@ local function main()
 			end,
 		},
 		Specific = {
+			["players"] = function()
+				return function() return service.Players:GetPlayers() end
+			end,
 			["loadedmodules"] = function()
 				return env.getloadedmodules
 			end,
