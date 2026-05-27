@@ -1968,12 +1968,6 @@ local function main()
 					Predicate = "isa(obj, 'Player')"
 				}
 			end,
-			["modules"] = function()
-				return {
-					Headers = {"local isa = game.IsA"},
-					Predicate = "isa(obj, 'ModuleScript')"
-				}
-			end,			
 			["rad"] = function(argString)
 				local num = tonumber(argString)
 				if not num then return { Predicate = "false" } end
