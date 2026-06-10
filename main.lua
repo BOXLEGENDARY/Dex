@@ -133,7 +133,7 @@ Main = (function()
 	Main.ModuleList = {"Explorer","Properties","ScriptViewer","Notepad","ModelViewer","SaveInstance","SettingsWindow"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
-	Main.Version = "3.2.0"
+	Main.Version = "3.2.1"
 	Main.Mouse = plr:GetMouse()
 	Main.AppControls = {}
 	Main.Apps = Apps
@@ -176,7 +176,11 @@ Main = (function()
 	
 	Main.SecureGui = function(gui)
 		--warn("Secured: "..gui.Name)
-		gui.Name = "_Dex_".. Main.GetRandomString()
+		gui.Name = service.HttpService:GenerateGUID(false)
+		
+		if type(_G.DexGui) ~= "table" then _G.DexActiveGuis = {} end
+		table.insert(_G.DexActiveGuis, gui)
+
 		-- service already using cloneref
 		if env.gethui then
 			if type(env.gethui) == "function" then
@@ -1414,11 +1418,14 @@ Main = (function()
 		Main.MenuApps = {}
 		Main.AppControls = {}
 		Main.Plugins = {}
-		for _, gui in pairs(Main.GetSecureContainer():GetChildren()) do
-			if string.sub(gui.Name,1,5) == "_Dex_" then
-				gui:Destroy()
+		
+		if type(_G.DexActiveGuis) == "table" then
+			for _, gui in pairs(_G.DexGui) do
+				pcall(function() gui:Destroy() end)
 			end
 		end
+		
+		_G.DexGui = {}
 	end
 
 	Main.Reinit = function()

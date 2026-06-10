@@ -4,6 +4,7 @@
 
 if _G.LOADED or _G.LOADING then return end
 _G.LOADING = true
+_G.DexGui = {}
 
 local selection
 local nodes = {}
