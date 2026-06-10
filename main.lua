@@ -178,7 +178,7 @@ Main = (function()
 		--warn("Secured: "..gui.Name)
 		gui.Name = service.HttpService:GenerateGUID(false)
 		
-		if type(_G.DexGui) ~= "table" then _G.DexActiveGuis = {} end
+		if type(_G.DexGui) ~= "table" then _G.DexGui = {} end
 		table.insert(_G.DexGui, gui)
 
 		-- service already using cloneref
