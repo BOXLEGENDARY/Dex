@@ -151,15 +151,6 @@ Main = (function()
 	
 	Main.Plugins = {}
 	
-	Main.GetRandomString = function()
-		local output = ""
-		for i = 2, 25 do
-			output = output .. string.char(math.random(1,250))
-		end
-		
-		return output
-	end
-	
 	Main.GetSecureContainer = function()
 		if env.gethui then
 			if type(env.gethui) == "function" then
