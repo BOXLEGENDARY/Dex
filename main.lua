@@ -179,7 +179,7 @@ Main = (function()
 		gui.Name = service.HttpService:GenerateGUID(false)
 		
 		if type(_G.DexGui) ~= "table" then _G.DexActiveGuis = {} end
-		table.insert(_G.DexActiveGuis, gui)
+		table.insert(_G.DexGui, gui)
 
 		-- service already using cloneref
 		if env.gethui then
