@@ -1419,7 +1419,7 @@ Main = (function()
 		Main.AppControls = {}
 		Main.Plugins = {}
 		
-		if type(_G.DexActiveGuis) == "table" then
+		if type(_G.DexGui) == "table" then
 			for _, gui in pairs(_G.DexGui) do
 				pcall(function() gui:Destroy() end)
 			end
