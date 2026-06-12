@@ -92,11 +92,19 @@ local function main()
 		    table.insert(openedTabs, tabObj)
 		    
 		    local btn = Instance.new("TextButton", tabBar)
-		    btn.Size = UDim2.new(0, 80, 1, 0)
-		    btn.Text = tabName
+		    btn.Size = UDim2.new(0, 100, 1, 0)
+		    btn.Text = ""
 		    btn.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
-		    btn.TextColor3 = Color3.new(1, 1, 1)
 		    btn.BorderSizePixel = 0
+		    
+		    local titleLabel = Instance.new("TextLabel", btn)
+		    titleLabel.Size = UDim2.new(1, -25, 1, 0)
+		    titleLabel.Position = UDim2.new(0, 5, 0, 0)
+		    titleLabel.BackgroundTransparency = 1
+		    titleLabel.Text = tabName
+		    titleLabel.TextColor3 = Color3.new(1, 1, 1)
+		    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+		    titleLabel.TextTruncate = Enum.TextTruncate.AtEnd
 		    
 		    local closeBtn = Instance.new("TextButton", btn)
 		    closeBtn.Size = UDim2.new(0, 15, 1, 0)
@@ -112,6 +120,7 @@ local function main()
 		    cf.Frame.Visible = false
 		    
 		    tabObj.Button = btn
+		    tabObj.TitleLabel = titleLabel
 		    tabObj.CodeFrame = cf
 		    
 		    if initialText then 
@@ -176,6 +185,10 @@ local function main()
 		    return tabObj
 		end
 		
+		addTabBtn.MouseButton1Click:Connect(function()
+		    createTab()
+		end)
+		
 		local saveBtn = Instance.new("TextButton", window.GuiElems.Content)
 		saveBtn.BackgroundTransparency = 1
 		saveBtn.Size = UDim2.new(0.25, 0, 0, 20)
@@ -197,7 +210,11 @@ local function main()
 		                activeTab.FilePath = filename
 		                local shortName = filename:match("([^/]+)$") or filename
 		                activeTab.Name = shortName
-		                activeTab.Button.Text = shortName
+		                if activeTab.TitleLabel then
+		                    activeTab.TitleLabel.Text = shortName
+		                else
+		                    activeTab.Button.Text = shortName
+		                end
 		            end
 		        end
 		    end
