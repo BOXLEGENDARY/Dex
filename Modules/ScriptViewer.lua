@@ -67,43 +67,42 @@ local function main()
 		codeFrame.Frame.Size = UDim2.new(1,0,1,-20)
 	    codeFrame.Frame.Parent = window.GuiElems.Content
 	    
-	    local copy = Instance.new("TextButton", window.GuiElems.Content)
-	    copy.BackgroundTransparency = 1
-	    copy.Size = UDim2.new(0.333,0,0,20)
-	    copy.Position = UDim2.new(0,0,0,0)
-	    copy.Text = "Copy"
-	    copy.TextColor3 = Color3.new(1,1,1)
-	
-	    copy.MouseButton1Click:Connect(function()
-	        local source = codeFrame:GetText()
-	        env.setclipboard(source)
-	    end)
-	
-	    local save = Instance.new("TextButton",window.GuiElems.Content)
-	    save.BackgroundTransparency = 1
-	    save.Size = UDim2.new(0.333,0,0,20)
-	    save.Position = UDim2.new(0.333,0,0,0)
-	    save.Text = "Save"
-	    save.TextColor3 = Color3.new(1,1,1)
+		local copyBtn = Instance.new("TextButton", window.GuiElems.Content)
+		copyBtn.BackgroundTransparency = 1
+		copyBtn.Size = UDim2.new(0.25, 0, 0, 20)
+		copyBtn.Position = UDim2.new(0, 0, 0, 0)
+		copyBtn.Text = "Copy"
+		copyBtn.TextColor3 = Color3.new(1, 1, 1)
+		
+		copyBtn.MouseButton1Click:Connect(function()
+		    if env.setclipboard then
+		        env.setclipboard(codeFrame:GetText())
+		    end
+		end)
+		
+		local saveBtn = Instance.new("TextButton", window.GuiElems.Content)
+		saveBtn.BackgroundTransparency = 1
+		saveBtn.Size = UDim2.new(0.25, 0, 0, 20)
+		saveBtn.Position = UDim2.new(0.25, 0, 0, 0)
+		saveBtn.Text = "Save"
+		saveBtn.TextColor3 = Color3.new(1, 1, 1)
+		
+		saveBtn.MouseButton1Click:Connect(function()
+		    if env.writefile then
+		        local scriptName = PreviousScr and PreviousScr.Name or "Decompiled"
+		        local filename = "dex/saved/" .. scriptName .. "_" .. os.date("%H%M%S") .. ".lua"
+		        env.writefile(filename, codeFrame:GetText())
+		    end
+		end)
+		
+		local dumpBtn = Instance.new("TextButton", window.GuiElems.Content)
+		dumpBtn.BackgroundTransparency = 1
+		dumpBtn.Size = UDim2.new(0.25, 0, 0, 20)
+		dumpBtn.Position = UDim2.new(0.50, 0, 0, 0)
+		dumpBtn.Text = "Dump Functions"
+		dumpBtn.TextColor3 = Color3.new(1, 1, 1)
 	    
-	    save.MouseButton1Click:Connect(function()
-	        local source = codeFrame:GetText()
-	        local filename = "dex/saved/Scriptviewer_" .. os.date("%Y%m%d_%H%M%S") .. ".lua"
-	
-	        env.writefile(filename, source)
-	        if env.movefileas then
-	            env.movefileas(filename, ".lua")
-	        end
-	    end)
-	    
-	    local dumpbtn = Instance.new("TextButton",window.GuiElems.Content)
-	    dumpbtn.BackgroundTransparency = 1
-	    dumpbtn.Size = UDim2.new(0.334,0,0,20)
-	    dumpbtn.Position = UDim2.new(0.666,0,0,0)
-	    dumpbtn.Text = "Dump Functions"
-	    dumpbtn.TextColor3 = Color3.new(1,1,1)
-	    
-	    dumpbtn.MouseButton1Click:Connect(function()
+	    dumpBtn.MouseButton1Click:Connect(function()
 	        if PreviousScr == nil then return end
 	    
 	        pcall(function()
@@ -193,6 +192,22 @@ local function main()
 	            codeFrame:SetText(codeFrame:GetText() .. table.concat(dump_buffer, "\n"))
 	        end)
 	    end)
+
+		local toNotepadBtn = Instance.new("TextButton", window.GuiElems.Content)
+		toNotepadBtn.BackgroundTransparency = 1
+		toNotepadBtn.Size = UDim2.new(0.25, 0, 0, 20)
+		toNotepadBtn.Position = UDim2.new(0.75, 0, 0, 0)
+		toNotepadBtn.Text = "To Notepad"
+		toNotepadBtn.TextColor3 = Color3.new(1, 1, 1)
+		
+		toNotepadBtn.MouseButton1Click:Connect(function()
+		    local source = codeFrame:GetText()
+		    local scriptName = PreviousScr and PreviousScr.Name or "Decompiled"
+		    
+		    if Apps.Notepad and Apps.Notepad.OpenInTab then
+		        Apps.Notepad.OpenInTab(source, scriptName .. ".lua", nil)
+		    end
+		end)
 	end
 
 	return ScriptViewer
