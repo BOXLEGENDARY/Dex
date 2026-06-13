@@ -346,6 +346,7 @@ Main = (function()
 		env.getupvalues = (debug and debug.getupvalues) or getupvalues or getupvals
 		env.getconstants = (debug and debug.getconstants) or getconstants or getconsts
 		env.getinfo = (debug and (debug.getinfo or debug.info)) or getinfo
+		env.getprotos = debug.getprotos
 		env.islclosure = islclosure or is_l_closure or is_lclosure
 		env.checkcaller = checkcaller
 		env.getreg = getreg
