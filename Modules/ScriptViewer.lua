@@ -119,7 +119,6 @@ local function main()
 	        
 	                local dump_buffer = {
 	                    ("\n\n--[[ DUMP OUTPUT\n" ..
-	                    "Function Dumper\n" ..
 	                    "Target: %s\n" ..
 	                    "Dumped at: %s\n")
 	                    :format(PreviousScr:GetFullName(), os.date("%X"))
@@ -135,7 +134,7 @@ local function main()
 	                    local ok, info = pcall(getinfo, f)
 	                    if not ok or not info then
 	                        return {
-	                            name = "UNKNOW",
+	                            name = "Anonymous",
 	                            what = "Lua",
 	                            source = "?",
 	                            linedefined = -1,
