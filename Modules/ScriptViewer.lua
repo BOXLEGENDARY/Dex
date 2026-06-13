@@ -110,127 +110,177 @@ local function main()
 	        
 	        task.spawn(function()
 	            local success, result = pcall(function()
-	                local getgc = env.getgc or getgc
-	                local getupvalues = env.getupvalues or debug.getupvalues
-	                local getconstants = env.getconstants or debug.getconstants
-	                local getinfo = env.getinfo or debug.getinfo
+	                local getgc = env.getgc
+	                local getupvalues = env.getupvalues
+	                local getconstants = env.getconstants
+	                local getinfo = env.getinfo
+	                local getprotos = env.getprotos
 	                local getfenv = getfenv
 	        
 	                local dump_buffer = {
-	                    ("\n\n--[[ DUMP OUTPUT ]]\n-- Function Dumper \n-- Target: %s\n-- Dumped at: %s\n"):format(PreviousScr:GetFullName(), os.date("%X"))
+	                    ("\n\n--[[ DUMP OUTPUT\n" ..
+	                    "Function Dumper\n" ..
+	                    "Target: %s\n" ..
+	                    "Dumped at: %s\n")
+	                    :format(PreviousScr:GetFullName(), os.date("%X"))
 	                }
-	                local data_base = {}
+	        
+	                local visited = {}
 	        
 	                local function add_to(str, indent)
 	                    table.insert(dump_buffer, string.rep("    ", indent or 0) .. tostring(str))
 	                end
 	        
-	                local function get_func_details(f)
-	                    local info = getinfo(f)
-	                    local name = (info.name and info.name ~= "") and info.name or "Anonymous"
-	                    local what = info.what or "Lua"
-	                    local args = {}
-	                    
-	                    if info.numparams then
-	                        for i = 1, info.numparams do table.insert(args, "p"..i) end
-	                        if info.is_vararg then table.insert(args, "...") end
+	                local function get_func_info(f)
+	                    local ok, info = pcall(getinfo, f)
+	                    if not ok or not info then
+	                        return {
+	                            name = "UNKNOW",
+	                            what = "Lua",
+	                            source = "?",
+	                            linedefined = -1,
+	                            numparams = 0,
+	                            is_vararg = false
+	                        }
 	                    end
-	                    
-	                    return ("%s(%s) %s"):format(name, table.concat(args, ", "), (what == "C") and "-- [C]" or "")
+	                    return {
+	                        name = (info.name and info.name ~= "") and info.name or "Anonymous",
+	                        what = info.what or "Lua",
+	                        source = info.short_src or "?",
+	                        linedefined = info.linedefined or -1,
+	                        numparams = info.numparams or 0,
+	                        is_vararg = info.is_vararg or false
+	                    }
 	                end
 	        
-	                local function format_val(val, v_type)
-	                    if v_type == "string" then
-	                        return '"' .. val:gsub("\n", "\\n"):gsub("\r", "\\r"):gsub('"', '\\"') .. '"'
-	                    elseif v_type == "Instance" then
+	                local function format_val(val)
+	                    local t = typeof(val)
+	                    if t == "string" then
+	                        return '"' .. val:gsub("\n","\\n"):gsub("\r","\\r"):gsub('"','\\"') .. '"'
+	                    elseif t == "number" or t == "boolean" then
+	                        return tostring(val)
+	                    elseif t == "Instance" then
 	                        local name = "nil"
 	                        pcall(function() name = val:GetFullName() end)
 	                        return name
-	                    elseif v_type == "function" then
-	                        return get_func_details(val)
+	                    elseif t == "function" then
+	                        local inf = get_func_info(val)
+	                        return ("<function %s>"):format(inf.name)
+	                    elseif t == "userdata" then
+	                        return "<userdata>"
+	                    elseif t == "thread" then
+	                        return "<thread>"
 	                    else
 	                        return tostring(val)
 	                    end
 	                end
 	        
-	                local function process_value(val, name, indent)
-	                    local indent_str = string.rep("    ", indent)
-	                    local v_type = typeof(val)
-	                    local key_str = type(name) == "string" and ('["%s"]'):format(name) or ("[%s]"):format(tostring(name))
-	                    
-	                    if v_type == "table" then
-	                        if data_base[val] then
-	                            add_to(indent_str .. key_str .. " = {}, -- <Circular Reference>", 0)
-	                        else
-	                            data_base[val] = true
-	                            add_to(indent_str .. key_str .. " = {", 0)
-	                            
-	                            for k, v in pairs(val) do
-	                                process_value(v, k, indent + 1)
-	                            end
-	                            
-	                            local mt = getmetatable(val)
-	                            if mt and type(mt) == "table" then
-	                                add_to(indent_str .. "    -- <Metatable>", 0)
-	                                for k, v in pairs(mt) do
-	                                    process_value(v, k, indent + 1)
-	                                end
-	                            end
-	                            add_to(indent_str .. "},", 0)
+	                local process_value
+	                process_value = function(val, name, indent)
+	                    local t = typeof(val)
+	                    local key = type(name) == "string" and ('["%s"]'):format(name) or ("[%s]"):format(tostring(name))
+	                    local tabs = string.rep("    ", indent)
+	        
+	                    if t == "table" then
+	                        if visited[val] then
+	                            add_to(tabs .. key .. " = <Circular Reference>,")
+	                            return
 	                        end
+	                        visited[val] = true
+	                        add_to(tabs .. key .. " = {")
+	                        
+	                        for k, v in pairs(val) do
+	                            process_value(v, k, indent + 1)
+	                        end
+	                        
+	                        local mt = getmetatable(val)
+	                        if mt and type(mt) == "table" then
+	                            add_to(tabs .. "    __metatable = {")
+	                            for k, v in pairs(mt) do
+	                                process_value(v, k, indent + 2)
+	                            end
+	                            add_to(tabs .. "    },")
+	                        end
+	                        add_to(tabs .. "},")
 	                    else
-	                        add_to(indent_str .. key_str .. " = " .. format_val(val, v_type) .. ", -- <" .. v_type .. ">", 0)
+	                        add_to(tabs .. key .. " = " .. format_val(val) .. ", -- <" .. t .. ">")
 	                    end
 	                end
 	        
 	                local count = 0
 	                for _, obj in pairs(getgc()) do
 	                    if type(obj) == "function" then
-	                        local s, fenv = pcall(getfenv, obj)
-	                        if s and fenv and fenv.script == PreviousScr then
-	                            add_to(string.rep("-", 50), 0)
-	                            add_to("-- Function: " .. get_func_details(obj), 0)
-	                            add_to(string.rep("-", 50), 0)
+	                        local ok, fenv = pcall(getfenv, obj)
+	                        
+	                        if ok and fenv and fenv.script == PreviousScr then
+	                            local inf = get_func_info(obj)
+	                            local func_address = tostring(obj) -- Get function address e.g. "function: 0x7fa3c8f0"
 	                            
+	                            add_to("")
+	                            add_to(string.rep("=", 50))
+	                            add_to("Function : " .. inf.name)
+	                            add_to("Address  : " .. func_address)
+	                            add_to("Type     : " .. inf.what)
+	                            add_to("Source   : " .. inf.source)
+	                            add_to("Line     : " .. tostring(inf.linedefined))
+	                            add_to("Params   : " .. tostring(inf.numparams))
+	                            add_to("VarArg   : " .. tostring(inf.is_vararg))
+	                            add_to(string.rep("=", 50))
+	        
 	                            local upvalues = getupvalues and getupvalues(obj) or {}
 	                            if next(upvalues) then
-	                                add_to("local Upvalues = {", 0)
-	                                for i, v in pairs(upvalues) do
-	                                    process_value(v, i, 1)
+	                                add_to("")
+	                                add_to("local Upvalues = {")
+	                                for k, v in pairs(upvalues) do
+	                                    process_value(v, k, 1)
 	                                end
-	                                add_to("}\n", 0)
+	                                add_to("}")
 	                            end
-	                            
+	        
 	                            local constants = getconstants and getconstants(obj) or {}
 	                            if next(constants) then
-	                                add_to("local Constants = {", 0)
-	                                for i, v in pairs(constants) do
-	                                    process_value(v, i, 1)
+	                                add_to("")
+	                                add_to("local Constants = {")
+	                                for k, v in pairs(constants) do
+	                                    process_value(v, k, 1)
 	                                end
-	                                add_to("}\n", 0)
+	                                add_to("}")
 	                            end
-	                            
+	        
+	                            local protos = getprotos and getprotos(obj) or {}
+	                            if #protos > 0 then
+	                                add_to("")
+	                                add_to("local Prototypes = {")
+	                                for i, p in ipairs(protos) do
+	                                    local pinfo = get_func_info(p)
+	                                    add_to(("[%d] = <function %s>,"):format(i, pinfo.name), 1)
+	                                end
+	                                add_to("}")
+	                            end
+	        
 	                            count = count + 1
-	                            if count % 15 == 0 then task.wait() end
+	                            if count % 10 == 0 then
+	                                task.wait()
+	                            end
 	                        end
 	                    end
 	                end
 	        
 	                if count == 0 then
-	                    add_to("-- No functions found belonging to this script in GC.", 0)
+	                    add_to("-- No functions found.")
 	                end
-	                
-	                table.insert(dump_buffer, "--[[ END OF DUMP ]]")
+	        
+	                table.insert(dump_buffer, "]]")
 	                return table.concat(dump_buffer, "\n")
 	            end)
 	            
 	            dumpBtn.Text = oldText
 	            
 	            if success then
-	                codeFrame:SetText(codeFrame:GetText() .. "\n" .. result)
+	                codeFrame:SetText(codeFrame:GetText() .. result)
 	            else
 	                warn("Dump Error: " .. tostring(result))
-	                codeFrame:SetText(codeFrame:GetText() .. "\n\n-- Dump Error: " .. tostring(result))
+	                codeFrame:SetText(codeFrame:GetText() .. "\n\n--[[ Dump Error: \n" .. tostring(result) .. "\n]]")
 	            end
 	        end)
 	    end)
