@@ -125,6 +125,7 @@ local function main()
 	                }
 	        
 	                local visited = {}
+	                local loop_counter = 0
 	        
 	                local function add_to(str, indent)
 	                    table.insert(dump_buffer, string.rep("    ", indent or 0) .. tostring(str))
@@ -133,14 +134,7 @@ local function main()
 	                local function get_func_info(f)
 	                    local ok, info = pcall(getinfo, f)
 	                    if not ok or not info then
-	                        return {
-	                            name = "Anonymous",
-	                            what = "Lua",
-	                            source = "?",
-	                            linedefined = -1,
-	                            numparams = 0,
-	                            is_vararg = false
-	                        }
+	                        return { name = "Anonymous", what = "Lua", source = "?", linedefined = -1, numparams = 0, is_vararg = false }
 	                    end
 	                    return {
 	                        name = (info.name and info.name ~= "") and info.name or "Anonymous",
@@ -176,6 +170,9 @@ local function main()
 	        
 	                local process_value
 	                process_value = function(val, name, indent)
+	                    loop_counter = loop_counter + 1
+	                    if loop_counter % 5000 == 0 then task.wait() end
+	                    
 	                    local t = typeof(val)
 	                    local key = type(name) == "string" and ('["%s"]'):format(name) or ("[%s]"):format(tostring(name))
 	                    local tabs = string.rep("    ", indent)
@@ -207,13 +204,17 @@ local function main()
 	                end
 	        
 	                local count = 0
-	                for _, obj in pairs(getgc()) do
+	                local gc_data = getgc()
+	                for _, obj in pairs(gc_data) do
+	                    loop_counter = loop_counter + 1
+	                    if loop_counter % 5000 == 0 then task.wait() end
+	                    
 	                    if type(obj) == "function" then
 	                        local ok, fenv = pcall(getfenv, obj)
 	                        
 	                        if ok and fenv and fenv.script == PreviousScr then
 	                            local inf = get_func_info(obj)
-	                            local func_address = tostring(obj) -- Get function address e.g. "function: 0x7fa3c8f0"
+	                            local func_address = tostring(obj)
 	                            
 	                            add_to("")
 	                            add_to(string.rep("=", 50))
@@ -258,9 +259,6 @@ local function main()
 	                            end
 	        
 	                            count = count + 1
-	                            if count % 10 == 0 then
-	                                task.wait()
-	                            end
 	                        end
 	                    end
 	                end
