@@ -105,91 +105,133 @@ local function main()
 	    dumpBtn.MouseButton1Click:Connect(function()
 	        if PreviousScr == nil then return end
 	    
-	        pcall(function()
-	            local getgc = env.getgc
-	            local getupvalues = env.getupvalues
-	            local getconstants = env.getconstants
-	            local getinfo = env.getinfo
-	            local getfenv = getfenv
-	    
-	            local dump_buffer = {
-	                ("\n-- Function Dumper \n-- Target: %s\n\n--[["):format(PreviousScr:GetFullName())
-	            }
-	            local data_base = {}
-	    
-	            local function add_to(str, indent)
-	                table.insert(dump_buffer, string.rep("    ", indent or 0) .. tostring(str))
-	            end
-	    
-	            local function get_func_details(f)
-	                local info = getinfo(f)
-	                local name = (info.name ~= "" and info.name) or "Anonymous"
-	                local what = info.what or "Lua"
-	                local type_label = (what == "C") and " [C]" or ""
-	                return ("%s%s"):format(name, type_label)
-	            end
-	    
-	            local function process_value(val, name, indent)
-	                local v_type = typeof(val)
-	                local label = ("[%s] %s"):format(tostring(name), v_type)
-	            
-	                if v_type == "function" then
-	                    add_to(label .. " = " .. get_func_details(val), indent)
-	                elseif v_type == "table" then
-	                    if data_base[val] then
-	                        add_to(label .. " (Circular Reference)", indent)
+	        local oldText = dumpBtn.Text
+	        dumpBtn.Text = "Dumping..."
+	        
+	        task.spawn(function()
+	            local success, result = pcall(function()
+	                local getgc = env.getgc or getgc
+	                local getupvalues = env.getupvalues or debug.getupvalues
+	                local getconstants = env.getconstants or debug.getconstants
+	                local getinfo = env.getinfo or debug.getinfo
+	                local getfenv = getfenv
+	        
+	                local dump_buffer = {
+	                    ("\n\n--[[ DUMP OUTPUT ]]\n-- Function Dumper \n-- Target: %s\n-- Dumped at: %s\n"):format(PreviousScr:GetFullName(), os.date("%X"))
+	                }
+	                local data_base = {}
+	        
+	                local function add_to(str, indent)
+	                    table.insert(dump_buffer, string.rep("    ", indent or 0) .. tostring(str))
+	                end
+	        
+	                local function get_func_details(f)
+	                    local info = getinfo(f)
+	                    local name = (info.name and info.name ~= "") and info.name or "Anonymous"
+	                    local what = info.what or "Lua"
+	                    local args = {}
+	                    
+	                    if info.numparams then
+	                        for i = 1, info.numparams do table.insert(args, "p"..i) end
+	                        if info.is_vararg then table.insert(args, "...") end
+	                    end
+	                    
+	                    return ("%s(%s) %s"):format(name, table.concat(args, ", "), (what == "C") and "-- [C]" or "")
+	                end
+	        
+	                local function format_val(val, v_type)
+	                    if v_type == "string" then
+	                        return '"' .. val:gsub("\n", "\\n"):gsub("\r", "\\r"):gsub('"', '\\"') .. '"'
+	                    elseif v_type == "Instance" then
+	                        local name = "nil"
+	                        pcall(function() name = val:GetFullName() end)
+	                        return name
+	                    elseif v_type == "function" then
+	                        return get_func_details(val)
 	                    else
-	                        data_base[val] = true
-	                        add_to(label .. ":", indent)
-	                        
-	                        for k, v in pairs(val) do
-	                            process_value(v, k, indent + 1)
-	                        end
-	                        
-	                        local mt = getmetatable(val)
-	                        if mt then
-	                            add_to("[Metatable]:", indent + 1)
-	                            for k, v in pairs(mt) do
-	                                local m_v_type = typeof(v)
-	                                if m_v_type == "function" then
-	                                    add_to(("[%s] function = %s"):format(tostring(k), get_func_details(v)), indent + 2)
-	                                elseif m_v_type == "table" then
-	                                    add_to(("[%s] table (Sub-table)"):format(tostring(k)), indent + 2)
-	                                else
-	                                    add_to(("[%s] %s = %s"):format(tostring(k), m_v_type, tostring(v)), indent + 2)
+	                        return tostring(val)
+	                    end
+	                end
+	        
+	                local function process_value(val, name, indent)
+	                    local indent_str = string.rep("    ", indent)
+	                    local v_type = typeof(val)
+	                    local key_str = type(name) == "string" and ('["%s"]'):format(name) or ("[%s]"):format(tostring(name))
+	                    
+	                    if v_type == "table" then
+	                        if data_base[val] then
+	                            add_to(indent_str .. key_str .. " = {}, -- <Circular Reference>", 0)
+	                        else
+	                            data_base[val] = true
+	                            add_to(indent_str .. key_str .. " = {", 0)
+	                            
+	                            for k, v in pairs(val) do
+	                                process_value(v, k, indent + 1)
+	                            end
+	                            
+	                            local mt = getmetatable(val)
+	                            if mt and type(mt) == "table" then
+	                                add_to(indent_str .. "    -- <Metatable>", 0)
+	                                for k, v in pairs(mt) do
+	                                    process_value(v, k, indent + 1)
 	                                end
 	                            end
+	                            add_to(indent_str .. "},", 0)
+	                        end
+	                    else
+	                        add_to(indent_str .. key_str .. " = " .. format_val(val, v_type) .. ", -- <" .. v_type .. ">", 0)
+	                    end
+	                end
+	        
+	                local count = 0
+	                for _, obj in pairs(getgc()) do
+	                    if type(obj) == "function" then
+	                        local s, fenv = pcall(getfenv, obj)
+	                        if s and fenv and fenv.script == PreviousScr then
+	                            add_to(string.rep("-", 50), 0)
+	                            add_to("-- Function: " .. get_func_details(obj), 0)
+	                            add_to(string.rep("-", 50), 0)
+	                            
+	                            local upvalues = getupvalues and getupvalues(obj) or {}
+	                            if next(upvalues) then
+	                                add_to("local Upvalues = {", 0)
+	                                for i, v in pairs(upvalues) do
+	                                    process_value(v, i, 1)
+	                                end
+	                                add_to("}\n", 0)
+	                            end
+	                            
+	                            local constants = getconstants and getconstants(obj) or {}
+	                            if next(constants) then
+	                                add_to("local Constants = {", 0)
+	                                for i, v in pairs(constants) do
+	                                    process_value(v, i, 1)
+	                                end
+	                                add_to("}\n", 0)
+	                            end
+	                            
+	                            count = count + 1
+	                            if count % 15 == 0 then task.wait() end
 	                        end
 	                    end
-	                elseif v_type == "Instance" then
-	                    add_to(label .. " = " .. (val.ClassName == "DataModel" and "game" or val:GetFullName()), indent)
-	                elseif v_type == "string" then
-	                    add_to(label .. ' = "' .. val .. '"', indent)
-	                else
-	                    add_to(label .. " = " .. tostring(val), indent)
 	                end
-	            end
-	    
-	            for _, obj in pairs(getgc()) do
-	                if type(obj) == "function" and getfenv(obj).script == PreviousScr then
-	                    add_to("\nFUNCTION: " .. get_func_details(obj), 0)
-	                    
-	                    add_to("[Upvalues]", 1)
-	                    for i, v in pairs(getupvalues(obj)) do
-	                        process_value(v, i, 2)
-	                    end
-	    
-	                    add_to("[Constants]", 1)
-	                    for i, v in pairs(getconstants(obj)) do
-	                        process_value(v, i, 2)
-	                    end
-	                    
-	                    add_to(string.rep("-", 50), 0)
+	        
+	                if count == 0 then
+	                    add_to("-- No functions found belonging to this script in GC.", 0)
 	                end
+	                
+	                table.insert(dump_buffer, "--[[ END OF DUMP ]]")
+	                return table.concat(dump_buffer, "\n")
+	            end)
+	            
+	            dumpBtn.Text = oldText
+	            
+	            if success then
+	                codeFrame:SetText(codeFrame:GetText() .. "\n" .. result)
+	            else
+	                warn("Dump Error: " .. tostring(result))
+	                codeFrame:SetText(codeFrame:GetText() .. "\n\n-- Dump Error: " .. tostring(result))
 	            end
-	    
-	            table.insert(dump_buffer, "]]")
-	            codeFrame:SetText(codeFrame:GetText() .. table.concat(dump_buffer, "\n"))
 	        end)
 	    end)
 
