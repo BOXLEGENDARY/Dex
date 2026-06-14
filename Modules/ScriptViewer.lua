@@ -134,13 +134,12 @@ local function main()
 	                local function get_func_info(f)
 	                    local ok, info = pcall(getinfo, f)
 	                    if not ok or not info then
-	                        return { name = "Anonymous", what = "Lua", source = "?", linedefined = -1, numparams = 0, is_vararg = false }
+	                        return { name = "Anonymous", what = "Lua", source = "?", numparams = 0, is_vararg = false }
 	                    end
 	                    return {
 	                        name = (info.name and info.name ~= "") and info.name or "Anonymous",
 	                        what = info.what or "Lua",
 	                        source = info.short_src or "?",
-	                        linedefined = info.linedefined or -1,
 	                        numparams = info.numparams or 0,
 	                        is_vararg = info.is_vararg or false
 	                    }
