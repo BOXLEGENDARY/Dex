@@ -222,7 +222,8 @@ local function main()
 	                            add_to("Type     : " .. inf.what)
 	                            add_to("Source   : " .. inf.source)
 	                            add_to("Params   : " .. tostring(inf.numparams))
-	                            add_to("VarArg   : " .. tostring(inf.is_vararg))
+								local isVarArg = (inf.is_vararg == 1 or inf.is_vararg == true) and "Yes" or "No"
+								add_to("VarArg   : " .. isVarArg)
 	                            add_to(string.rep("=", 50))
 	        
 	                            local upvalues = getupvalues and getupvalues(obj) or {}
