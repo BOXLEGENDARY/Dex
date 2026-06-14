@@ -222,7 +222,6 @@ local function main()
 	                            add_to("Address  : " .. func_address)
 	                            add_to("Type     : " .. inf.what)
 	                            add_to("Source   : " .. inf.source)
-	                            add_to("Line     : " .. tostring(inf.linedefined))
 	                            add_to("Params   : " .. tostring(inf.numparams))
 	                            add_to("VarArg   : " .. tostring(inf.is_vararg))
 	                            add_to(string.rep("=", 50))
@@ -230,7 +229,7 @@ local function main()
 	                            local upvalues = getupvalues and getupvalues(obj) or {}
 	                            if next(upvalues) then
 	                                add_to("")
-	                                add_to("local Upvalues = {")
+	                                add_to("Upvalues = {")
 	                                for k, v in pairs(upvalues) do
 	                                    process_value(v, k, 1)
 	                                end
@@ -240,7 +239,7 @@ local function main()
 	                            local constants = getconstants and getconstants(obj) or {}
 	                            if next(constants) then
 	                                add_to("")
-	                                add_to("local Constants = {")
+	                                add_to("Constants = {")
 	                                for k, v in pairs(constants) do
 	                                    process_value(v, k, 1)
 	                                end
@@ -250,7 +249,7 @@ local function main()
 	                            local protos = getprotos and getprotos(obj) or {}
 	                            if #protos > 0 then
 	                                add_to("")
-	                                add_to("local Prototypes = {")
+	                                add_to("Prototypes = {")
 	                                for i, p in ipairs(protos) do
 	                                    local pinfo = get_func_info(p)
 	                                    add_to(("[%d] = <function %s>,"):format(i, pinfo.name), 1)
