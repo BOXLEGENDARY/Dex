@@ -57,16 +57,16 @@ local function main()
 	end
 
 	ScriptViewer.Init = function()
-	    window = Lib.Window.new()
-	    window:SetTitle("Scriptviewer")
-	    window:Resize(500, 400)
-	    ScriptViewer.Window = window
-	    
-	    codeFrame = Lib.CodeFrame.new()
+		window = Lib.Window.new()
+		window:SetTitle("Scriptviewer")
+		window:Resize(500, 400)
+		ScriptViewer.Window = window
+		
+		codeFrame = Lib.CodeFrame.new()
 		codeFrame.Frame.Position = UDim2.new(0,0,0,20)
 		codeFrame.Frame.Size = UDim2.new(1,0,1,-20)
-	    codeFrame.Frame.Parent = window.GuiElems.Content
-	    
+		codeFrame.Frame.Parent = window.GuiElems.Content
+		
 		local copyBtn = Instance.new("TextButton", window.GuiElems.Content)
 		copyBtn.BackgroundTransparency = 1
 		copyBtn.Size = UDim2.new(0.25, 0, 0, 20)
@@ -75,9 +75,9 @@ local function main()
 		copyBtn.TextColor3 = Color3.new(1, 1, 1)
 		
 		copyBtn.MouseButton1Click:Connect(function()
-		    if env.setclipboard then
-		        env.setclipboard(codeFrame:GetText())
-		    end
+			if env.setclipboard then
+				env.setclipboard(codeFrame:GetText())
+			end
 		end)
 		
 		local saveBtn = Instance.new("TextButton", window.GuiElems.Content)
@@ -88,11 +88,11 @@ local function main()
 		saveBtn.TextColor3 = Color3.new(1, 1, 1)
 		
 		saveBtn.MouseButton1Click:Connect(function()
-		    if env.writefile then
-		        local scriptName = PreviousScr and PreviousScr.Name or "Decompiled"
-		        local filename = "dex/saved/" .. scriptName .. "_" .. os.date("%H%M%S") .. ".lua"
-		        env.writefile(filename, codeFrame:GetText())
-		    end
+			if env.writefile then
+				local scriptName = PreviousScr and PreviousScr.Name or "Decompiled"
+				local filename = "dex/saved/" .. scriptName .. "_" .. os.date("%H%M%S") .. ".lua"
+				env.writefile(filename, codeFrame:GetText())
+			end
 		end)
 		
 		local dumpBtn = Instance.new("TextButton", window.GuiElems.Content)
@@ -101,185 +101,105 @@ local function main()
 		dumpBtn.Position = UDim2.new(0.50, 0, 0, 0)
 		dumpBtn.Text = "Dump Functions"
 		dumpBtn.TextColor3 = Color3.new(1, 1, 1)
-	    
-	    dumpBtn.MouseButton1Click:Connect(function()
-	        if PreviousScr == nil then return end
-	    
-	        local oldText = dumpBtn.Text
-	        dumpBtn.Text = "Dumping..."
-	        
-	        task.spawn(function()
-	            local success, result = pcall(function()
-	                local getgc = env.getgc
-	                local getupvalues = env.getupvalues
-	                local getconstants = env.getconstants
-	                local getinfo = env.getinfo
-	                local getprotos = env.getprotos
-	                local getfenv = getfenv
-	        
-	                local dump_buffer = {
-	                    ("\n\n--[[ DUMP OUTPUT\n" ..
-	                    "Target: %s\n" ..
-	                    "Dumped at: %s\n")
-	                    :format(PreviousScr:GetFullName(), os.date("%X"))
-	                }
-	        
-	                local visited = {}
-	                local loop_counter = 0
-	        
-	                local function add_to(str, indent)
-	                    table.insert(dump_buffer, string.rep("    ", indent or 0) .. tostring(str))
-	                end
-	        
-	                local function get_func_info(f)
-	                    local ok, info = pcall(getinfo, f)
-	                    if not ok or not info then
-	                        return { name = "Anonymous", what = "Lua", source = "?", numparams = 0, is_vararg = false }
-	                    end
-	                    return {
-	                        name = (info.name and info.name ~= "") and info.name or "Anonymous",
-	                        what = info.what or "Lua",
-	                        source = info.short_src or "?",
-	                        numparams = info.numparams or 0,
-	                        is_vararg = info.is_vararg or false
-	                    }
-	                end
-	        
-	                local function format_val(val)
-	                    local t = typeof(val)
-	                    if t == "string" then
-	                        return '"' .. val:gsub("\n","\\n"):gsub("\r","\\r"):gsub('"','\\"') .. '"'
-	                    elseif t == "number" or t == "boolean" then
-	                        return tostring(val)
-	                    elseif t == "Instance" then
-	                        local name = "nil"
-	                        pcall(function() name = val:GetFullName() end)
-	                        return name
-	                    elseif t == "function" then
-	                        local inf = get_func_info(val)
-	                        return ("<function %s>"):format(inf.name)
-	                    elseif t == "userdata" then
-	                        return "<userdata>"
-	                    elseif t == "thread" then
-	                        return "<thread>"
-	                    else
-	                        return tostring(val)
-	                    end
-	                end
-	        
-	                local process_value
-	                process_value = function(val, name, indent)
-	                    loop_counter = loop_counter + 1
-	                    if loop_counter % 5000 == 0 then task.wait() end
-	                    
-	                    local t = typeof(val)
-	                    local key = type(name) == "string" and ('["%s"]'):format(name) or ("[%s]"):format(tostring(name))
-	                    local tabs = string.rep("    ", indent)
-	        
-	                    if t == "table" then
-	                        if visited[val] then
-	                            add_to(tabs .. key .. " = <Circular Reference>,")
-	                            return
-	                        end
-	                        visited[val] = true
-	                        add_to(tabs .. key .. " = {")
-	                        
-	                        for k, v in pairs(val) do
-	                            process_value(v, k, indent + 1)
-	                        end
-	                        
-	                        local mt = getmetatable(val)
-	                        if mt and type(mt) == "table" then
-	                            add_to(tabs .. "    __metatable = {")
-	                            for k, v in pairs(mt) do
-	                                process_value(v, k, indent + 2)
-	                            end
-	                            add_to(tabs .. "    },")
-	                        end
-	                        add_to(tabs .. "},")
-	                    else
-	                        add_to(tabs .. key .. " = " .. format_val(val) .. ", -- <" .. t .. ">")
-	                    end
-	                end
-	        
-	                local count = 0
-	                local gc_data = getgc()
-	                for _, obj in pairs(gc_data) do
-	                    loop_counter = loop_counter + 1
-	                    if loop_counter % 5000 == 0 then task.wait() end
-	                    
-	                    if type(obj) == "function" then
-	                        local ok, fenv = pcall(getfenv, obj)
-	                        
-	                        if ok and fenv and fenv.script == PreviousScr then
-	                            local inf = get_func_info(obj)
-	                            local func_address = tostring(obj)
-	                            
-	                            add_to("")
-	                            add_to(string.rep("=", 50))
-	                            add_to("Function : " .. inf.name)
-	                            add_to("Address  : " .. func_address)
-	                            add_to("Type     : " .. inf.what)
-	                            add_to("Source   : " .. inf.source)
-	                            add_to("Params   : " .. tostring(inf.numparams))
-								local isVarArg = (inf.is_vararg == 1 or inf.is_vararg == true) and "Yes" or "No"
-								add_to("VarArg   : " .. isVarArg)
-	                            add_to(string.rep("=", 50))
-	        
-	                            local upvalues = getupvalues and getupvalues(obj) or {}
-	                            if next(upvalues) then
-	                                add_to("")
-	                                add_to("Upvalues = {")
-	                                for k, v in pairs(upvalues) do
-	                                    process_value(v, k, 1)
-	                                end
-	                                add_to("}")
-	                            end
-	        
-	                            local constants = getconstants and getconstants(obj) or {}
-	                            if next(constants) then
-	                                add_to("")
-	                                add_to("Constants = {")
-	                                for k, v in pairs(constants) do
-	                                    process_value(v, k, 1)
-	                                end
-	                                add_to("}")
-	                            end
-	        
-	                            local protos = getprotos and getprotos(obj) or {}
-	                            if #protos > 0 then
-	                                add_to("")
-	                                add_to("Prototypes = {")
-	                                for i, p in ipairs(protos) do
-	                                    local pinfo = get_func_info(p)
-	                                    add_to(("[%d] = <function %s>,"):format(i, pinfo.name), 1)
-	                                end
-	                                add_to("}")
-	                            end
-	        
-	                            count = count + 1
-	                        end
-	                    end
-	                end
-	        
-	                if count == 0 then
-	                    add_to("-- No functions found.")
-	                end
-	        
-	                table.insert(dump_buffer, "]]")
-	                return table.concat(dump_buffer, "\n")
-	            end)
-	            
-	            dumpBtn.Text = oldText
-	            
-	            if success then
-	                codeFrame:SetText(codeFrame:GetText() .. result)
-	            else
-	                warn("Dump Error: " .. tostring(result))
-	                codeFrame:SetText(codeFrame:GetText() .. "\n\n--[[ Dump Error: \n" .. tostring(result) .. "\n]]")
-	            end
-	        end)
-	    end)
+		
+		dumpBtn.MouseButton1Click:Connect(function()
+			if PreviousScr ~= nil then
+				pcall(function()
+					local getgc = env.getgc
+					local getupvalues = env.getupvalues
+					local getconstants = env.getconstants
+					local getinfo = env.getinfo
+					
+					local original_header = ("\n-- // Script Path: %s\n\n--[["):format(PreviousScr:GetFullName())
+					local dump_buffer = {}
+					local functions, function_count, data_base = {}, 0, {}
+					
+					function functions:add_to_dump(str, indentation, new_line)
+						if new_line == nil then new_line = true end
+						table.insert(dump_buffer, ("%s%s%s"):format(string.rep("\t\t", indentation), tostring(str), new_line and "\n" or ""))
+					end
+					
+					function functions:get_function_name(func)
+						local n = getinfo(func).name
+						return (n and n ~= "") and n or "Unknown Name"
+					end
+					
+					function functions:dump_table(input, indent, index)
+						local indent = indent < 0 and 0 or indent
+						functions:add_to_dump(("%s [%s] = %s"):format(tostring(index), typeof(input), tostring(input)), indent - 1)
+						local count = 0
+						for index, value in pairs(input) do
+							count = count + 1
+							if type(value) == "function" then
+								functions:add_to_dump(("%d [function] = %s"):format(count, functions:get_function_name(value)), indent)
+							elseif type(value) == "table" then
+								if not data_base[value] then
+									data_base[value] = true
+									functions:add_to_dump(("%d [table]:"):format(count), indent)
+									functions:dump_table(value, indent + 1, index)
+								else
+									functions:add_to_dump(("%d [table] (Recursive table detected)"):format(count), indent)
+								end
+							else
+								functions:add_to_dump(("%d [%s] = %s"):format(count, typeof(value), tostring(value)), indent)
+							end
+						end
+					end
+					
+					function functions:dump_function(input, indent)
+						local func_name = functions:get_function_name(input)
+						functions:add_to_dump(("\nFunction Dump: %s"):format(func_name), indent)
+						
+						functions:add_to_dump(("\nFunction Upvalues: %s"):format(func_name), indent)
+						for index, upvalue in pairs(getupvalues(input)) do
+							if type(upvalue) == "function" then
+								functions:add_to_dump(("%d [function] = %s"):format(index, functions:get_function_name(upvalue)), indent + 1)
+							elseif type(upvalue) == "table" then
+								if not data_base[upvalue] then
+									data_base[upvalue] = true
+									functions:add_to_dump(("%d [table]:"):format(index), indent + 1)
+									functions:dump_table(upvalue, indent + 2, index)
+								else
+									functions:add_to_dump(("%d [table] (Recursive table detected)"):format(index), indent + 1)
+								end
+							else
+								functions:add_to_dump(("%d [%s] = %s"):format(index, typeof(upvalue), tostring(upvalue)), indent + 1)
+							end
+						end
+						
+						functions:add_to_dump(("\nFunction Constants: %s"):format(func_name), indent)
+						for index, constant in pairs(getconstants(input)) do
+							if type(constant) == "function" then
+								functions:add_to_dump(("%d [function] = %s"):format(index, functions:get_function_name(constant)), indent + 1)
+							elseif type(constant) == "table" then
+								if not data_base[constant] then
+									data_base[constant] = true
+									functions:add_to_dump(("%d [table]:"):format(index), indent + 1)
+									functions:dump_table(constant, indent + 2, index)
+								else
+									functions:add_to_dump(("%d [table] (Recursive table detected)"):format(index), indent + 1)
+								end
+							else
+								functions:add_to_dump(("%d [%s] = %s"):format(index, typeof(constant), tostring(constant)), indent + 1)
+							end
+						end
+					end
+					
+					for _, _function in pairs(getgc()) do
+						if typeof(_function) == "function" and getfenv(_function).script and getfenv(_function).script == PreviousScr then
+							functions:dump_function(_function, 0)
+							functions:add_to_dump("\n" .. ("="):rep(100), 0, false)
+						end
+					end
+					
+					local source = codeFrame:GetText()
+					if #dump_buffer > 0 then 
+						source = source .. original_header .. table.concat(dump_buffer) .. "]]" 
+					end
+					codeFrame:SetText(source)
+				end)
+			end
+		end)
 
 		local toNotepadBtn = Instance.new("TextButton", window.GuiElems.Content)
 		toNotepadBtn.BackgroundTransparency = 1
@@ -289,12 +209,12 @@ local function main()
 		toNotepadBtn.TextColor3 = Color3.new(1, 1, 1)
 		
 		toNotepadBtn.MouseButton1Click:Connect(function()
-		    local source = codeFrame:GetText()
-		    local scriptName = PreviousScr and PreviousScr.Name or "Decompiled"
-		    
-		    if Apps.Notepad and Apps.Notepad.OpenInTab then
-		        Apps.Notepad.OpenInTab(source, scriptName .. ".lua", nil)
-		    end
+			local source = codeFrame:GetText()
+			local scriptName = PreviousScr and PreviousScr.Name or "Decompiled"
+			
+			if Apps.Notepad and Apps.Notepad.OpenInTab then
+				Apps.Notepad.OpenInTab(source, scriptName .. ".lua", nil)
+			end
 		end)
 	end
 
