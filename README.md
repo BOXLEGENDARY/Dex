@@ -3,9 +3,6 @@
 loadstring(game:HttpGet("https://github.com/BOXLEGENDARY/Dex/releases/latest/download/out.lua"))()
 ```
 
-![Preview](https://github.com/BOXLEGENDARY/Dex/raw/main/.picture/Screenshot_2026-06-12-18-57-18-54_080032403b0f3d7ce099ec68649d222a.jpg)
-
-
 ---
 ## Dex
 **Important**
