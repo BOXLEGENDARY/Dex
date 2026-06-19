@@ -5,13 +5,9 @@ loadstring(game:HttpGet("https://github.com/BOXLEGENDARY/Dex/releases/latest/dow
 
 ---
 ## Dex
-**Important**
 * To reset the settings, delete `workspace/dex/DexSettings.json`.
 * ​To install plugins, place the plugin files in `workspace/dex/plugins`.
 * All files save in `workspace/dex/saved`.
-
-**General Notes**
-* better use Shiny to Decompiler.
 * What's different between Dex 2021 and Dex 2026?
     * Mostly keeping it fresh and adding more features.
     * Uses stable third-party components.
