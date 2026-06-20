@@ -4,7 +4,7 @@ loadstring(game:HttpGet("https://github.com/BOXLEGENDARY/Dex/releases/latest/dow
 ```
 
 ---
-## Dex
+## Notes
 * To reset the settings, delete `workspace/dex/DexSettings.json`.
 * ​To install plugins, place the plugin files in `workspace/dex/plugins`.
 * All files save in `workspace/dex/saved`.
