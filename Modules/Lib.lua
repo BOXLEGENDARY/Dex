@@ -238,12 +238,6 @@ local function main()
 								entities[#entities+1] = {name=name, value=entity}
 							end, 1)
 						end
-						-- elseif '?' == type then
-						--	 print('?	' .. name .. ' // ' .. attrs .. '$$')
-						-- elseif '-' == type then
-						--	 print('comment	' .. name .. ' // ' .. attrs .. '$$')
-						-- else
-						--	 print('o	' .. #p .. ' // ' .. name .. ' // ' .. attrs .. '$$')
 					end
 				end)
 
@@ -480,8 +474,6 @@ local function main()
 			nameBox.Position = UDim2.new(0,75,0,10)
 			nameBox.Size = UDim2.new(0,220,0,20)
 			win:Add(nameBox,"NameBox")
-
-			--nameBox.TextBox.Text = filename or ""
 
 			nameBox.TextBox:GetPropertyChangedSignal("Text"):Connect(function()
 				saveButton:SetDisabled(#nameBox:GetText() == 0)
@@ -2750,16 +2742,6 @@ local function main()
 			leftSide.Frame.Resizer.Position = UDim2.new(0,leftSide.Width,0,0)
 			rightSide.Frame.Resizer.Position = UDim2.new(0,-5,0,0)
 
-			--leftSide.Frame.Visible = (#leftSide.Windows > 0)
-			--rightSide.Frame.Visible = (#rightSide.Windows > 0)
-
-			--[[if #leftSide.Windows > 0 and leftSide.Frame.Position == UDim2.new(0,-leftSide.Width-5,0,0) then
-				leftSide.Frame:TweenPosition(UDim2.new(0,0,0,0),Enum.EasingDirection.Out,Enum.EasingStyle.Quad,0.3,true)
-			elseif #leftSide.Windows == 0 and leftSide.Frame.Position == UDim2.new(0,0,0,0) then
-				leftSide.Frame:TweenPosition(UDim2.new(0,-leftSide.Width-5,0,0),Enum.EasingDirection.Out,Enum.EasingStyle.Quad,0.3,true)
-			end
-			local rightTweenPos = (#rightSide.Windows == 0 and UDim2.new(1,5,0,0) or UDim2.new(1,-rightSide.Width,0,0))
-			rightSide.Frame:TweenPosition(rightTweenPos,Enum.EasingDirection.Out,Enum.EasingStyle.Quad,0.3,true)]]
 			local leftHidden = #leftSide.Windows == 0 or leftSide.Hidden
 			local rightHidden = #rightSide.Windows == 0 or rightSide.Hidden
 			local leftPos = (leftHidden and UDim2.new(0,-leftSide.Width-10,0,0) or UDim2.new(0,0,0,0))
@@ -2922,7 +2904,6 @@ local function main()
 				local size = UDim2.new(0,side.Width,0,v.SizeY)
 				local pos = UDim2.new(sideFramePos.X.Scale,sideFramePos.X.Offset,0,currentPos)
 				Lib.ShowGui(v.Gui)
-				--v.GuiElems.Main:TweenSizeAndPosition(size,pos,Enum.EasingDirection.Out,Enum.EasingStyle.Quad,0.3,true)
 				if noTween then
 					v.GuiElems.Main.Size = size
 					v.GuiElems.Main.Position = pos
@@ -2946,9 +2927,6 @@ local function main()
 					newTemplate.Parent = side.Frame
 				end
 			end
-
-			--side.Frame.Back.Position = UDim2.new(0,0,0,0)
-			--side.Frame.Back.Size = UDim2.new(0,side.Width,1,0)
 		end
 
 		local function updateSide(side,noTween)
@@ -2992,11 +2970,6 @@ local function main()
 				Lib.ShowGui(visibleWindows[i].Gui)
 				count = count + 1
 			end
-
-			--[[local leftTweenPos = (#leftSide.Windows == 0 and UDim2.new(0,-leftSide.Width-5,0,0) or UDim2.new(0,0,0,0))
-			leftSide.Frame:TweenPosition(leftTweenPos,Enum.EasingDirection.Out,Enum.EasingStyle.Quad,0.3,true)
-			local rightTweenPos = (#rightSide.Windows == 0 and UDim2.new(1,5,0,0) or UDim2.new(1,-rightSide.Width,0,0))
-			rightSide.Frame:TweenPosition(rightTweenPos,Enum.EasingDirection.Out,Enum.EasingStyle.Quad,0.3,true)]]
 		end
 
 		funcs.SetMinimized = function(self,set,mode)
@@ -3590,7 +3563,6 @@ local function main()
 						newEntry.Icon.Visible = false
 					else
 						local iconIndex = item.Disabled and item.DisabledIcon or item.Icon
-						-- Explorer.MiscIcons:DisplayExplorerIcons(newEntry.Icon, iconIndex)
 						if item.IconMap then
 							if type(iconIndex) == "number" then
 								item.IconMap:Display(newEntry.Icon, iconIndex)
@@ -4499,231 +4471,244 @@ local function main()
 		end
 
 		funcs.PreHighlight = function(self)
-			local start = tick()
-			local text = self.Text:gsub("\\\\","	")
-			--print("BACKSLASH SUB",tick()-start)
-			local textLen = #text
-			local found = {}
-			local foundMap = {}
-			local extras = {}
-			local find = string.find
-			local sub = string.sub
+			local text = self.Text
+			local lines = self.Lines
 			self.ColoredLines = {}
+			self.LineStates = {}
 
-			local function findAll(str,pattern,typ,raw)
-				local count = #found+1
-				local init = 1
-				local x,y,extra = find(str,pattern,init,raw)
-				while x do
-					found[count] = x
-					foundMap[x] = typ
-					if extra then
-						extras[x] = extra
+			local inMultiline = false
+			local multilineCloser = ""
+			local multilineType = 0
+
+			for i = 1, #lines do
+				self.LineStates[i] = {InMultiline = inMultiline, Closer = multilineCloser, Type = multilineType}
+				
+				local lineText = lines[i]
+				local pos = 1
+				local len = #lineText
+
+				while pos <= len do
+					if inMultiline then
+						local closePos = string.find(lineText, multilineCloser, pos, true)
+						if closePos then
+							inMultiline = false
+							pos = closePos + #multilineCloser
+						else
+							break
+						end
+					else
+						local startC, endC, eqC = string.find(lineText, "^%-%-%[(=*)%[", pos)
+						if startC then
+							inMultiline = true
+							multilineCloser = "]" .. eqC .. "]"
+							multilineType = 4
+							pos = endC + 1
+							continue
+						end
+
+						local singleComment = string.find(lineText, "^%-%-", pos)
+						if singleComment then
+							break
+						end
+
+						local startS, endS, eqS = string.find(lineText, "^%[(=*)%[", pos)
+						if startS then
+							inMultiline = true
+							multilineCloser = "]" .. eqS .. "]"
+							multilineType = 3
+							pos = endS + 1
+							continue
+						end
+
+						local quote = string.match(lineText, "^(['\"])", pos)
+						if quote then
+							local pattern = "^" .. quote .. "[^" .. quote .. "\\]*(?:\\.[^" .. quote .. "\\]*)*" .. quote
+							local matchEnd = pos + 1
+							while matchEnd <= len do
+								local c = string.sub(lineText, matchEnd, matchEnd)
+								if c == "\\" then
+									matchEnd = matchEnd + 2
+								elseif c == quote then
+									break
+								else
+									matchEnd = matchEnd + 1
+								end
+							end
+							pos = matchEnd + 1
+							continue
+						end
+
+						pos = pos + 1
 					end
-
-					count = count+1
-					init = y+1
-					x,y,extra = find(str,pattern,init,raw)
 				end
 			end
-			local start = tick()
-			findAll(text,'"',1,true)
-			findAll(text,"'",2,true)
-			findAll(text,"%[(=*)%[",3)
-			findAll(text,"--",4,true)
-			table.sort(found)
-			
-			local newLines = self.NewLines
-			local curLine = 0
-			local lineTableCount = 1
-			local lineStart = 0
-			local lineEnd = 0
-			local lastEnding = 0
-			local foundHighlights = {}
-
-			for i = 1,#found do
-				local pos = found[i]
-				if pos <= lastEnding then continue end
-
-				local ending = pos
-				local typ = foundMap[pos]
-				if typ == 1 then
-					ending = find(text,'"',pos+1,true)
-					while ending and sub(text,ending-1,ending-1) == "\\" do
-						ending = find(text,'"',ending+1,true)
-					end
-					if not ending then ending = textLen end
-				elseif typ == 2 then
-					ending = find(text,"'",pos+1,true)
-					while ending and sub(text,ending-1,ending-1) == "\\" do
-						ending = find(text,"'",ending+1,true)
-					end
-					if not ending then ending = textLen end
-				elseif typ == 3 then
-					_,ending = find(text,"]"..extras[pos].."]",pos+1,true)
-					if not ending then ending = textLen end
-				elseif typ == 4 then
-					local ahead = foundMap[pos+2]
-
-					if ahead == 3 then
-						_,ending = find(text,"]"..extras[pos+2].."]",pos+1,true)
-						if not ending then ending = textLen end
-					else
-						ending = find(text,"\n",pos+1,true) or textLen
-					end
-				end
-
-				while pos > lineEnd do
-					curLine = curLine + 1
-					--lineTableCount = 1
-					lineEnd = newLines[curLine] or textLen+1
-				end
-				while true do
-					local lineTable = foundHighlights[curLine]
-					if not lineTable then lineTable = {} foundHighlights[curLine] = lineTable end
-					lineTable[pos] = {typ,ending}
-					--lineTableCount = lineTableCount + 1
-
-					if ending > lineEnd then
-						curLine = curLine + 1
-						lineEnd = newLines[curLine] or textLen+1
-					else
-						break
-					end
-				end
-
-				lastEnding = ending
-				--if i < 200 then print(curLine) end
-			end
-			self.PreHighlights = foundHighlights
-			--print(tick()-start)
-			--print(#found,curLine)
 		end
 
-		funcs.HighlightLine = function(self,line)
+		funcs.HighlightLine = function(self, line)
 			local cached = self.ColoredLines[line]
 			if cached then return cached end
 
-			local sub = string.sub
-			local find = string.find
-			local match = string.match
 			local highlights = {}
-			local preHighlights = self.PreHighlights[line] or {}
 			local lineText = self.Lines[line] or ""
-			local lineLen = #lineText
-			local lastEnding = 0
-			local currentType = 0
+			local len = #lineText
+			local pos = 1
+
+			local state = self.LineStates[line] or {InMultiline = false}
+			local inMultiline = state.InMultiline
+			local multilineCloser = state.Closer
+			local currentType = state.Type
+
 			local lastWord = nil
 			local wordBeginsDotted = false
-			local funcStatus = 0
-			local lineStart = self.NewLines[line-1] or 0
 
-			local preHighlightMap = {}
-			for pos,data in next,preHighlights do
-				local relativePos = pos-lineStart
-				if relativePos < 1 then
-					currentType = data[1]
-					lastEnding = data[2] - lineStart
-					--warn(pos,data[2])
-				else
-					preHighlightMap[relativePos] = {data[1],data[2]-lineStart}
+			local function fill(startIdx, endIdx, typeNum)
+				for i = startIdx, endIdx do
+					highlights[i] = typeNum
 				end
 			end
 
-			for col = 1,#lineText do
-				if col <= lastEnding then highlights[col] = currentType continue end
-
-				local pre = preHighlightMap[col]
-				if pre then
-					currentType = pre[1]
-					lastEnding = pre[2]
-					highlights[col] = currentType
-					wordBeginsDotted = false
-					lastWord = nil
-					funcStatus = 0
+			while pos <= len do
+				if inMultiline then
+					local closePos = string.find(lineText, multilineCloser, pos, true)
+					if closePos then
+						fill(pos, closePos + #multilineCloser - 1, currentType)
+						pos = closePos + #multilineCloser
+						inMultiline = false
+					else
+						fill(pos, len, currentType)
+						break
+					end
 				else
-					local char = sub(lineText,col,col)
-					if find(char,"[%a_]") then
-						local word = match(lineText,"[%a%d_]+",col)
-						local wordType = (keywords[word] and 7) or (builtIns[word] and 8)
+					local char = string.sub(lineText, pos, pos)
 
-						lastEnding = col+#word-1
+					local spaceStart, spaceEnd = string.find(lineText, "^%s+", pos)
+					if spaceStart then
+						pos = spaceEnd + 1
+						continue
+					end
 
-						if wordType ~= 7 then
-							if wordBeginsDotted then
-								local prevBuiltIn = lastWord and builtIns[lastWord]
-								wordType = (prevBuiltIn and type(prevBuiltIn) == "table" and prevBuiltIn[word] and 8) or 10
-							end
+					local startC, endC, eqC = string.find(lineText, "^%-%-%[(=*)%[", pos)
+					if startC then
+						inMultiline = true
+						multilineCloser = "]" .. eqC .. "]"
+						currentType = 4
+						continue
+					end
+					if string.find(lineText, "^%-%-", pos) then
+						fill(pos, len, 4)
+						break
+					end
 
-							if wordType ~= 8 then
-								local x,y,br = find(lineText,"^%s*([%({\"'])",lastEnding+1)
-								if x then
-									wordType = (funcStatus > 0 and br == "(" and 16) or 9
-									funcStatus = 0
-								end
-							end
-						else
-							wordType = specialKeywordsTypes[word] or wordType
-							funcStatus = (word == "function" and 1 or 0)
-						end
+					local startS, endS, eqS = string.find(lineText, "^%[(=*)%[", pos)
+					if startS then
+						inMultiline = true
+						multilineCloser = "]" .. eqS .. "]"
+						currentType = 3
+						continue
+					end
 
-						lastWord = word
-						wordBeginsDotted = false
-						if funcStatus > 0 then funcStatus = 1 end
-
-						if wordType then
-							currentType = wordType
-							highlights[col] = currentType
-						else
-							currentType = nil
-						end
-					elseif find(char,"%p") then
-						local isDot = (char == ".")
-						local isNum = isDot and find(sub(lineText,col+1,col+1),"%d")
-						highlights[col] = (isNum and 6 or 5)
-
-						if not isNum then
-							local dotStr = isDot and match(lineText,"%.%.?%.?",col)
-							if dotStr and #dotStr > 1 then
-								currentType = 5
-								lastEnding = col+#dotStr-1
-								wordBeginsDotted = false
-								lastWord = nil
-								funcStatus = 0
+					local quote = string.match(lineText, "^(['\"])", pos)
+					if quote then
+						local qType = (quote == '"') and 1 or 2
+						local matchEnd = pos + 1
+						while matchEnd <= len do
+							local c = string.sub(lineText, matchEnd, matchEnd)
+							if c == "\\" then
+								matchEnd = matchEnd + 2
+							elseif c == quote then
+								break
 							else
-								if isDot then
-									if wordBeginsDotted then
-										lastWord = nil
-									else
-										wordBeginsDotted = true
-									end
-								else
-									wordBeginsDotted = false
-									lastWord = nil
-								end
-
-								funcStatus = ((isDot or char == ":") and funcStatus == 1 and 2) or 0
+								matchEnd = matchEnd + 1
 							end
 						end
-					elseif find(char,"%d") then
-						local _,endPos = find(lineText,"%x+",col)
-						local endPart = sub(lineText,endPos,endPos+1)
-						if (endPart == "e+" or endPart == "e-") and find(sub(lineText,endPos+2,endPos+2),"%d") then
-							endPos = endPos + 1
-						end
-						currentType = 6
-						lastEnding = endPos
-						highlights[col] = 6
+						fill(pos, math.min(matchEnd, len), qType)
+						pos = matchEnd + 1
+						continue
+					end
+
+					local numStart, numEnd = string.find(lineText, "^0x[%da-fA-F]+", pos)
+					if not numStart then
+						numStart, numEnd = string.find(lineText, "^%d+%.?%d*[eE][%+%-]?%d+", pos)
+					end
+					if not numStart then
+						numStart, numEnd = string.find(lineText, "^%d+%.?%d*", pos)
+					end
+					if not numStart then
+						numStart, numEnd = string.find(lineText, "^%.%d+", pos)
+					end
+
+					if numStart then
+						fill(numStart, numEnd, 6)
+						pos = numEnd + 1
 						wordBeginsDotted = false
 						lastWord = nil
-						funcStatus = 0
-					else
-						highlights[col] = currentType
-						local _,endPos = find(lineText,"%s+",col)
-						if endPos then
-							lastEnding = endPos
-						end
+						continue
 					end
+
+					local wordStart, wordEnd, word = string.find(lineText, "^([%a_][%w_]*)", pos)
+					if wordStart then
+						local wordType = 0
+						if keywords[word] then
+							wordType = specialKeywordsTypes[word] or 7
+						elseif builtIns[word] then
+							wordType = 8
+						else
+							if wordBeginsDotted then
+								local prevBuiltIn = lastWord and builtIns[lastWord]
+								if prevBuiltIn and type(prevBuiltIn) == "table" and prevBuiltIn[word] then
+									wordType = 8
+								else
+									wordType = 10
+								end
+							else
+								local nextChar = string.match(lineText, "^%s*([%({\"'])", wordEnd + 1)
+								if nextChar then
+									wordType = 9
+								else
+									wordType = 0
+								end
+							end
+						end
+
+						if wordType ~= 0 then
+							fill(wordStart, wordEnd, wordType)
+						end
+
+						pos = wordEnd + 1
+						lastWord = word
+						wordBeginsDotted = false
+						continue
+					end
+
+					if string.find(char, "[%+%-%*/%%^==~<><=>=#%.%,:;]") then
+						if char == "." then
+							local dotStr = string.match(lineText, "^%.%.?%.?", pos)
+							if dotStr and #dotStr > 1 then
+								fill(pos, pos + #dotStr - 1, 5)
+								pos = pos + #dotStr
+								wordBeginsDotted = false
+								lastWord = nil
+								continue
+							else
+								wordBeginsDotted = true
+							end
+						else
+							wordBeginsDotted = false
+						end
+						
+						highlights[pos] = 5
+						pos = pos + 1
+						continue
+					end
+
+					if string.find(char, "[%(%)%[%]{}]") then
+						highlights[pos] = 17
+						pos = pos + 1
+						wordBeginsDotted = false
+						continue
+					end
+
+					pos = pos + 1
 				end
 			end
 
@@ -4842,16 +4827,19 @@ local function main()
 				end
 
 				local lastText = gsub(sub(lineText,colStart,viewX+maxCols),"['\"<>&]",richReplace)
-				--warn("SUB",colStart,viewX+maxCols-1)
 				if #lastText > 0 then
 					resText = resText .. (curTemplate ~= textTemplate and (curTemplate .. lastText .. "</font>") or lastText)
 				end
 
 				if self.Lines[relaY] then
+					lineNumberStr = lineNumberStr .. relaY .. "\n"
+				end
 
-					-- REMOVED LINE HIGHLIGHT DUE TO BUG OFFSET
-					lineNumberStr = lineNumberStr .. (relaY == self.CursorY and ("<b>"..relaY.."</b>\n") or relaY .. "\n")
-					--lineNumberStr = lineNumberStr .. (relaY == self.CursorY and (relaY.."\n") or relaY .. "\n")
+				if relaY == self.CursorY + 1 then
+					lineFrame.BackgroundColor3 = self.Colors.CurrentLine
+					lineFrame.BackgroundTransparency = 0
+				else
+					lineFrame.BackgroundTransparency = 1
 				end
 
 				lineFrame.Label.Text = resText
@@ -4864,8 +4852,6 @@ local function main()
 
 			self.Frame.LineNumbers.Text = lineNumberStr
 			self:UpdateCursor()
-
-			--print("REFRESH TIME",tick()-start)
 		end
 
 		funcs.UpdateView = function(self)
@@ -4934,7 +4920,6 @@ local function main()
 			self:MapNewLines()
 			self:PreHighlight()
 			self:Refresh()
-			--self.TextChanged:Fire()
 		end
 		
 		funcs.ConvertText = function(self, text, toEditor)
@@ -5127,7 +5112,6 @@ local function main()
 				Middle = filler.middle
 			}
 			
-			-- Best input compatibility:
 			checkbox.MouseButton1Up:Connect(function()
 				if Lib.CheckMouseInGui(checkbox) then
 					if self.Style == 0 then
@@ -5143,49 +5127,6 @@ local function main()
 					self.OnInput:Fire()
 				end
 			end)
-			
-			-- New:
-			--[[checkbox.Activated:Connect(function()
-				if Lib.CheckMouseInGui(checkbox) then
-					if self.Style == 0 then
-						ripple(ripples_container, self.Disabled and self.Colors.Disabled or self.Colors.Primary)
-					end
-					
-					if not self.Disabled then
-						self:SetState(not self.Toggled,true)
-					else
-						self:Paint()
-					end
-					
-					self.OnInput:Fire()
-				end
-			end)]]
-			
-			-- Old:
-			--[[checkbox.InputBegan:Connect(function(i)
-				if i.UserInputType == Enum.UserInputType.MouseButton1 then
-					local release
-					release = service.UserInputService.InputEnded:Connect(function(input)
-						if input.UserInputType == Enum.UserInputType.MouseButton1 then
-							release:Disconnect()
-
-							if Lib.CheckMouseInGui(checkbox) then
-								if self.Style == 0 then
-									ripple(ripples_container, self.Disabled and self.Colors.Disabled or self.Colors.Primary)
-								end
-
-								if not self.Disabled then
-									self:SetState(not self.Toggled,true)
-								else
-									self:Paint()
-								end
-								
-								self.OnInput:Fire()
-							end
-						end
-					end)
-				end
-			end)]]
 			
 			self:Paint()
 		end

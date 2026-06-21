@@ -912,9 +912,6 @@ local function main()
 		context:AddRegistered("COPY_PATH", env.setclipboard == nil)
 		context:AddRegistered("INSERT_OBJECT")
 		context:AddRegistered("SAVE_INST")
-		-- context:AddRegistered("CALL_FUNCTION")
-		-- context:AddRegistered("VIEW_CONNECTIONS")
-		-- context:AddRegistered("GET_REFERENCES")
 		context:AddRegistered("COPY_API_PAGE")
 		
 		context:QueueDivider()
@@ -1351,14 +1348,6 @@ local function main()
 			local x,y = Explorer.LastRightClickX or mouse.X, Explorer.LastRightClickY or mouse.Y
 			Explorer.InsertObjectContext:Show(x,y)
 		end})
-
-		--[[context:Register("CALL_FUNCTION",{Name = "Call Function", IconMap = Explorer.ClassIcons, Icon = 66, OnClick = function()
-			
-		end})]]
-
-		--[[context:Register("GET_REFERENCES",{Name = "Get Lua References", IconMap = Explorer.ClassIcons, Icon = 34, OnClick = function()
-			
-		end})]]
 		
 		context:Register("SAVE_INST",{Name = "Save to File", IconMap = Explorer.MiscIcons, Icon = "Save", OnClick = function()
 			local sList = selection.List
@@ -1381,10 +1370,6 @@ local function main()
 				end
 			end
 		end})
-		
-		--[[context:Register("VIEW_CONNECTIONS",{Name = "View Connections", OnClick = function()
-			
-		end})]]
 		
 		local ClassFire = {
 			RemoteEvent = "FireServer",
@@ -1410,7 +1395,6 @@ local function main()
 					if Settings.RemoteBlockWriteAttribute then
 						obj:SetAttribute("IsBlocked", true)
 					end
-					--print("blocking ",functionToHook)
 				end
 			end
 		end})
@@ -1424,7 +1408,6 @@ local function main()
 					if Settings.RemoteBlockWriteAttribute then
 						list.Obj:SetAttribute("IsBlocked", false)
 					end
-					--print("unblocking ",functionToHook)
 				end
 			end
 		end})
@@ -1617,18 +1600,11 @@ local function main()
 		local nilInsts = env.getnilinstances()
 		local game = game
 		local getDescs = game.GetDescendants
-		--local newNilMap = {}
-		--local newNilRoots = {}
-		--local nilRoots = Explorer.NilRoots
-		--local connect = game.DescendantAdded.Connect
-		--local disconnect
-		--if not nilRoots then nilRoots = {} Explorer.NilRoots = nilRoots end
 
 		for i = 1,#nilInsts do
 			local obj = nilInsts[i]
 			if obj ~= game then
 				nilMap[obj] = true
-				--newNilRoots[obj] = true
 
 				local descs = getDescs(obj)
 				for j = 1,#descs do
@@ -1637,44 +1613,11 @@ local function main()
 			end
 		end
 
-		-- Remove unmapped nil nodes
-		--[[for i = 1,#nilNode do
-			local node = nilNode[i]
-			if not newNilMap[node.Obj] then
-				nilMap[node.Obj] = nil
-				coroutine.wrap(removeObject)(node)
-			end
-		end]]
-
-		--nilMap = newNilMap
-
 		for i = 1,#nilInsts do
 			local obj = nilInsts[i]
 			local node = nodes[obj]
 			if not node then coroutine.wrap(addObject)(obj) end
 		end
-
-		--[[
-		-- Remove old root connections
-		for obj in next,nilRoots do
-			if not newNilRoots[obj] then
-				if not disconnect then disconnect = obj[1].Disconnect end
-				disconnect(obj[1])
-				disconnect(obj[2])
-			end
-		end
-		
-		for obj in next,newNilRoots do
-			if not nilRoots[obj] then
-				nilRoots[obj] = {
-					connect(obj.DescendantAdded,addObject),
-					connect(obj.DescendantRemoving,removeObject)
-				}
-			end
-		end]]
-
-		--nilMap = newNilMap
-		--Explorer.NilRoots = newNilRoots
 
 		Explorer.Update()
 		Explorer.Refresh()
@@ -2278,7 +2221,6 @@ return search]==]
 			if Main.Elevated then
 				local start = tick()
 				searchFunc,specFilters = Explorer.BuildSearchFunc(query)
-				--print("BUILD SEARCH",tick()-start)
 			else
 				searchFunc = defaultSearch
 			end
@@ -2302,7 +2244,6 @@ return search]==]
 				local start = tick()
 				searchFunc(nodes[game])
 				searchFunc(nilNode)
-				--warn(tick()-start)
 			end
 		end
 

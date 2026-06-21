@@ -89,10 +89,6 @@ local function main()
 			elseif item:IsA("Model") then
 				item.Archivable = true
 
-			--[[if not item.PrimaryPart then
-				pathLabel.Gui.Text = "Failed to view model: No PrimaryPart is found."
-				return
-			end]]
 				if #item:GetChildren() == 0 then return end
 				
 				model = item:Clone()

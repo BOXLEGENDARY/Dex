@@ -512,7 +512,6 @@ local function main()
 		-- Find conflicts and get auto-update instances
 		Properties.ClassLists = classLists
 		Properties.ComputeConflicts()
-		--warn("CONFLICT",tick()-start)
 		if #props > 0 then
 			props[#props+1] = Properties.AddAttributeProp
 		end
