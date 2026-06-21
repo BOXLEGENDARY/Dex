@@ -4553,7 +4553,9 @@ local function main()
 			local len = #lineText
 			local pos = 1
 
-			local state = self.LineStates[line] or {InMultiline = false}
+			self.LineStates = self.LineStates or {}
+			local state = self.LineStates[line] or {InMultiline = false, Closer = "", Type = 0}
+			
 			local inMultiline = state.InMultiline
 			local multilineCloser = state.Closer
 			local currentType = state.Type
