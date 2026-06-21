@@ -80,10 +80,6 @@ DefaultSettings = (function()
 		},
 		RemoteBlockWriteAttribute = false, -- writes attribute to remote instance if remote is blocked/unblocked
 		ClassIcon = "NewDark",
-		-- What available icons:
-		-- > Vanilla3
-		-- > Old
-		-- > NewDark
 		DecompilerMode = "Default",
 		ShinyDecompilerPort = 3000,
 	}
@@ -329,7 +325,6 @@ Main = (function()
 		
 			local function wrappedsaveinstance(obj, filepath, options)
 				options["FilePath"] = filepath
-				--options["ReadMe"] = false
 				options["Object"] = obj
 				return synsaveinstance(options)
 			end
@@ -1103,7 +1098,6 @@ Main = (function()
 		Main.MainGui.OpenButton.Text = val and "X" or "Dex"
 		if val then Main.MainGui.OpenButton.MainFrame.Visible = true end
 		Main.MainGui.OpenButton.MainFrame:TweenSize(val and UDim2.new(0,224,0,200) or UDim2.new(0,0,0,0),Enum.EasingDirection.Out,Enum.EasingStyle.Quad,0.2,true)
-		--Main.MainGui.OpenButton.BackgroundTransparency = val and 0 or (Lib.CheckMouseInGui(Main.MainGui.OpenButton) and 0 or 0.2)
 		service.TweenService:Create(Main.MainGui.OpenButton,TweenInfo.new(0.2,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{BackgroundTransparency = val and 0 or (Lib.CheckMouseInGui(Main.MainGui.OpenButton) and 0 or 0.2)}):Play()
 		
 		if Main.MainGuiMouseEvent then Main.MainGuiMouseEvent:Disconnect() end
@@ -1254,10 +1248,6 @@ Main = (function()
 		local function initProcess()
 			Lib = Main.LoadModule("Lib")
 			Lib.FastWait()
-			
-			
-			-- Init other stuff
-    		--Main.IncompatibleTest()
 		
     		-- Init icons
 			Main.MiscIcons = Lib.IconMap.new("rbxassetid://6511490623",256,256,16,16)
