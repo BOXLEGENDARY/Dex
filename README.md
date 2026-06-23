@@ -4,6 +4,24 @@ loadstring(game:HttpGet("https://github.com/BOXLEGENDARY/Dex/releases/latest/dow
 ```
 
 ---
+
+## Search Filters
+You can chain filters using `&&` (AND), `||` (OR), and `!` (NOT).
+
+| Filter | Description | Example |
+| :--- | :--- | :--- |
+| `c:ClassName` | Find instances by ClassName. | `c:Part` |
+| `p:Prop=Val` | Find instances with a specific property value. | `p:Anchored=true` |
+| `p:Prop>Val` | Compare numbers (supports `>`, `<`, `>=`, `<=`, `~=`). | `p:Transparency>0.5` |
+| `a:Name=Val` | Search by custom Attribute. | `a:IsAdmin=true` |
+| `t:Tag` | Find instances with a CollectionService tag. | `t:KillBrick` |
+| `rad:Radius` | Find parts within a specific radius from your character. | `rad:50` |
+| `in:Name` | Find instances inside a specific parent. | `c:Script && in:Workspace` |
+| `remotes` | Quick filter for all RemoteEvents/Functions. | `remotes` |
+
+*Example:* `c:BasePart && p:Transparency=1 && rad:100` (Finds all invisible parts within 100 studs).
+
+---
 ## Notes
 * To reset the settings, delete `workspace/dex/DexSettings.json`.
 * ​To install plugins, place the plugin files in `workspace/dex/plugins`.
