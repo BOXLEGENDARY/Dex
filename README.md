@@ -17,7 +17,10 @@ You can chain filters using `&&` (AND), `||` (OR), and `!` (NOT).
 | `t:Tag` | Find instances with a CollectionService tag. | `t:KillBrick` |
 | `rad:Radius` | Find parts within a specific radius from your character. | `rad:50` |
 | `in:Name` | Find instances inside a specific parent. | `c:Script && in:Workspace` |
-| `remotes` | Quick filter for all RemoteEvents/Functions. | `remotes` |
+| `:remotes` | Quick filter for all RemoteEvents/Functions. | `:remotes` |
+| `:bindables` | Quick filter for all bindables/Functions. | `:bindables` |
+| `:players` | Show all players. | `:players` |
+| `:loadedmodules` | Show all loadedmodules. | `:loadedmodules` |
 
 *Example:* `c:BasePart && p:Transparency=1 && rad:100` (Finds all invisible parts within 100 studs).
 
