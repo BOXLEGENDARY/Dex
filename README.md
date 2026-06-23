@@ -5,7 +5,7 @@ loadstring(game:HttpGet("https://github.com/BOXLEGENDARY/Dex/releases/latest/dow
 
 ---
 
-## Search Filters ( QoL )
+## Search Filters
 You can chain filters using `&&` (AND), `||` (OR), and `!` (NOT).
 
 | Filter | Description | Example |
