@@ -3757,7 +3757,8 @@ local function main()
 		
 		local keywords = {
 			["and"] = true,
-			["break"] = true, 
+			["break"] = true,
+			["const"] = true,
 			["do"] = true,
 			["else"] = true,
 			["elseif"] = true,
@@ -4569,7 +4570,6 @@ local function main()
 			local pos = 1
 
 			self.LineStates = self.LineStates or {}
-			
 			local state = self.LineStates[line] or {InMultiline = false, Closer = "", Type = 0}
 			local inMultiline = state.InMultiline
 			local multilineCloser = state.Closer
@@ -4579,9 +4579,61 @@ local function main()
 			local wordBeginsDotted = false
 
 			local function fill(startIdx, endIdx, typeNum)
+				if startIdx > endIdx then
+					return
+				end
 				for i = startIdx, endIdx do
 					highlights[i] = typeNum
 				end
+			end
+
+			local function scanNumber(startPos)
+				local s, e = string.find(lineText, "^0[xX][%da-fA-F_]+", startPos)
+				if s then return s, e end
+
+				s, e = string.find(lineText, "^0[bB][01_]+", startPos)
+				if s then return s, e end
+
+				s, e = string.find(lineText, "^%d[%d_]*%.%d[%d_]*[eE][%+%-]?%d[%d_]*", startPos)
+				if s then return s, e end
+
+				s, e = string.find(lineText, "^%d[%d_]*[eE][%+%-]?%d[%d_]*", startPos)
+				if s then return s, e end
+
+				s, e = string.find(lineText, "^%d[%d_]*%.%d[%d_]*", startPos)
+				if s then return s, e end
+
+				s, e = string.find(lineText, "^%d[%d_]*%.?", startPos)
+				if s then return s, e end
+
+				s, e = string.find(lineText, "^%.%d[%d_]*", startPos)
+				if s then return s, e end
+
+				return nil
+			end
+
+			local function scanOperator(startPos)
+				local three = string.sub(lineText, startPos, startPos + 2)
+				if three == "//=" or three == "..=" or three == "..." then
+					return 3
+				end
+
+				local two = string.sub(lineText, startPos, startPos + 1)
+				if two == "+=" or two == "-=" or two == "*=" or two == "/=" or two == "%=" or two == "^="
+					or two == "==" or two == "~=" or two == "<=" or two == ">=" or two == "//"
+					or two == ".." or two == "::" or two == "->" then
+					return 2
+				end
+
+				local one = string.sub(lineText, startPos, startPos)
+				if one == "+" or one == "-" or one == "*" or one == "/" or one == "%" or one == "^"
+					or one == "=" or one == "<" or one == ">" or one == "#" or one == "."
+					or one == "," or one == ":" or one == ";" or one == "~" or one == "?"
+					or one == "&" or one == "|" or one == "@" then
+					return 1
+				end
+
+				return nil
 			end
 
 			while pos <= len do
@@ -4596,8 +4648,6 @@ local function main()
 						break
 					end
 				else
-					local char = string.sub(lineText, pos, pos)
-
 					local spaceStart, spaceEnd = string.find(lineText, "^%s+", pos)
 					if spaceStart then
 						pos = spaceEnd + 1
@@ -4611,6 +4661,7 @@ local function main()
 						currentType = 4
 						continue
 					end
+
 					if string.find(lineText, "^%-%-", pos) then
 						fill(pos, len, 4)
 						break
@@ -4624,10 +4675,11 @@ local function main()
 						continue
 					end
 
-					local quote = string.match(lineText, "^(['\"])", pos)
+					local quote = string.match(lineText, "^(['\"`])", pos)
 					if quote then
-						local qType = (quote == '"') and 1 or 2
+						local qType = (quote == "'") and 2 or 1
 						local matchEnd = pos + 1
+
 						while matchEnd <= len do
 							local c = string.sub(lineText, matchEnd, matchEnd)
 							if c == "\\" then
@@ -4638,22 +4690,21 @@ local function main()
 								matchEnd = matchEnd + 1
 							end
 						end
-						fill(pos, math.min(matchEnd, len), qType)
-						pos = matchEnd + 1
-						continue
+
+						if matchEnd > len then
+							fill(pos, len, qType)
+							inMultiline = true
+							multilineCloser = quote
+							currentType = qType
+							break
+						else
+							fill(pos, matchEnd, qType)
+							pos = matchEnd + 1
+							continue
+						end
 					end
 
-					local numStart, numEnd = string.find(lineText, "^0x[%da-fA-F]+", pos)
-					if not numStart then
-						numStart, numEnd = string.find(lineText, "^%d+%.?%d*[eE][%+%-]?%d+", pos)
-					end
-					if not numStart then
-						numStart, numEnd = string.find(lineText, "^%d+%.?%d*", pos)
-					end
-					if not numStart then
-						numStart, numEnd = string.find(lineText, "^%.%d+", pos)
-					end
-
+					local numStart, numEnd = scanNumber(pos)
 					if numStart then
 						fill(numStart, numEnd, 6)
 						pos = numEnd + 1
@@ -4662,9 +4713,22 @@ local function main()
 						continue
 					end
 
+					local atChar = string.sub(lineText, pos, pos)
+					if atChar == "@" then
+						local attrStart, attrEnd, attrWord = string.find(lineText, "^@([%a_][%w_]*)", pos)
+						if attrStart then
+							fill(attrStart, attrEnd, 7)
+							pos = attrEnd + 1
+							wordBeginsDotted = false
+							lastWord = attrWord
+							continue
+						end
+					end
+
 					local wordStart, wordEnd, word = string.find(lineText, "^([%a_][%w_]*)", pos)
 					if wordStart then
 						local wordType = 0
+
 						if keywords[word] then
 							wordType = specialKeywordsTypes[word] or 7
 						elseif builtIns[word] then
@@ -4697,28 +4761,24 @@ local function main()
 						continue
 					end
 
-					if string.find(char, "[%+%-%*/%%^==~<><=>=#%.%,:;]") then
-						if char == "." then
-							local dotStr = string.match(lineText, "^%.%.?%.?", pos)
-							if dotStr and #dotStr > 1 then
-								fill(pos, pos + #dotStr - 1, 5)
-								pos = pos + #dotStr
-								wordBeginsDotted = false
-								lastWord = nil
-								continue
-							else
-								wordBeginsDotted = true
-							end
+					local opLen = scanOperator(pos)
+					if opLen then
+						local opChar = string.sub(lineText, pos, pos)
+
+						if opChar == "." and opLen == 1 then
+							wordBeginsDotted = true
 						else
 							wordBeginsDotted = false
 						end
-						
-						highlights[pos] = 5
-						pos = pos + 1
+
+						fill(pos, pos + opLen - 1, 5)
+						pos = pos + opLen
+						lastWord = nil
 						continue
 					end
 
-					if string.find(char, "[%(%)%[%]{}]") then
+					local bracket = string.sub(lineText, pos, pos)
+					if string.find(bracket, "[%(%)%[%]{}]") then
 						highlights[pos] = 17
 						pos = pos + 1
 						wordBeginsDotted = false
