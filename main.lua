@@ -129,7 +129,7 @@ Main = (function()
 	Main.ModuleList = {"Explorer","Properties","ScriptViewer","Notepad","ModelViewer","SaveInstance","SettingsWindow"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
-	Main.Version = "5.0.0"
+	Main.Version = "5.0.1"
 	Main.Mouse = plr:GetMouse()
 	Main.AppControls = {}
 	Main.Apps = Apps
@@ -351,9 +351,9 @@ Main = (function()
 		env.hookmetamethod = hookmetamethod
 	
 		-- other
-		if type(decompile) ~= "function" then
-		    pcall(Main.LoadAdvancedLuauDecompiler)
-		end
+		pcall(function()
+		    Main.LoadLuauDisassemble()
+		end)
 
 		local Decompiler = getgenv().decompile or decompile
 		
@@ -430,7 +430,7 @@ Main = (function()
 		end
 
 		env.disassemble = function(script_instance)
-			return konstant_call("/konstant/disassemble", script_instance)
+			return disassemble(script_instance)
 		end
 		env.getscriptbytecode = getscriptbytecode
 		env.setfflag = setfflag
@@ -835,8 +835,8 @@ Main = (function()
 		return {Classes = classes, Enums = enums, PropertyOrders = propertyOrders}
 	end
 
-	Main.LoadAdvancedLuauDecompiler = function()
-	    loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/Advanced-Luau-Decompiler/main/init.lua", true))()
+	Main.LoadLuauDisassemble = function()
+	    loadstring(game:HttpGet("https://raw.githubusercontent.com/BOXLEGENDARY/Luau-Disassembler/main/init.lua", true))()
 	end
 
 	Main.ShowGui = Main.SecureGui
