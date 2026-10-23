@@ -39,7 +39,7 @@ loadstring(game:HttpGet("https://github.com/BOXLEGENDARY/Dex/releases/latest/dow
 
 [Luau-Disassembler](https://github.com/BOXLEGENDARY/Luau-Disassembler)
 
-[UniversalSynapseSaveInstance](https://github.com/BOXLEGENDARY/UniversalSynSaveInstance)
+[SaveInstance](https://github.com/BOXLEGENDARY/SaveInstance)
 
 [Shiny](https://github.com/BOXLEGENDARY/shiny)
 
