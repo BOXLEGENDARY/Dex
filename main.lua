@@ -129,7 +129,7 @@ Main = (function()
 	Main.ModuleList = {"Explorer","Properties","ScriptViewer","Notepad","ModelViewer","SaveInstance","SettingsWindow"}
 	Main.Elevated = false
 	Main.MissingEnv = {}
-	Main.Version = "5.0.1"
+	Main.Version = "5.0.2"
 	Main.Mouse = plr:GetMouse()
 	Main.AppControls = {}
 	Main.Apps = Apps
@@ -318,15 +318,15 @@ Main = (function()
 		env.movefileas = movefileas
 		env.saveinstance = (function()
 			local Params = {
-				RepoURL = "https://raw.githubusercontent.com/BOXLEGENDARY/UniversalSynSaveInstance/main/",
-				SSI = "saveinstance",
+				RepoURL = "https://raw.githubusercontent.com/BOXLEGENDARY/SaveInstance/main/",
+				SI = "saveinstance",
 			}
-			local synsaveinstance = loadstring(oldgame:HttpGet(Params.RepoURL .. Params.SSI .. ".luau", true), Params.SSI)()
+			local saveinstance = loadstring(oldgame:HttpGet(Params.RepoURL .. Params.SI .. ".luau", true), Params.SI)()
 		
 			local function wrappedsaveinstance(obj, filepath, options)
 				options["FilePath"] = filepath
 				options["Object"] = obj
-				return synsaveinstance(options)
+				return saveinstance(options)
 			end
 			
 			getgenv().saveinstance = wrappedsaveinstance
