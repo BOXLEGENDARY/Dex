@@ -1216,12 +1216,10 @@ Main = (function()
 	
 	Main.SetupFilesystem = function()
 		if not env.writefile or not env.makefolder then return end
-		local writefile, makefolder = env.writefile, env.makefolder
-		makefolder("dex")
-		makefolder("dex/assets")
-		makefolder("dex/saved")
-		makefolder("dex/plugins")
-		makefolder("dex/ModuleCache")
+		env.makefolder("dex")
+		env.makefolder("dex/assets")
+		env.makefolder("dex/saved")
+		env.makefolder("dex/plugins")
 	end
 	
 	Main.SaveCurrentSettings = function()
